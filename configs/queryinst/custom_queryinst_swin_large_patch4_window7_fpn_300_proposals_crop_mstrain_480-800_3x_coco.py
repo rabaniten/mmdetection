@@ -61,12 +61,27 @@ fp16 = None
 load_from = '/opt/ml/code/work_dirs/custom_queryinst_swin_large/weights/custom_queryinst_swin_large_patch4_window7_fpn_300_queries-832c5813.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-lr_config = dict(
-    policy='step',
-    warmup='linear',
-    warmup_iters=125,
-    warmup_ratio=0.001,
-    step=[8, 10]) # step=[8, 10] is to decay the learning rate once at epoch=8, and then decay it again at epoch=10
+#lr_config = dict(
+#    policy='step',
+#    warmup='linear',
+#    warmup_iters=1,
+#    warmup_ratio=0.001,
+#    step=[8, 10]) # step=[8, 10] is to decay the learning rate once at epoch=8, and then decay it again at epoch=10
+param_scheduler = [
+    dict(
+        type='LinearLR',  # Use linear learning rate warmup
+        start_factor=0.001, # Coefficient for learning rate warmup
+        by_epoch=False,  # Update the learning rate during warmup at each iteration
+        begin=0,  # Starting from the first iteration
+        end=2),  # End at the 2nd iteration
+#    dict(
+#        type='MultiStepLR',  # Use multi-step learning rate strategy during training
+#        by_epoch=True,  # Update the learning rate at each epoch
+#        begin=0,   # Starting from the first epoch
+#        end=10,  # Ending at the 10th epoch
+#        milestones=[8, 10],  # Learning rate decay at which epochs, epch=8 and epch=10
+#        gamma=0.1)  # Learning rate decay coefficient
+]
 max_epochs = 10  # original: 36
 model = dict(
     backbone=dict(
@@ -654,21 +669,24 @@ optim_wrapper = dict(
     clip_grad=dict(max_norm=0.1, norm_type=2),
     optimizer=dict(lr=(2e-05 * (8**0.5)), type='AdamW', weight_decay=0.0001),
     paramwise_cfg=dict(
-        custom_keys=dict(backbone=dict(decay_mult=1.0, lr_mult=0.1))),
-    type='OptimWrapper')
-optimizer = dict(
-    paramwise_cfg=dict(
         custom_keys=dict(
             absolute_pos_embed=dict(decay_mult=0.0),
-            norm=dict(decay_mult=0.0),
-            relative_position_bias_table=dict(decay_mult=0.0))))
-optimizer_config = dict(
-    grad_clip=dict(max_norm=1, norm_type=2),
-    type='DistOptimizerHook',
-    update_interval=1,
-    coalesce=True,
-    bucket_size_mb=-1,
-    use_fp16=False)
+            relative_position_bias_table=dict(decay_mult=0.0),
+            norm=dict(decay_mult=0.0))),
+    type='OptimWrapper')
+#optimizer = dict(
+#    paramwise_cfg=dict(
+#        custom_keys=dict(
+#            absolute_pos_embed=dict(decay_mult=0.0),
+#            norm=dict(decay_mult=0.0),
+#            relative_position_bias_table=dict(decay_mult=0.0))))
+#optimizer_config = dict(
+#    grad_clip=dict(max_norm=1, norm_type=2),
+#    type='DistOptimizerHook',
+#    update_interval=1,
+#    coalesce=True,
+#    bucket_size_mb=-1,
+#    use_fp16=False)
 resume = False
 runner = dict(max_epochs=10, type='EpochBasedRunnerAmp')  # original: 36
 test_cfg = dict(type='TestLoop')
