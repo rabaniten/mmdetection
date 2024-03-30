@@ -1,3 +1,4 @@
+# augmentation
 albu_train_transforms = [
     dict(
         interpolation=1,
@@ -61,26 +62,18 @@ fp16 = None
 load_from = '/opt/ml/code/work_dirs/custom_queryinst_swin_large/weights/custom_queryinst_swin_large_patch4_window7_fpn_300_queries-832c5813.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-#lr_config = dict(
-#    policy='step',
-#    warmup='linear',
-#    warmup_iters=1,
-#    warmup_ratio=0.001,
-#    step=[8, 10]) # step=[8, 10] is to decay the learning rate once at epoch=8, and then decay it again at epoch=10
 param_scheduler = [
     dict(
         type='LinearLR',  # Use linear learning rate warmup
         start_factor=0.001, # Coefficient for learning rate warmup
         by_epoch=False,  # Update the learning rate during warmup at each iteration
         begin=0,  # Starting from the first iteration
-        end=2),  # End at the 2nd iteration
-#    dict(
-#        type='MultiStepLR',  # Use multi-step learning rate strategy during training
-#        by_epoch=True,  # Update the learning rate at each epoch
-#        begin=0,   # Starting from the first epoch
-#        end=10,  # Ending at the 10th epoch
-#        milestones=[8, 10],  # Learning rate decay at which epochs, epch=8 and epch=10
-#        gamma=0.1)  # Learning rate decay coefficient
+        end=250),  # End at the first iteration
+    dict(
+        type='MultiStepLR',  # Use multi-step learning rate strategy during training
+        by_epoch=True,  # Update the learning rate at each epoch
+        milestones=[8, 10],  # Learning rate decay at which epochs, epch=8 and epch=10
+        gamma=0.1)  # Learning rate decay coefficient
 ]
 max_epochs = 10  # original: 36
 model = dict(
@@ -667,7 +660,7 @@ num_proposals = 300
 num_stages = 6
 optim_wrapper = dict(
     clip_grad=dict(max_norm=0.1, norm_type=2),
-    optimizer=dict(lr=(2e-05 * (8**0.5)), type='AdamW', weight_decay=0.0001),
+    optimizer=dict(lr=(2e-05 * (8**0.5)), type='AdamW', weight_decay=0.0001),  # default lr: 0.0001
     paramwise_cfg=dict(
         custom_keys=dict(
             absolute_pos_embed=dict(decay_mult=0.0),
@@ -752,6 +745,7 @@ test_pipeline = [
         type='PackDetInputs'),
 ]
 total_epochs = 10 # 36
+
 train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)  # original: 36
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
@@ -999,7 +993,7 @@ val_dataloader = dict(
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
     ann_file=
-    '/opt/ml/input/data/validation/val.json',
+    '/opt/ml/input/data/train/new_train.json', # change back to validation/val.json
     backend_args=None,
     format_only=False,
     metric=[
@@ -1007,6 +1001,7 @@ val_evaluator = dict(
         'segm',
     ],
     type='CocoMetric')
+
 vis_backends = [
     dict(type='LocalVisBackend'),
 ]
