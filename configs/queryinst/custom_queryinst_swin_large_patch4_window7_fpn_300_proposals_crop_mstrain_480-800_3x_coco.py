@@ -68,14 +68,14 @@ param_scheduler = [
         start_factor=0.001, # Coefficient for learning rate warmup
         by_epoch=False,  # Update the learning rate during warmup at each iteration
         begin=0,  # Starting from the first iteration
-        end=250),  # End at the first iteration
+        end=125),  # End at the 250th iteration # cha ge back to 250
     dict(
         type='MultiStepLR',  # Use multi-step learning rate strategy during training
         by_epoch=True,  # Update the learning rate at each epoch
-        milestones=[8, 10],  # Learning rate decay at which epochs, epch=8 and epch=10
+        milestones=[22, 24],  # Learning rate decay at which epochs, epch=8 and epch=10
         gamma=0.1)  # Learning rate decay coefficient
 ]
-max_epochs = 10  # original: 36
+max_epochs = 24  # original: 36
 model = dict(
     backbone=dict(
         attn_drop_rate=0.0,
@@ -681,7 +681,7 @@ optim_wrapper = dict(
 #    bucket_size_mb=-1,
 #    use_fp16=False)
 resume = False
-runner = dict(max_epochs=10, type='EpochBasedRunnerAmp')  # original: 36
+runner = dict(max_epochs=24, type='EpochBasedRunnerAmp')  # original: 36
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
@@ -744,9 +744,9 @@ test_pipeline = [
         ),
         type='PackDetInputs'),
 ]
-total_epochs = 10 # 36
+total_epochs = 24 # 36
 
-train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)  # original: 36
+train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=1)  # original: 36
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
@@ -961,11 +961,11 @@ val_dataloader = dict(
     batch_size=1,
     dataset=dict(
         ann_file=
-        '/opt/ml/input/data/validation/val.json',
+        '/opt/ml/input/data/train/new_train.json',
         backend_args=None,
         data_prefix=dict(
             img=
-            '/opt/ml/input/data/validation/images/'
+            '/opt/ml/input/data/train/images/'
         ),
         data_root='/opt/ml/input/data/',
         pipeline=[
