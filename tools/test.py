@@ -9,6 +9,12 @@ from mmengine import ConfigDict
 from mmengine.config import Config, DictAction
 from mmengine.runner import Runner
 
+# new #
+import sys
+sys.path.insert(0, '/Sofia/Genioos/sm_mmdetection/sm_queryinst_mini/mmdetection/mmdet') 
+import mmdet
+# # # #
+
 from mmdet.engine.hooks.utils import trigger_visualization_hook
 from mmdet.evaluation import DumpDetResults
 from mmdet.registry import RUNNERS

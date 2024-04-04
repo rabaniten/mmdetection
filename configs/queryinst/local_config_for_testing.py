@@ -689,13 +689,13 @@ test_dataloader = dict(
     batch_size=1,
     dataset=dict(
         ann_file=
-        '/opt/ml/input/data/train/new_train.json',
+        '/root/Sofia/Genioos/food_recognition_benchmark_EPFL/data/new_train_mini_v2.json',
         backend_args=None,
         data_prefix=dict(
             img=
-            '/opt/ml/input/data/train/images/'
+            '/root/Sofia/Genioos/food_recognition_benchmark_EPFL/data/selected_images/'
         ),
-        data_root='/opt/ml/input/data/',
+        data_root='/root/Sofia/Genioos/food_recognition_benchmark_EPFL/data/',
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(keep_ratio=True, scale=(
@@ -721,7 +721,7 @@ test_dataloader = dict(
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
     ann_file=
-    '/opt/ml/input/data/train/new_train.json',
+    '/root/Sofia/Genioos/food_recognition_benchmark_EPFL/data/new_train_mini_v2.json',
     backend_args=None,
     format_only=False,
     metric=[
