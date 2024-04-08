@@ -689,11 +689,11 @@ test_dataloader = dict(
     batch_size=1,
     dataset=dict(
         ann_file=
-        '/opt/ml/input/data/train/new_train.json',
+        '/opt/ml/input/data/test/new_train.json',
         backend_args=None,
         data_prefix=dict(
             img=
-            '/opt/ml/input/data/train/images/'
+            '/opt/ml/input/data/test/images/'
         ),
         data_root='/opt/ml/input/data/',
         pipeline=[
@@ -721,7 +721,7 @@ test_dataloader = dict(
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
     ann_file=
-    '/opt/ml/input/data/train/new_train.json',
+    '/opt/ml/input/data/test/new_train.json',
     backend_args=None,
     format_only=False,
     metric=[
@@ -1019,5 +1019,5 @@ visualizer = dict(
 work_dir = '/opt/ml/checkpoints'
 metainfo = {
     'classes': (
-    'jam', 'water', 'bread', 'banana', 'coffee'),
+    'asparagus', 'potato_gnocchi', 'pineapple', 'dates', 'spring_roll_fried'),
 }

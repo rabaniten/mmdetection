@@ -16,7 +16,7 @@ class CocoDataset(BaseDetDataset):
 
     METAINFO = {
         'classes':
-        ('jam', 'water', 'bread', 'banana', 'coffee'),
+        ('asparagus', 'potato_gnocchi', 'pineapple', 'dates', 'spring_roll_fried'),
     }
     COCOAPI = COCO
     # ann_id is unique in coco dataset.
