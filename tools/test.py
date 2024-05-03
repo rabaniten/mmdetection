@@ -11,7 +11,7 @@ from mmengine.runner import Runner
 
 # new #
 import sys
-sys.path.insert(0, '/Sofia/Genioos/sm_mmdetection/sm_queryinst_mini/mmdetection/mmdet') 
+sys.path.insert(0, '/Sofia/Genioos/detection_models/codetr/mmdetection/mmdet') 
 import mmdet
 # # # #
 
