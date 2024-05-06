@@ -8,6 +8,8 @@ from mmengine.registry import init_default_scope
 
 from mmdet.registry import DATASETS
 
+import sys
+sys.path.insert(0, '/root/Sofia/Genioos/detection_models/codetr/mmdetection/')
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Evaluate metric of the '
@@ -32,6 +34,7 @@ def main():
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
+    #print(cfg)
     init_default_scope(cfg.get('default_scope', 'mmdet'))
 
     if args.cfg_options is not None:
@@ -41,7 +44,9 @@ def main():
     predictions = mmengine.load(args.pkl_results)
 
     evaluator = Evaluator(cfg.val_evaluator)
-    evaluator.dataset_meta = dataset.metainfo
+    #evaluator.dataset_meta = dataset.metainfo  # standard MS COCO dataset classes are provided
+    evaluator.dataset_meta = cfg.metainfo  # provide custom classes for food dataset
+    print(evaluator.dataset_meta)
     eval_results = evaluator.offline_evaluate(predictions)
     print(eval_results)
 
