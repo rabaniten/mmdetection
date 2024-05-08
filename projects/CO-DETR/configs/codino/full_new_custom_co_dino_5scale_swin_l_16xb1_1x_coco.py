@@ -710,11 +710,11 @@ test_dataloader = dict(
     batch_size=1,
     dataset=dict(
         _scope_='mmdet',
-        ann_file='/root/Sofia/Genioos/detection_models/codetr/test/test.json',
+        ann_file='/root/Sofia/Genioos/data/full_dataset/test/test.json',
         backend_args=None,
         data_prefix=dict(
-            img='/root/Sofia/Genioos/detection_models/codetr/test/images/'),
-        data_root='/root/Sofia/Genioos/detection_models/codetr/',
+            img='/root/Sofia/Genioos/data/full_dataset/test/images/'),
+        data_root='/root/Sofia/Genioos/data/full_dataset/',
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(keep_ratio=True, scale=(
@@ -740,7 +740,7 @@ test_dataloader = dict(
     sampler=dict(_scope_='mmdet', shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
     _scope_='mmdet',
-    ann_file='/root/Sofia/Genioos/detection_models/codetr/test/test.json',
+    ann_file='/root/Sofia/Genioos/data/full_dataset/test/test.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
