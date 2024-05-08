@@ -11,8 +11,7 @@ from mmengine.runner import Runner
 
 # new #
 import sys
-sys.path.insert(0, '/Sofia/Genioos/detection_models/codetr/mmdetection/mmdet') 
-import mmdet
+sys.path.insert(0, '/root/Sofia/Genioos/detection_models/codetr/mmdetection/') 
 # # # #
 
 from mmdet.engine.hooks.utils import trigger_visualization_hook

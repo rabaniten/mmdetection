@@ -43,10 +43,10 @@ def main():
     dataset = DATASETS.build(cfg.test_dataloader.dataset)
     predictions = mmengine.load(args.pkl_results)
 
-    evaluator = Evaluator(cfg.val_evaluator)
+    evaluator = Evaluator(cfg.test_evaluator)
     #evaluator.dataset_meta = dataset.metainfo  # standard MS COCO dataset classes are provided
     evaluator.dataset_meta = cfg.metainfo  # provide custom classes for food dataset
-    print(evaluator.dataset_meta)
+    #print(evaluator.dataset_meta)  # visualize custom classes
     eval_results = evaluator.offline_evaluate(predictions)
     print(eval_results)
 
