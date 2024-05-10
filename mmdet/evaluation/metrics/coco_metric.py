@@ -18,6 +18,8 @@ from mmdet.registry import METRICS
 from mmdet.structures.mask import encode_mask_results
 from ..functional import eval_recalls
 
+import sys
+sys.path.insert(0, '/root/Sofia/Genioos/detection_models/codetr/mmdetection/mmdet/')
 
 @METRICS.register_module()
 class CocoMetric(BaseMetric):
@@ -121,7 +123,7 @@ class CocoMetric(BaseMetric):
                 'please use `backend_args` instead, please refer to'
                 'https://github.com/open-mmlab/mmdetection/blob/main/configs/_base_/datasets/coco_detection.py'  # noqa: E501
             )
-
+        
         # if ann_file is not specified,
         # initialize coco api with the converted dataset
         if ann_file is not None:
@@ -460,7 +462,8 @@ class CocoMetric(BaseMetric):
                     for x in predictions:
                         x.pop('bbox')
                 coco_dt = self._coco_api.loadRes(predictions)
-
+                #coco_obj = COCO('/root/Sofia/Genioos/data/mini_datasets/v3/new_train.json')
+                #coco_dt =  coco_obj.loadRes(predictions)
             except IndexError:
                 logger.error(
                     'The testing results of the whole dataset is empty.')

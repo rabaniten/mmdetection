@@ -40,10 +40,10 @@ def main():
     if args.cfg_options is not None:
         cfg.merge_from_dict(args.cfg_options)
 
-    dataset = DATASETS.build(cfg.test_dataloader.dataset)
+    dataset = DATASETS.build(cfg.test_dataloader.dataset) 
     predictions = mmengine.load(args.pkl_results)
 
-    evaluator = Evaluator(cfg.test_evaluator)
+    evaluator = Evaluator(cfg.test_evaluator) 
     #evaluator.dataset_meta = dataset.metainfo  # standard MS COCO dataset classes are provided
     evaluator.dataset_meta = cfg.metainfo  # provide custom classes for food dataset
     #print(evaluator.dataset_meta)  # visualize custom classes
