@@ -689,7 +689,7 @@ test_dataloader = dict(
     batch_size=1,
     dataset=dict(
         ann_file=
-        '/root/Sofia/Genioos/data/full_dataset/test/test.json',
+        '/root/Sofia/Genioos/data/full_dataset/test/modified_test.json',
         backend_args=None,
         data_prefix=dict(
             img=
@@ -721,7 +721,7 @@ test_dataloader = dict(
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
     ann_file=
-    '/root/Sofia/Genioos/data/full_dataset/test/test.json',
+    '/root/Sofia/Genioos/data/full_dataset/test/modified_test.json',
     backend_args=None,
     format_only=False,
     metric=[
