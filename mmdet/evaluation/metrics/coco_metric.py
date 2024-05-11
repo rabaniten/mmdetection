@@ -147,6 +147,10 @@ class CocoMetric(BaseMetric):
         # handle dataset lazy init
         self.cat_ids = None
         self.img_ids = None
+        
+        # custom (new)
+        category_ids = self._coco_api.loadCats(sorted(self._coco_api.getCatIds()))
+        self.category_names = [_["name"] for _ in category_ids]
 
     def fast_eval_recall(self,
                          results: List[dict],
@@ -532,16 +536,17 @@ class CocoMetric(BaseMetric):
                         t = []
                         # area range index 0: all area ranges
                         # max dets index -1: typically 100 per image
-                        nm = self._coco_api.loadCats(cat_id)[0]
+                        #nm = self._coco_api.loadCats(cat_id)[0]
+                        name = self.category_names[idx]
                         precision = precisions[:, :, idx, 0, -1]
                         precision = precision[precision > -1]
                         if precision.size:
                             ap = np.mean(precision)
                         else:
                             ap = float('nan')
-                        t.append(f'{nm["name"]}')
+                        t.append(f'{name}')
                         t.append(f'{round(ap, 3)}')
-                        eval_results[f'{nm["name"]}_precision'] = round(ap, 3)
+                        eval_results[f'{name}_precision'] = round(ap, 3)
 
                         # indexes of IoU  @50 and @75
                         for iou in [0, 5]:
