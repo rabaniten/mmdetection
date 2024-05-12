@@ -446,12 +446,12 @@ test_dataloader = dict(
     dataset=dict(
         _scope_='mmdet',
         ann_file=
-        '/root/Sofia/Genioos/sm_mmdetection/sm_codetr/test_data/new_train.json',
+        '/root/Sofia/Genioos/data/mini_datasets/v4/train.json',
         backend_args=None,
         data_prefix=dict(
-            img='/root/Sofia/Genioos/sm_mmdetection/sm_codetr/test_data/images/'
+            img='/root/Sofia/Genioos/data/mini_datasets/v4/images/'
         ),
-        data_root='/root/Sofia/Genioos/sm_mmdetection/sm_codetr/',
+        data_root='/root/Sofia/Genioos/data/mini_datasets/v4/',
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(keep_ratio=True, scale=(
@@ -478,7 +478,7 @@ test_dataloader = dict(
 test_evaluator = dict(
     _scope_='mmdet',
     ann_file=
-    '/root/Sofia/Genioos/sm_mmdetection/sm_codetr/test_data/new_train.json',
+    '/root/Sofia/Genioos/data/mini_datasets/v4/train.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
@@ -505,10 +505,10 @@ train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/train/new_train.json',
+        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/train.json',
         backend_args=None,
-        data_prefix=dict(img='/opt/ml/input/data/train/images/'),
-        data_root='/opt/ml/input/data/',
+        data_prefix=dict(img='/root/Sofia/Genioos/data/mini_datasets/v4/images/'),
+        data_root='/root/Sofia/Genioos/data/mini_datasets/v4/',
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
