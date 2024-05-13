@@ -1,4 +1,4 @@
-auto_scale_lr = dict(base_batch_size=16, enable=True)
+auto_scale_lr = dict(base_batch_size=16, enable=False)
 backend_args = None
 batch_augments = [
     dict(pad_mask=True, size=(
@@ -34,7 +34,7 @@ image_size = (
     1024,
 )
 launcher = 'pytorch'
-load_from = '/opt/ml/code/work_dirs/custom_co_dino_5scale_swin_l_16xb1_1x_coco/weights/custom_co_dino_5scale_swin_large_1x_coco-27c13da4.pth'
+load_from = '/opt/ml/code/work_dirs/custom_co_dino_5scale_swin_l_16xb1_1x_coco/pretrained_model/custom_co_dino_5scale_swin_large_1x_coco-27c13da4.pth'
 load_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
@@ -76,7 +76,7 @@ log_level = 'INFO'
 log_processor = dict(
     _scope_='mmdet', by_epoch=True, type='LogProcessor', window_size=50)
 loss_lambda = 2.0
-max_epochs = 10
+max_epochs = 24
 max_iters = 270000
 metainfo = dict(classes=(
     'pear',
@@ -428,12 +428,12 @@ num_classes = 4
 num_dec_layer = 6
 optim_wrapper = dict(
     clip_grad=dict(max_norm=0.1, norm_type=2),
-    optimizer=dict(lr=0.0002, type='AdamW', weight_decay=0.0001),
+    optimizer=dict(lr=1e-05, type='AdamW', weight_decay=0.0001),
     paramwise_cfg=dict(custom_keys=dict(backbone=dict(lr_mult=0.1))),
     type='OptimWrapper')
 param_scheduler = [
     dict(
-        begin=0, by_epoch=False, end=250, start_factor=0.001, type='LinearLR'),
+        begin=0, by_epoch=False, end=50, start_factor=0.001, type='LinearLR'),
     dict(by_epoch=True, gamma=0.1, milestones=[
         22,
         24,
@@ -500,8 +500,8 @@ test_pipeline = [
         ),
         type='PackDetInputs'),
 ]
-total_epochs = 10
-train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)
+total_epochs = 24
+train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
