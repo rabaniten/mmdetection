@@ -21,12 +21,12 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'pytorch'
-load_from = '/opt/ml/code/checkpoints/model/epoch_10.pth'
+load_from = '/opt/ml/code/checkpoints/epoch_13.pth'
 log_level = 'INFO'
 log_processor = dict(
     _scope_='mmdet', by_epoch=True, type='LogProcessor', window_size=50)
 loss_lambda = 2.0
-max_epochs = 13
+max_epochs = 15
 max_iters = 270000
 metainfo = dict(
     classes=(
@@ -762,8 +762,8 @@ test_pipeline = [
         ),
         type='PackDetInputs'),
 ]
-total_epochs = 13
-train_cfg = dict(max_epochs=13, type='EpochBasedTrainLoop', val_interval=1)
+total_epochs = 15
+train_cfg = dict(max_epochs=15, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
