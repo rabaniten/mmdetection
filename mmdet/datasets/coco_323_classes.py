@@ -11,7 +11,7 @@ from .base_det_dataset import BaseDetDataset
 
 
 @DATASETS.register_module()
-class CocoDataset(BaseDetDataset):
+class Coco323Dataset(BaseDetDataset):
     """Dataset for COCO."""
 
     METAINFO = {
