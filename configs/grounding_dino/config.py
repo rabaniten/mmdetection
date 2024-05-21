@@ -247,7 +247,7 @@ train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/train/correct_train.json',
+        ann_file='/opt/ml/input/data/train/new_correct_train.json',
         backend_args=None,
         data_prefix=dict(img= '/opt/ml/input/data/train/images/'),
         data_root='/opt/ml/input/data/',
@@ -559,7 +559,7 @@ val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/validation/correct_val.json',
+        ann_file='/opt/ml/input/data/validation/new_correct_val.json',
         backend_args=None,
         data_prefix=dict(img='/opt/ml/input/data/validation/images/'),
         data_root='/opt/ml/input/data/',
@@ -590,7 +590,7 @@ val_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
-    ann_file='/opt/ml/input/data/validation/correct_val.json',
+    ann_file='/opt/ml/input/data/validation/new_correct_val.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
