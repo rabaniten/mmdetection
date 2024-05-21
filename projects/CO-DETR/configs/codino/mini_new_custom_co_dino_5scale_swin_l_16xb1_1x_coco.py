@@ -505,7 +505,7 @@ train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/train/new_train.json',
+        ann_file='/opt/ml/input/data/train/new_correct_train.json',
         backend_args=None,
         data_prefix=dict(img='/opt/ml/input/data/train/images/'),
         data_root='/opt/ml/input/data/',
@@ -793,7 +793,7 @@ val_dataloader = dict(
     batch_size=1,
     dataset=dict(
         _scope_='mmdet',
-        ann_file='/opt/ml/input/data/validation/updated_val.json',
+        ann_file='/opt/ml/input/data/validation/new_correct_val.json',
         backend_args=None,
         data_prefix=dict(img='/opt/ml/input/data/validation/images/'),
         data_root='/opt/ml/input/data/',
@@ -822,7 +822,7 @@ val_dataloader = dict(
     sampler=dict(_scope_='mmdet', shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
     _scope_='mmdet',
-    ann_file='/opt/ml/input/data/validation/updated_val.json',
+    ann_file='/opt/ml/input/data/validation/new_correct_val.json',
     backend_args=None,
     format_only=False,
     metric='bbox',

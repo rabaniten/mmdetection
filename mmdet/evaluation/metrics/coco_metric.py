@@ -19,7 +19,7 @@ from mmdet.structures.mask import encode_mask_results
 from ..functional import eval_recalls
 
 import sys
-sys.path.insert(0, '/root/Sofia/Genioos/detection_models/codetr/mmdetection/mmdet/')
+sys.path.insert(0, '/root/Sofia/Genioos/sofia_thesis_project/detection_models/codetr/mmdetection/mmdet/')
 
 @METRICS.register_module()
 class CocoMetric(BaseMetric):

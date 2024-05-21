@@ -710,7 +710,7 @@ test_dataloader = dict(
     batch_size=1,
     dataset=dict(
         _scope_='mmdet',
-        ann_file='/root/Sofia/Genioos/data/full_dataset/test/correct_test.json',
+        ann_file='/root/Sofia/Genioos/data/full_dataset/test/new_correct_test.json',
         backend_args=None,
         data_prefix=dict(
             img='/root/Sofia/Genioos/data/full_dataset/test/images/'),
@@ -740,7 +740,7 @@ test_dataloader = dict(
     sampler=dict(_scope_='mmdet', shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
     _scope_='mmdet',
-    ann_file='/root/Sofia/Genioos/data/full_dataset/test/correct_test.json',
+    ann_file='/root/Sofia/Genioos/data/full_dataset/test/new_correct_test.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
