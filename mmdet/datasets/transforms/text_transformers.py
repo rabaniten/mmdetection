@@ -264,7 +264,13 @@ class LoadTextAnnotations(BaseTransform):
                 if random.random() < prob:
                     extra_classes.append(c)
 
-            # Add extra classes to results['text']
-            results['text'] = list(text.values()) + extra_classes
-            
+            # Combine text and extra classes into a single tuple
+            #print('class dictionary:', text)
+            if isinstance(text, dict):
+                results['text'] = tuple(text.values()) + tuple(extra_classes)
+            elif isinstance(text, tuple):
+                results['text'] = text + tuple(extra_classes)
+            else:
+                raise TypeError("Expected 'text' to be a dictionary or a tuple")
+        
         return results

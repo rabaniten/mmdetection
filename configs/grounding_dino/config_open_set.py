@@ -225,7 +225,7 @@ test_evaluator = dict(
     metric='bbox',
     type='CocoMetric')
 
-train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=1)
+train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=None)
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
@@ -238,6 +238,7 @@ train_dataloader = dict(
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='LoadTextAnnotations'),  # new
             dict(prob=0.5, type='RandomFlip'),
             dict(
                 transforms=[
@@ -390,46 +391,7 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
 
-val_cfg = dict(type='ValLoop')
-val_dataloader = dict(
-    batch_size=1,
-    dataset=dict(
-        ann_file='/opt/ml/input/data/validation/new_correct_val.json',
-        backend_args=None,
-        data_prefix=dict(img='/opt/ml/input/data/validation/images/'),
-        data_root='/opt/ml/input/data/',
-        pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                800,
-                1333,
-            ), type='FixScaleResize'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'text',
-                    'custom_entities',
-                ),
-                type='PackDetInputs'),
-        ],
-        return_classes=True,
-        test_mode=True,
-        type='CocoDataset'),
-    drop_last=False,
-    num_workers=2,
-    persistent_workers=True,
-    sampler=dict(shuffle=False, type='DefaultSampler'))
-val_evaluator = dict(
-    ann_file='/opt/ml/input/data/validation/new_correct_val.json',
-    backend_args=None,
-    format_only=False,
-    metric='bbox',
-    type='CocoMetric')
+
 vis_backends = [
     dict(type='LocalVisBackend'),
 ]
