@@ -251,5 +251,20 @@ class LoadTextAnnotations(BaseTransform):
             results['tokens_positive'] = tokens_positive
         else:
             text = results['text']
-            results['text'] = list(text.values())
+            #results['text'] = list(text.values())
+            
+            # Customize for open set training of GDINO
+            
+            # Define probabilities for extra classes
+            probs_extra_classes = {'wine_red': 0.6, 'dates': 0.25, 'jam': 0.1, 'onion': 0.05}
+            extra_classes = []
+
+            # Sample extra classes based on their probabilities
+            for c, prob in probs_extra_classes.items():
+                if random.random() < prob:
+                    extra_classes.append(c)
+
+            # Add extra classes to results['text']
+            results['text'] = list(text.values()) + extra_classes
+            
         return results
