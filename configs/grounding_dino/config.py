@@ -22,11 +22,10 @@ log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
 max_epochs = 24
 metainfo = dict(
     classes=(
-        'asparagus',
+        'pear',
+        'nuggets',
         'potato_gnocchi',
-        'pineapple',
-        'dates',
-        'spring_roll_fried',
+        'basil',
     ))
 model = dict(
     as_two_stage=True,
@@ -70,7 +69,7 @@ model = dict(
             type='FocalLoss',
             use_sigmoid=True),
         loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
-        num_classes=5,
+        num_classes=4,
         sync_cls_avg_factor=True,
         type='GroundingDINOHead'),
     data_preprocessor=dict(
@@ -248,7 +247,7 @@ train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/train/new_train.json',
+        ann_file='/opt/ml/input/data/train/new_correct_train.json',
         backend_args=None,
         data_prefix=dict(img= '/opt/ml/input/data/train/images/'),
         data_root='/opt/ml/input/data/',
@@ -560,7 +559,7 @@ val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/validation/val.json',
+        ann_file='/opt/ml/input/data/validation/new_correct_val.json',
         backend_args=None,
         data_prefix=dict(img='/opt/ml/input/data/validation/images/'),
         data_root='/opt/ml/input/data/',
@@ -591,7 +590,7 @@ val_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
-    ann_file='/opt/ml/input/data/validation/val.json',
+    ann_file='/opt/ml/input/data/validation/new_correct_val.json',
     backend_args=None,
     format_only=False,
     metric='bbox',

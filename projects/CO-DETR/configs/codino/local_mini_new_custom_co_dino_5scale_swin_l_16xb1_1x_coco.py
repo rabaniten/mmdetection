@@ -446,7 +446,7 @@ test_dataloader = dict(
     dataset=dict(
         _scope_='mmdet',
         ann_file=
-        '/root/Sofia/Genioos/data/mini_datasets/v4/train/train.json',
+        '/root/Sofia/Genioos/data/mini_datasets/v4/train/new_correct_train.json',
         backend_args=None,
         data_prefix=dict(
             img='/root/Sofia/Genioos/data/mini_datasets/v4/train/images/'
@@ -478,7 +478,7 @@ test_dataloader = dict(
 test_evaluator = dict(
     _scope_='mmdet',
     ann_file=
-    '/root/Sofia/Genioos/data/mini_datasets/v4/train/train.json',
+    '/root/Sofia/Genioos/data/mini_datasets/v4/train/new_correct_train.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
@@ -505,7 +505,7 @@ train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/train/train.json',
+        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/train/new_correct_train.json',
         backend_args=None,
         data_prefix=dict(img='/root/Sofia/Genioos/data/mini_datasets/v4/train/images/'),
         data_root='/root/Sofia/Genioos/data/mini_datasets/v4/',

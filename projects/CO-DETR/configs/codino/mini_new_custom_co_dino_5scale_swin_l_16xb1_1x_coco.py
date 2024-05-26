@@ -1,4 +1,4 @@
-auto_scale_lr = dict(base_batch_size=16, enable=False)
+auto_scale_lr = dict(base_batch_size=16, enable=True)
 backend_args = None
 batch_augments = [
     dict(pad_mask=True, size=(
@@ -428,16 +428,29 @@ num_classes = 4
 num_dec_layer = 6
 optim_wrapper = dict(
     clip_grad=dict(max_norm=0.1, norm_type=2),
-    optimizer=dict(lr=1e-05, type='AdamW', weight_decay=0.0001),
-    paramwise_cfg=dict(custom_keys=dict(backbone=dict(lr_mult=0.1))),
+    optimizer=dict(lr=0.0002, type='AdamW', weight_decay=0.0001),
+    paramwise_cfg=dict(
+        custom_keys=dict(
+            absolute_pos_embed=dict(decay_mult=0.0),
+            backbone=dict(lr_mult=0.1))),
     type='OptimWrapper')
 param_scheduler = [
+    dict( # original configuration didn't have warmup step!
+        type='LinearLR', 
+        start_factor=0.001, 
+        by_epoch=False,  
+        begin=0, 
+        end=50),  # End at the 50th iteration # original: 250
     dict(
-        begin=0, by_epoch=False, end=50, start_factor=0.001, type='LinearLR'),
-    dict(by_epoch=True, gamma=0.1, milestones=[
-        22,
-        24,
-    ], type='MultiStepLR'),
+        begin=0,
+        by_epoch=True,
+        end=24,
+        gamma=0.1,
+        milestones=[
+            22,
+            24,
+        ],
+        type='MultiStepLR'),
 ]
 resume = False
 test_cfg = dict(_scope_='mmdet', type='TestLoop')

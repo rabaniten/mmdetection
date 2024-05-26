@@ -21,12 +21,14 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'pytorch'
-load_from = '/opt/ml/code/checkpoints/epoch_13.pth'
+resume = True # set to true to resume training from previous epoch
+load_from = '/opt/ml/code/checkpoints/epoch_5.pth'
+#load_from = '/opt/ml/code/work_dirs/custom_co_dino_5scale_swin_l_16xb1_1x_coco/pretrained_model/custom_co_dino_5scale_swin_large_1x_coco-27c13da4.pth'
 log_level = 'INFO'
 log_processor = dict(
     _scope_='mmdet', by_epoch=True, type='LogProcessor', window_size=50)
 loss_lambda = 2.0
-max_epochs = 15
+max_epochs = 10
 max_iters = 270000
 metainfo = dict(
     classes=(
@@ -704,7 +706,6 @@ param_scheduler = [
     dict(
         begin=0, by_epoch=False, end=250, start_factor=0.001, type='LinearLR'),
 ]
-resume = True
 test_cfg = dict(_scope_='mmdet', type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
@@ -762,12 +763,12 @@ test_pipeline = [
         ),
         type='PackDetInputs'),
 ]
-total_epochs = 15
-train_cfg = dict(max_epochs=15, type='EpochBasedTrainLoop', val_interval=1)
+total_epochs = 10
+train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/train/new_train.json',
+        ann_file='/opt/ml/input/data/train/correct_train.json',
         backend_args=None,
         data_prefix=dict(img='/opt/ml/input/data/train/images/'),
         data_root='/opt/ml/input/data/',
@@ -1055,7 +1056,7 @@ val_dataloader = dict(
     batch_size=1,
     dataset=dict(
         _scope_='mmdet',
-        ann_file='/opt/ml/input/data/validation/val.json',
+        ann_file='/opt/ml/input/data/validation/correct_val.json',
         backend_args=None,
         data_prefix=dict(img='/opt/ml/input/data/validation/images/'),
         data_root='/opt/ml/input/data/',
@@ -1084,7 +1085,7 @@ val_dataloader = dict(
     sampler=dict(_scope_='mmdet', shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(
     _scope_='mmdet',
-    ann_file='/opt/ml/input/data/validation/val.json',
+    ann_file='/opt/ml/input/data/validation/correct_val.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
