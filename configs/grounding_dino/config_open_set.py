@@ -19,7 +19,7 @@ launcher = 'none'
 load_from = '/opt/ml/code/work_dirs/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-max_epochs = 24
+max_epochs = 1
 metainfo = dict(
     classes=(
     'pear',
@@ -189,7 +189,7 @@ param_scheduler = [
 ]
 resume = False
 
-train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=None)
+train_cfg = dict(max_epochs=1, type='EpochBasedTrainLoop', val_interval=None)
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,

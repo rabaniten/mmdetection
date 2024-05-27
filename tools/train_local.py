@@ -17,17 +17,15 @@ wait_before_import_config()
 from mmengine.config import Config
 wait_after_import_config()
 
+from ..mmdet.utils import setup_cache_size_limit_of_dynamo
+print(f"Name: {__name__}")
+print(f"Package: {__package__}")
+
 from mmengine.config import DictAction
 from mmengine.registry import RUNNERS
 from mmengine.runner import Runner
 
-from mmdet.utils import setup_cache_size_limit_of_dynamo
 
-
-# new #
-import sys
-sys.path.insert(0, '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/mmdetection/') 
-# # # #
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')

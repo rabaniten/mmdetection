@@ -27,6 +27,7 @@ class CocoDataset(BaseDetDataset):
     
     # custom
     do_closed_set_training = False
+    print('closed_set_training' if do_closed_set_training else 'open set training')
 
     def load_data_list(self) -> List[dict]:
         """Load annotations from an annotation file named as ``self.ann_file``
@@ -143,9 +144,11 @@ class CocoDataset(BaseDetDataset):
                 # new: save image-specific class labels
                 cat_name = self.coco.loadCats(ann['category_id'])[0]["name"]
                 labels_for_text_input.append(cat_name)
+            
             # new: save image-specific class labels in appropriate format
             data_info['text'] = set(labels_for_text_input)    
-            print('image-specific input text:', data_info['text'])
+            #print('image-specific input text:', data_info['text'])
+        
         # closed-set training (default)
         else:
             instances = []

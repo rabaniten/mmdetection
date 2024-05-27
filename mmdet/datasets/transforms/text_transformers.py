@@ -259,13 +259,15 @@ class LoadTextAnnotations(BaseTransform):
         n = self.choose_n_based_on_probabilities(probabilities)
         
         # Choose n random wrong labels from the set of all labels
-        wrong_labels = random.sample([label for label in all_labels if label not in true_classes], n)
+        wrong_labels = random.sample([label for label in all_classes if label not in true_classes], n)
         
         # Add the wrong labels to the text prompt
         augmented_text_prompt = text_prompt + tuple(wrong_labels)
         return augmented_text_prompt
 
     def transform(self, results: dict) -> dict:
+        
+        # print('example result for testing:', results)  # for testing
         
         # same classes as in dataset.metadata.classes 
         all_classes_augmented = (
@@ -296,10 +298,7 @@ class LoadTextAnnotations(BaseTransform):
             augmented_text_prompt = self.augment_text_prompt(true_classes, all_classes_augmented)
             
             # Combine text and extra classes into a single tuple
-            elif isinstance(text, tuple):
-                results['text'] = augmented_text_prompt
-                print('augmented_text_prompt:', results['text'])
-            else:
-                raise TypeError("Expected 'text' to be a tuple")
+            results['text'] = augmented_text_prompt
+            print('augmented_text_prompt:', results['text'])
         
         return results
