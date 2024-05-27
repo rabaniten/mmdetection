@@ -183,47 +183,6 @@ param_scheduler = [
         type='MultiStepLR'),
 ]
 resume = False
-test_cfg = dict(type='TestLoop')
-test_dataloader = dict(
-    batch_size=1,
-    dataset=dict(
-        ann_file='annotations/instances_val2017.json',
-        backend_args=None,
-        data_prefix=dict(img='val2017/'),
-        data_root='data/coco/',
-        pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                800,
-                1333,
-            ), type='FixScaleResize'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),
-            dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'text',
-                    'custom_entities',
-                ),
-                type='PackDetInputs'),
-        ],
-        return_classes=True,
-        test_mode=True,
-        type='CocoDataset'),
-    drop_last=False,
-    num_workers=2,
-    persistent_workers=True,
-    sampler=dict(shuffle=False, type='DefaultSampler'))
-test_evaluator = dict(
-    ann_file='data/coco/annotations/instances_val2017.json',
-    backend_args=None,
-    format_only=False,
-    metric='bbox',
-    type='CocoMetric')
 
 train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=None)
 train_dataloader = dict(

@@ -241,8 +241,32 @@ class RandomSamplingNegPos(BaseTransform):
 
 @TRANSFORMS.register_module()
 class LoadTextAnnotations(BaseTransform):
+    
+    def choose_n_based_on_probabilities(self, probabilities):
+        random_value = random.uniform(0, 1)
+        cumulative_probability = 0
+        for n, probability in probabilities.items():
+            cumulative_probability += probability
+            if random_value <= cumulative_probability:
+                return n
+        return 0  # Fallback in case of rounding issues
+    
+    def augment_text_prompt(self, true_classes: tuple, all_classes: tuple) -> tuple:
+        # Define probabilities for choosing n wrong labels
+        probabilities = {0: 0.60, 1: 0.20, 2: 0.10, 3: 0.05, 4: 0.025, 5: 0.005}
+        
+        # Choose a number n based on the defined probabilities
+        n = choose_n_based_on_probabilities(probabilities)
+        
+        # Choose n random wrong labels from the set of all labels
+        wrong_labels = random.sample([label for label in all_labels if label not in true_classes], n)
+        
+        # Add the wrong labels to the text prompt
+        augmented_text_prompt = text_prompt + tuple(wrong_labels)
+        return augmented_text_prompt
 
     def transform(self, results: dict) -> dict:
+        
         if 'phrases' in results:
             tokens_positive = [
                 phrase['tokens_positive']
@@ -255,21 +279,20 @@ class LoadTextAnnotations(BaseTransform):
             
             # Customize for open set training of GDINO
             
-            # Define probabilities for extra classes
-            probs_extra_classes = {'wine_red': 0.6, 'dates': 0.25, 'jam': 0.1, 'onion': 0.05}
-            extra_classes = []
-
-            # Sample extra classes based on their probabilities
-            for c, prob in probs_extra_classes.items():
-                if random.random() < prob:
-                    extra_classes.append(c)
-
+            # Extract true classes from annotations
+            true_classes = text
+            
+            # Define set with additional (wrong classes)
+            all_classes = ('wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')
+            
+            # Augment the current text prompt
+            augmented_text_prompt = augment_text_prompt(true_classes, all_classes)
+            
             # Combine text and extra classes into a single tuple
-            #print('class dictionary:', text)
             if isinstance(text, dict):
                 results['text'] = tuple(text.values()) + tuple(extra_classes)
             elif isinstance(text, tuple):
-                results['text'] = text + tuple(extra_classes)
+                results['text'] = augmented_text_prompt
             else:
                 raise TypeError("Expected 'text' to be a dictionary or a tuple")
         

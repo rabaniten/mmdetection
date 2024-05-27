@@ -235,7 +235,7 @@ train_dataloader = dict(
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),  # new
+            #dict(type='LoadTextAnnotations'),  # new
             dict(prob=0.5, type='RandomFlip'),
             dict(
                 transforms=[

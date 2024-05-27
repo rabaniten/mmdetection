@@ -97,7 +97,8 @@ class CocoDataset(BaseDetDataset):
         data_info['width'] = img_info['width']
 
         if self.return_classes:
-            data_info['text'] = self.metainfo['classes']
+            #data_info['text'] = self.metainfo['classes']
+            labels_for_text_input = []  # initialize empty list
             data_info['caption_prompt'] = self.caption_prompt
             data_info['custom_entities'] = True
 
@@ -127,9 +128,18 @@ class CocoDataset(BaseDetDataset):
 
             if ann.get('segmentation', None):
                 instance['mask'] = ann['segmentation']
+            
+            if self.return_classes:  # new
+                cat_name = coco.loadCats(ann['category_id'])[0]["name"]
+                labels_for_text_input.append(cat_name)
 
             instances.append(instance)
+        
+        if self.return_classes:  # new
+            data_info['text'] = set(labels_for_text_input)
+        
         data_info['instances'] = instances
+        
         return data_info
 
     def filter_data(self) -> List[dict]:
