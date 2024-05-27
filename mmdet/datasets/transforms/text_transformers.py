@@ -263,7 +263,11 @@ class LoadTextAnnotations(BaseTransform):
         
         # Add the wrong labels to the text prompt
         augmented_text_prompt = tuple(true_classes) + tuple(wrong_labels)
-        return augmented_text_prompt
+        
+        if len(augmented_text_prompt) == 1:
+            return augmented_text_prompt
+        else:
+            return augmented_text_prompt + ('',)
 
     def transform(self, results: dict) -> dict:
         

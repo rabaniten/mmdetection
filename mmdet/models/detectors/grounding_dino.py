@@ -457,7 +457,12 @@ class GroundingDINO(DINO):
                     self.get_tokens_and_prompts(
                         text_prompts[0], True)
                 new_text_prompts = [caption_string] * len(batch_inputs)
+
                 for gt_label in gt_labels:
+                    for label in gt_label:
+                        if label >= len(tokens_positive):
+                            print(f"Invalid label index: {label}, max index should be {len(tokens_positive) - 1}")
+                            print("Text prompt:", text_prompts)
                     new_tokens_positive = [
                         tokens_positive[label] for label in gt_label
                     ]
