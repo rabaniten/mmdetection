@@ -22,10 +22,15 @@ log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
 max_epochs = 24
 metainfo = dict(
     classes=(
-        'pear',
-        'nuggets',
-        'potato_gnocchi',
-        'basil',
+    'pear',
+    'nuggets',
+    'potato_gnocchi',
+    'basil',
+    'wine_red', 
+    'dates', 
+    'jam', 
+    'spring_roll_fried', 
+    'brioche',
     ))
 model = dict(
     as_two_stage=True,
@@ -69,7 +74,7 @@ model = dict(
             type='FocalLoss',
             use_sigmoid=True),
         loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
-        num_classes=4,
+        num_classes=9,
         sync_cls_avg_factor=True,
         type='GroundingDINOHead'),
     data_preprocessor=dict(

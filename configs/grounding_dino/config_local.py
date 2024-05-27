@@ -20,10 +20,15 @@ log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
 max_epochs = 24
 metainfo = dict(
     classes=(
-        'pear',
-        'nuggets',
-        'potato_gnocchi',
-        'basil',
+    'pear',
+    'nuggets',
+    'potato_gnocchi',
+    'basil',
+    'wine_red', 
+    'dates', 
+    'jam', 
+    'spring_roll_fried', 
+    'brioche',
     ))
 model = dict(
     as_two_stage=True,
@@ -235,7 +240,7 @@ train_dataloader = dict(
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
-            #dict(type='LoadTextAnnotations'),  # new
+            dict(type='LoadTextAnnotations'),  # new
             dict(prob=0.5, type='RandomFlip'),
             dict(
                 transforms=[

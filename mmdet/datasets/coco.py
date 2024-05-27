@@ -24,6 +24,9 @@ class CocoDataset(BaseDetDataset):
     COCOAPI = COCO
     # ann_id is unique in coco dataset.
     ANN_ID_UNIQUE = True
+    
+    # custom
+    do_closed_set_training = False
 
     def load_data_list(self) -> List[dict]:
         """Load annotations from an annotation file named as ``self.ann_file``
@@ -56,7 +59,9 @@ class CocoDataset(BaseDetDataset):
                 'raw_ann_info':
                 raw_ann_info,
                 'raw_img_info':
-                raw_img_info
+                raw_img_info,
+                'closed_set_training':
+                self.do_closed_set_training,
             })
             data_list.append(parsed_data_info)
         if self.ANN_ID_UNIQUE:
@@ -79,9 +84,10 @@ class CocoDataset(BaseDetDataset):
         """
         img_info = raw_data_info['raw_img_info']
         ann_info = raw_data_info['raw_ann_info']
+        do_closed_set_training = raw_data_info['closed_set_training']  # new
 
         data_info = {}
-
+                
         # TODO: need to change data_prefix['img'] to data_prefix['img_path']
         img_path = osp.join(self.data_prefix['img'], img_info['file_name'])
         if self.data_prefix.get('seg', None):
@@ -97,49 +103,81 @@ class CocoDataset(BaseDetDataset):
         data_info['width'] = img_info['width']
 
         if self.return_classes:
-            #data_info['text'] = self.metainfo['classes']
-            labels_for_text_input = []  # initialize empty list
+            if do_closed_set_training:
+                data_info['text'] = self.metainfo['classes']  # closed-set predictions by defaut
             data_info['caption_prompt'] = self.caption_prompt
             data_info['custom_entities'] = True
+        
+        # open-set training
+        if not do_closed_set_training:
+            instances = []
+            labels_for_text_input = []
+            for i, ann in enumerate(ann_info):
+                instance = {}
 
-        instances = []
-        for i, ann in enumerate(ann_info):
-            instance = {}
+                if ann.get('ignore', False):
+                    continue
+                x1, y1, w, h = ann['bbox']
+                inter_w = max(0, min(x1 + w, img_info['width']) - max(x1, 0))
+                inter_h = max(0, min(y1 + h, img_info['height']) - max(y1, 0))
+                if inter_w * inter_h == 0:
+                    continue
+                if ann['area'] <= 0 or w < 1 or h < 1:
+                    continue
+                if ann['category_id'] not in self.cat_ids:
+                    continue
+                bbox = [x1, y1, x1 + w, y1 + h]
 
-            if ann.get('ignore', False):
-                continue
-            x1, y1, w, h = ann['bbox']
-            inter_w = max(0, min(x1 + w, img_info['width']) - max(x1, 0))
-            inter_h = max(0, min(y1 + h, img_info['height']) - max(y1, 0))
-            if inter_w * inter_h == 0:
-                continue
-            if ann['area'] <= 0 or w < 1 or h < 1:
-                continue
-            if ann['category_id'] not in self.cat_ids:
-                continue
-            bbox = [x1, y1, x1 + w, y1 + h]
+                if ann.get('iscrowd', False):
+                    instance['ignore_flag'] = 1
+                else:
+                    instance['ignore_flag'] = 0
+                instance['bbox'] = bbox
+                instance['bbox_label'] = self.cat2label[ann['category_id']]
 
-            if ann.get('iscrowd', False):
-                instance['ignore_flag'] = 1
-            else:
-                instance['ignore_flag'] = 0
-            instance['bbox'] = bbox
-            instance['bbox_label'] = self.cat2label[ann['category_id']]
-
-            if ann.get('segmentation', None):
-                instance['mask'] = ann['segmentation']
-            
-            if self.return_classes:  # new
+                if ann.get('segmentation', None):
+                    instance['mask'] = ann['segmentation']
+                
+                instances.append(instance)
+                
+                # new: save image-specific class labels
                 cat_name = self.coco.loadCats(ann['category_id'])[0]["name"]
                 labels_for_text_input.append(cat_name)
+            # new: save image-specific class labels in appropriate format
+            data_info['text'] = set(labels_for_text_input)    
+            print('image-specific input text:', data_info['text'])
+        # closed-set training (default)
+        else:
+            instances = []
+            for i, ann in enumerate(ann_info):
+                instance = {}
 
-            instances.append(instance)
-        
-        if self.return_classes:  # new
-            data_info['text'] = set(labels_for_text_input)
+                if ann.get('ignore', False):
+                    continue
+                x1, y1, w, h = ann['bbox']
+                inter_w = max(0, min(x1 + w, img_info['width']) - max(x1, 0))
+                inter_h = max(0, min(y1 + h, img_info['height']) - max(y1, 0))
+                if inter_w * inter_h == 0:
+                    continue
+                if ann['area'] <= 0 or w < 1 or h < 1:
+                    continue
+                if ann['category_id'] not in self.cat_ids:
+                    continue
+                bbox = [x1, y1, x1 + w, y1 + h]
+
+                if ann.get('iscrowd', False):
+                    instance['ignore_flag'] = 1
+                else:
+                    instance['ignore_flag'] = 0
+                instance['bbox'] = bbox
+                instance['bbox_label'] = self.cat2label[ann['category_id']]
+
+                if ann.get('segmentation', None):
+                    instance['mask'] = ann['segmentation']
+
+                instances.append(instance)            
         
         data_info['instances'] = instances
-        
         return data_info
 
     def filter_data(self) -> List[dict]:

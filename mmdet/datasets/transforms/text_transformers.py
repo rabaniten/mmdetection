@@ -253,7 +253,7 @@ class LoadTextAnnotations(BaseTransform):
     
     def augment_text_prompt(self, true_classes: tuple, all_classes: tuple) -> tuple:
         # Define probabilities for choosing n wrong labels
-        probabilities = {0: 0.60, 1: 0.20, 2: 0.10, 3: 0.05, 4: 0.025, 5: 0.005}
+        probabilities = {0: 0.631578947368421, 1: 0.21052631578947367, 2: 0.10526315789473684, 3: 0.05263157894736842, 4: 0.02631578947368421, 5: 0.005263157894736842}
         
         # Choose a number n based on the defined probabilities
         n = self.choose_n_based_on_probabilities(probabilities)
@@ -267,6 +267,18 @@ class LoadTextAnnotations(BaseTransform):
 
     def transform(self, results: dict) -> dict:
         
+        # same classes as in dataset.metadata.classes 
+        all_classes_augmented = (
+                'pear',
+                'nuggets',
+                'potato_gnocchi',
+                'basil',
+                'wine_red', 
+                'dates', 
+                'jam', 
+                'spring_roll_fried', 
+                'brioche',)
+        
         if 'phrases' in results:
             tokens_positive = [
                 phrase['tokens_positive']
@@ -276,24 +288,18 @@ class LoadTextAnnotations(BaseTransform):
         else:
             text = results['text']
             #results['text'] = list(text.values())
-            
-            # Customize for open set training of GDINO
-            
+                        
             # Extract true classes from annotations
-            true_classes = text
-            
-            # Define set with additional (wrong classes)
-            all_classes = ('wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')
+            true_classes = text            
             
             # Augment the current text prompt
-            augmented_text_prompt = self.augment_text_prompt(true_classes, all_classes)
+            augmented_text_prompt = self.augment_text_prompt(true_classes, all_classes_augmented)
             
             # Combine text and extra classes into a single tuple
-            if isinstance(text, dict):
-                results['text'] = tuple(text.values()) + tuple(extra_classes)
             elif isinstance(text, tuple):
                 results['text'] = augmented_text_prompt
+                print('augmented_text_prompt:', results['text'])
             else:
-                raise TypeError("Expected 'text' to be a dictionary or a tuple")
+                raise TypeError("Expected 'text' to be a tuple")
         
         return results
