@@ -256,7 +256,7 @@ class LoadTextAnnotations(BaseTransform):
         probabilities = {0: 0.60, 1: 0.20, 2: 0.10, 3: 0.05, 4: 0.025, 5: 0.005}
         
         # Choose a number n based on the defined probabilities
-        n = choose_n_based_on_probabilities(probabilities)
+        n = self.choose_n_based_on_probabilities(probabilities)
         
         # Choose n random wrong labels from the set of all labels
         wrong_labels = random.sample([label for label in all_labels if label not in true_classes], n)
@@ -286,7 +286,7 @@ class LoadTextAnnotations(BaseTransform):
             all_classes = ('wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')
             
             # Augment the current text prompt
-            augmented_text_prompt = augment_text_prompt(true_classes, all_classes)
+            augmented_text_prompt = self.augment_text_prompt(true_classes, all_classes)
             
             # Combine text and extra classes into a single tuple
             if isinstance(text, dict):

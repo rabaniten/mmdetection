@@ -130,7 +130,7 @@ class CocoDataset(BaseDetDataset):
                 instance['mask'] = ann['segmentation']
             
             if self.return_classes:  # new
-                cat_name = coco.loadCats(ann['category_id'])[0]["name"]
+                cat_name = self.coco.loadCats(ann['category_id'])[0]["name"]
                 labels_for_text_input.append(cat_name)
 
             instances.append(instance)
