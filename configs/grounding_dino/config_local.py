@@ -196,7 +196,6 @@ test_dataloader = dict(
                 1333,
             ), type='FixScaleResize'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),
             dict(
                 meta_keys=(
                     'img_id',
@@ -228,7 +227,7 @@ train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
     dataset=dict(
-        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/train/new_correct_train.json',
+            ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/train/new_correct_train.json',
         backend_args=None,
         data_prefix=dict(img= '/root/Sofia/Genioos/data/mini_datasets/v4/train/images/'),
         data_root='/root/Sofia/Genioos/data/mini_datasets/v4/train/',
