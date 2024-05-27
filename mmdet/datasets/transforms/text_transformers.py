@@ -262,7 +262,7 @@ class LoadTextAnnotations(BaseTransform):
         wrong_labels = random.sample([label for label in all_classes if label not in true_classes], n)
         
         # Add the wrong labels to the text prompt
-        augmented_text_prompt = text_prompt + tuple(wrong_labels)
+        augmented_text_prompt = tuple(true_classes) + tuple(wrong_labels)
         return augmented_text_prompt
 
     def transform(self, results: dict) -> dict:
