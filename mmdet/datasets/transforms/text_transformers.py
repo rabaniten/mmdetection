@@ -251,7 +251,7 @@ class LoadTextAnnotations(BaseTransform):
                 return n
         return 0  # Fallback in case of rounding issues
     
-    def augment_text_prompt(self, true_classes: tuple, all_classes: tuple) -> tuple:
+    def augment_text_data(self, true_classes: tuple, all_classes: tuple) -> tuple:
         # Define probabilities for choosing n wrong labels
         probabilities = {0: 0.631578947368421, 1: 0.21052631578947367, 2: 0.10526315789473684, 3: 0.05263157894736842, 4: 0.02631578947368421, 5: 0.005263157894736842}
         
@@ -261,13 +261,10 @@ class LoadTextAnnotations(BaseTransform):
         # Choose n random wrong labels from the set of all labels
         wrong_labels = random.sample([label for label in all_classes if label not in true_classes], n)
         
-        # Add the wrong labels to the text prompt
-        augmented_text_prompt = tuple(true_classes) + tuple(wrong_labels)
+        # Add the wrong labels to the text data
+        augmented_text_data = true_classes + tuple(wrong_labels)
         
-        if len(augmented_text_prompt) == 1:
-            return augmented_text_prompt
-        else:
-            return augmented_text_prompt + ('',)
+        return augmented_text_data
 
     def transform(self, results: dict) -> dict:
         
@@ -296,13 +293,16 @@ class LoadTextAnnotations(BaseTransform):
             #results['text'] = list(text.values())
                         
             # Extract true classes from annotations
-            true_classes = text            
+            true_classes = text
+            print('original_text_data:', true_classes)
+            print('original data format:', type(true_classes))
             
-            # Augment the current text prompt
-            augmented_text_prompt = self.augment_text_prompt(true_classes, all_classes_augmented)
+            # Augment the current text data
+            augmented_text_data = self.augment_text_data(true_classes, all_classes_augmented)
             
             # Combine text and extra classes into a single tuple
-            results['text'] = augmented_text_prompt
-            print('augmented_text_prompt:', results['text'])
+            results['text'] = augmented_text_data
+            print('augmented_text_data:', results['text'])
+            print('augmented data format:', type(results['text']))
         
         return results

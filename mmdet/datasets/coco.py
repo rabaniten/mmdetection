@@ -13,22 +13,38 @@ from .base_det_dataset import BaseDetDataset
 @DATASETS.register_module()
 class CocoDataset(BaseDetDataset):
     """Dataset for COCO."""
-
-    METAINFO = {
-        'classes': (
-        'pear',
-        'nuggets',
-        'potato_gnocchi',
-        'basil',)
-    }
-    COCOAPI = COCO
-    # ann_id is unique in coco dataset.
-    ANN_ID_UNIQUE = True
     
     # custom
     do_closed_set_training = False
-    print('closed_set_training' if do_closed_set_training else 'open set training')
+    print('\nclosed_set_training\n' if do_closed_set_training else '\nopen set training\n')
 
+    if do_closed_set_training:
+        METAINFO = {
+            'classes': (
+            'pear',
+            'nuggets',
+            'potato_gnocchi',
+            'basil',)
+        }
+    else:  # provide, extra wrong classes for open set training
+        METAINFO = {
+            'classes': (
+            'pear',
+            'nuggets',
+            'potato_gnocchi',
+            'basil',
+            'wine_red', 
+            'dates', 
+            'jam', 
+            'spring_roll_fried', 
+            'brioche',)
+        }
+    
+    COCOAPI = COCO
+    # ann_id is unique in coco dataset.
+    ANN_ID_UNIQUE = True
+            
+    
     def load_data_list(self) -> List[dict]:
         """Load annotations from an annotation file named as ``self.ann_file``
 
@@ -146,9 +162,12 @@ class CocoDataset(BaseDetDataset):
                 labels_for_text_input.append(cat_name)
             
             # new: save image-specific class labels in appropriate format
-            data_info['text'] = set(labels_for_text_input)    
+            unique_labels_for_text_input = set(labels_for_text_input)
+            data_info['text'] = tuple(unique_labels_for_text_input)
             #print('image-specific input text:', data_info['text'])
-        
+            #print('data format:', type(data_info['text']))
+            #print('default data format:', type(self.metainfo['classes']))
+
         # closed-set training (default)
         else:
             instances = []
