@@ -124,7 +124,7 @@ class CocoDataset(BaseDetDataset):
                 data_info['text'] = self.metainfo['classes']  # closed-set predictions by defaut
             data_info['caption_prompt'] = self.caption_prompt
             data_info['custom_entities'] = True
-        
+            
         # open-set training
         if not do_closed_set_training:
             instances = []

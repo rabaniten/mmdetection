@@ -427,8 +427,6 @@ class GroundingDINO(DINO):
             for data_samples in batch_data_samples
         ]
         
-        print('gt_labels', gt_labels)
-
         if 'tokens_positive' in batch_data_samples[0]:
             tokens_positive = [
                 data_samples.tokens_positive
@@ -459,18 +457,15 @@ class GroundingDINO(DINO):
                     self.get_tokens_and_prompts(
                         text_prompts[0], True)
                 new_text_prompts = [caption_string] * len(batch_inputs)
-                for gt_label in gt_labels:
-                    for label in gt_label:  # testing
-                        if label >= len(tokens_positive):
-                            print(f"Invalid label index: {label}, max index should be {len(tokens_positive) - 1}")
-                            print('tokens_positive', tokens_positive)
 
+                for gt_label in gt_labels:
                     new_tokens_positive = [
                         tokens_positive[label] for label in gt_label
                     ]
                     _, positive_map = self.get_positive_map(
                         tokenized, new_tokens_positive)
                     positive_maps.append(positive_map)
+                        
             else:
                 for text_prompt, gt_label in zip(text_prompts, gt_labels):
                     tokenized, caption_string, tokens_positive, _ = \
