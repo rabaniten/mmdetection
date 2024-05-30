@@ -421,11 +421,29 @@ class GroundingDINO(DINO):
         text_prompts = [
             data_samples.text for data_samples in batch_data_samples
         ]
+        print(f'text_prompts: {text_prompts}')
+        print(f'data type of text_prompts: {type(text_prompts)}')
+        print('all images in the batch have same text prompt' if len(set(text_prompts)) == 1 else 'images in the batch have different text prompts')
 
         gt_labels = [
             data_samples.gt_instances.labels
             for data_samples in batch_data_samples
         ]
+        print(f'gt_labels: {gt_labels}')
+        print(f'data type of gt_labels: {type(gt_labels)}')
+        
+        all_classes_augmented = (
+            'pear',
+            'nuggets',
+            'potato_gnocchi',
+            'basil',
+            'wine_red', 
+            'dates', 
+            'jam', 
+            'spring_roll_fried', 
+            'brioche',)
+        # extract info about all category id from InstanceData class from DetDataSample
+        cat2label = {cat_id: i for i, cat_id in enumerate(all_classes_augmented)}
         
         if 'tokens_positive' in batch_data_samples[0]:
             tokens_positive = [
@@ -451,6 +469,10 @@ class GroundingDINO(DINO):
             new_text_prompts = []
             positive_maps = []
             if len(set(text_prompts)) == 1:
+                aug_labels = []
+                for cat_name in text_prompts[0]:
+                    aug_labels.append(cat2label(cat_name))
+                    
                 # All the text prompts are the same,
                 # so there is no need to calculate them multiple times.
                 tokenized, caption_string, tokens_positive, _ = \
@@ -458,15 +480,20 @@ class GroundingDINO(DINO):
                         text_prompts[0], True)
                 new_text_prompts = [caption_string] * len(batch_inputs)
 
-                for gt_label in gt_labels:
+                for aug_label in aug_labels:
                     new_tokens_positive = [
-                        tokens_positive[label] for label in gt_label
+                        tokens_positive[label] for label in aug_label
                     ]
                     _, positive_map = self.get_positive_map(
                         tokenized, new_tokens_positive)
                     positive_maps.append(positive_map)
                         
             else:
+                # Text prompts differ for the different images in the batch,
+                # this is the case for open-set training. 
+                aug_labels = []  # TODO
+                for cat_name in text_prompts[0]:
+                    aug_labels.append(cat2label(cat_name))
                 for text_prompt, gt_label in zip(text_prompts, gt_labels):
                     tokenized, caption_string, tokens_positive, _ = \
                         self.get_tokens_and_prompts(

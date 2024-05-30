@@ -286,15 +286,15 @@ class LoadTextAnnotations(BaseTransform):
         else:                      
             # Extract true classes from annotations (original text data)
             true_classes = results['text'] 
-            print('raw text data:', true_classes)
-            print('raw text data type:', type(true_classes))
+            #print('raw text data:', true_classes)
+            #print('raw text data type:', type(true_classes))
             
             # Augment the current text data
             extra_classes = self.get_extra_classes(true_classes, all_classes_augmented)
             
             # Combine true classes and extra classes into a single tuple (augmented text data)
             results['text'] = true_classes + tuple(extra_classes)
-            print('augmented text data:', results['text'])
-            print('augmented text data type:', type(results['text']))
+            #print('augmented text data:', results['text'])
+            #print('augmented text data type:', type(results['text']))
         
         return results
