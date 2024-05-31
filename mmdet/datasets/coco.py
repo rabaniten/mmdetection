@@ -15,7 +15,7 @@ class CocoDataset(BaseDetDataset):
     """Dataset for COCO."""
     
     # custom
-    do_closed_set_training = False
+    do_closed_set_training = True
     print('\nclosed_set_training\n' if do_closed_set_training else '\nopen set training\n')
 
     if do_closed_set_training:
