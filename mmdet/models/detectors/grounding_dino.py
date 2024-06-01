@@ -427,7 +427,12 @@ class GroundingDINO(DINO):
             for data_samples in batch_data_samples
         ]
         
-        do_closed_set_training = True  # change depending on training
+        ####################### custom #########################
+        do_closed_set_training = False
+        aug_text_prompts = [('pear', 'nuggets', 'potato_gnocchi', 'basil', 'wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')]
+        _, _, aug_tokens_positive, _ = \
+            self.get_tokens_and_prompts(aug_text_prompts[0], True)
+        #######################################################
         
         if 'tokens_positive' in batch_data_samples[0]:
             tokens_positive = [
@@ -459,25 +464,25 @@ class GroundingDINO(DINO):
                     self.get_tokens_and_prompts(
                         text_prompts[0], True)
                 new_text_prompts = [caption_string] * len(batch_inputs)
-                print(f'new_text_prompts: {new_text_prompts}')
-                print(f'gt_labels: {gt_labels}')
-                if do_closed_set_training:
-                    for gt_label in gt_labels:
+                for gt_label in gt_labels:
+                    if do_closed_set_training:
                         new_tokens_positive = [
                             tokens_positive[label] for label in gt_label
                         ]
-                        print(f'new_tokens_positive: {new_tokens_positive}')
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
-                        print(f'positive_maps: {positive_maps}')
+                    else:  # open-set training
+                        new_tokens_positive = [
+                            aug_tokens_positive[label] for label in gt_label
+                        ]
+                        _, positive_map = self.get_positive_map(
+                            tokenized, new_tokens_positive)
+                        positive_maps.append(positive_map)
 
-                else:
-                    _, positive_map = self.get_positive_map(tokenized, tokens_positive)
-                    positive_maps.append(positive_map)
             else:
                 # Text prompts differ for the different images in the batch,
-                # this is the case for open-set training. 
+                # this can happen during open-set training. 
                 for text_prompt, gt_label in zip(text_prompts, gt_labels):
                     tokenized, caption_string, tokens_positive, _ = \
                         self.get_tokens_and_prompts(
@@ -490,12 +495,13 @@ class GroundingDINO(DINO):
                             tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
                         new_text_prompts.append(caption_string)
-                    else:
+                    else:  # open-set training
+                        new_tokens_positive = [
+                            aug_tokens_positive[label] for label in gt_label
+                        ]
                         _, positive_map = self.get_positive_map(
-                            tokenized, tokens_positive)
+                            tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
-                        new_text_prompts.append(caption_string)
-
 
         text_dict = self.language_model(new_text_prompts)
         if self.text_feat_map is not None:
