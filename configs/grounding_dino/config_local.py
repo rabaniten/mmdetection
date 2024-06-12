@@ -1,7 +1,5 @@
 auto_scale_lr = dict(base_batch_size=32, enable=True)
 backend_args = None
-data_root = '/opt/ml/input/data/'
-dataset_type = 'CocoDataset'
 default_hooks = dict(
     checkpoint=dict(interval=1, type='CheckpointHook', by_epoch=True, max_keep_ckpts=1),
     logger=dict(interval=50, type='LoggerHook'),
@@ -16,16 +14,21 @@ env_cfg = dict(
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 lang_model_name = 'bert-base-uncased'
 launcher = 'none'
-load_from = '/opt/ml/code/work_dirs/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
+load_from = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/work_dirs/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
 max_epochs = 24
 metainfo = dict(
     classes=(
-        'pear',
-        'nuggets',
-        'potato_gnocchi',
-        'basil',
+    'pear',
+    'nuggets',
+    'potato_gnocchi',
+    'basil',
+    'wine_red', 
+    'dates', 
+    'jam', 
+    'spring_roll_fried', 
+    'brioche',
     ))
 model = dict(
     as_two_stage=True,
@@ -187,10 +190,10 @@ test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='annotations/instances_val2017.json',
+        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/val/new_correct_val.json',
         backend_args=None,
-        data_prefix=dict(img='val2017/'),
-        data_root='data/coco/',
+        data_prefix=dict(img='/root/Sofia/Genioos/data/mini_datasets/v4/val/images/'),
+        data_root='/root/Sofia/Genioos/data/mini_datasets/v4/val/',
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(keep_ratio=True, scale=(
@@ -198,7 +201,6 @@ test_dataloader = dict(
                 1333,
             ), type='FixScaleResize'),
             dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),
             dict(
                 meta_keys=(
                     'img_id',
@@ -219,25 +221,26 @@ test_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
-    ann_file='data/coco/annotations/instances_val2017.json',
+    ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/val/new_correct_val.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
     type='CocoMetric')
 
-train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=1)
+train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=None)
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
     dataset=dict(
-        ann_file='/opt/ml/input/data/train/new_correct_train.json',
+            ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/train/new_correct_train.json',
         backend_args=None,
-        data_prefix=dict(img= '/opt/ml/input/data/train/images/'),
-        data_root='/opt/ml/input/data/',
+        data_prefix=dict(img= '/root/Sofia/Genioos/data/mini_datasets/v4/train/images/'),
+        data_root='/root/Sofia/Genioos/data/mini_datasets/v4/train/',
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         pipeline=[
             dict(backend_args=None, type='LoadImageFromFile'),
             dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='LoadTextAnnotations'),  # new
             dict(prob=0.5, type='RandomFlip'),
             dict(
                 transforms=[
@@ -390,46 +393,7 @@ train_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
 
-val_cfg = dict(type='ValLoop')
-val_dataloader = dict(
-    batch_size=1,
-    dataset=dict(
-        ann_file='/opt/ml/input/data/validation/new_correct_val.json',
-        backend_args=None,
-        data_prefix=dict(img='/opt/ml/input/data/validation/images/'),
-        data_root='/opt/ml/input/data/',
-        pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                800,
-                1333,
-            ), type='FixScaleResize'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'text',
-                    'custom_entities',
-                ),
-                type='PackDetInputs'),
-        ],
-        return_classes=True,
-        test_mode=True,
-        type='CocoDataset'),
-    drop_last=False,
-    num_workers=2,
-    persistent_workers=True,
-    sampler=dict(shuffle=False, type='DefaultSampler'))
-val_evaluator = dict(
-    ann_file='/opt/ml/input/data/validation/new_correct_val.json',
-    backend_args=None,
-    format_only=False,
-    metric='bbox',
-    type='CocoMetric')
+
 vis_backends = [
     dict(type='LocalVisBackend'),
 ]
@@ -439,4 +403,4 @@ visualizer = dict(
     vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = '/opt/ml/checkpoints'
+work_dir = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/checkpoints'

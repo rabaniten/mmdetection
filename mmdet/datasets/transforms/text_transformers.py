@@ -241,15 +241,60 @@ class RandomSamplingNegPos(BaseTransform):
 
 @TRANSFORMS.register_module()
 class LoadTextAnnotations(BaseTransform):
+    
+    def choose_n_based_on_probabilities(self, probabilities):
+        random_value = random.uniform(0, 1)
+        cumulative_probability = 0
+        for n, probability in probabilities.items():
+            cumulative_probability += probability
+            if random_value <= cumulative_probability:
+                return n
+        return 0  # Fallback in case of rounding issues
+    
+    def get_extra_classes(self, true_classes: tuple, all_classes: tuple) -> tuple:
+        # Define probabilities for choosing n wrong labels
+        probabilities = {0: 0.631578947368421, 1: 0.21052631578947367, 2: 0.10526315789473684, 3: 0.05263157894736842, 4: 0.02631578947368421, 5: 0.005263157894736842}
+        
+        # Choose a number n based on the defined probabilities
+        n = self.choose_n_based_on_probabilities(probabilities)
+        
+        # Choose n random wrong labels from the set of all labels
+        extra_classes = random.sample([c for c in all_classes if c not in true_classes], n)
+        
+        return extra_classes
 
     def transform(self, results: dict) -> dict:
+            
+        # same classes as in dataset.metadata.classes 
+        all_classes_augmented = (
+                'pear',
+                'nuggets',
+                'potato_gnocchi',
+                'basil',
+                'wine_red', 
+                'dates', 
+                'jam', 
+                'spring_roll_fried', 
+                'brioche',)
+        
         if 'phrases' in results:
             tokens_positive = [
                 phrase['tokens_positive']
                 for phrase in results['phrases'].values()
             ]
             results['tokens_positive'] = tokens_positive
-        else:
-            text = results['text']
-            results['text'] = list(text.values())
+        else:                      
+            # Extract true classes from annotations (original text data)
+            true_classes = results['text'] 
+            #print('raw text data:', true_classes)
+            #print('raw text data type:', type(true_classes))
+            
+            # Augment the current text data
+            extra_classes = self.get_extra_classes(true_classes, all_classes_augmented)
+            
+            # Combine true classes and extra classes into a single tuple (augmented text data)
+            results['text'] = true_classes + tuple(extra_classes)
+            #print('augmented text data:', results['text'])
+            #print('augmented text data type:', type(results['text']))
+        
         return results
