@@ -1,4 +1,4 @@
-auto_scale_lr = dict(base_batch_size=16, enable=True)
+auto_scale_lr = dict(base_batch_size=16, enable=False)
 custom_imports = dict(
     allow_failed_imports=False, imports=[
         'projects.CO-DETR.codetr',
@@ -21,14 +21,14 @@ env_cfg = dict(
     dist_cfg=dict(backend='nccl'),
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 launcher = 'pytorch'
-resume = True # set to true to resume training from previous epoch
-load_from = '/opt/ml/code/checkpoints/epoch_5.pth'
-#load_from = '/opt/ml/code/work_dirs/custom_co_dino_5scale_swin_l_16xb1_1x_coco/pretrained_model/custom_co_dino_5scale_swin_large_1x_coco-27c13da4.pth'
+resume = False # set to true to resume training from previous epoch
+#load_from = '/opt/ml/code/checkpoints/epoch_3.pth'
+load_from = '/opt/ml/code/work_dirs/custom_co_dino_5scale_swin_l_16xb1_1x_coco/pretrained_model/custom_co_dino_5scale_swin_large_1x_coco-27c13da4.pth'
 log_level = 'INFO'
 log_processor = dict(
     _scope_='mmdet', by_epoch=True, type='LogProcessor', window_size=50)
 loss_lambda = 2.0
-max_epochs = 10
+max_epochs = 3
 max_iters = 270000
 metainfo = dict(
     classes=(
@@ -699,8 +699,8 @@ model = dict(
 num_dec_layer = 6
 optim_wrapper = dict(
     clip_grad=dict(max_norm=0.1, norm_type=2),
-    optimizer=dict(lr=0.0002, type='AdamW', weight_decay=0.0001),
-    paramwise_cfg=dict(custom_keys=dict(backbone=dict(lr_mult=0.1))),
+    optimizer=dict(lr=1e-04, type='AdamW', weight_decay=0.0001),
+    paramwise_cfg=dict(custom_keys=dict(backbone=dict(lr_mult=0.1))),  # resulting lr: 1e-5
     type='OptimWrapper')
 param_scheduler = [
     dict(
@@ -763,8 +763,8 @@ test_pipeline = [
         ),
         type='PackDetInputs'),
 ]
-total_epochs = 10
-train_cfg = dict(max_epochs=10, type='EpochBasedTrainLoop', val_interval=1)
+total_epochs = 3
+train_cfg = dict(max_epochs=3, type='EpochBasedTrainLoop', val_interval=1)
 train_dataloader = dict(
     batch_size=1,
     dataset=dict(
