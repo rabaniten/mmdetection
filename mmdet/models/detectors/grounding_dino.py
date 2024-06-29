@@ -61,6 +61,8 @@ class GroundingDINO(DINO):
         self.language_model_cfg = language_model
         self._special_tokens = '. '
         self.use_autocast = use_autocast
+        #Set this variable equal to True here if you would like to get logs for debugging
+        self.logging_enabled = False
         super().__init__(*args, **kwargs)
 
     def _init_layers(self) -> None:
@@ -416,8 +418,8 @@ class GroundingDINO(DINO):
         head_inputs_dict['text_token_mask'] = text_token_mask
         return decoder_inputs_dict, head_inputs_dict
 
-    def loss(self, batch_inputs: Tensor,
-             batch_data_samples: SampleList) -> Union[dict, list]:
+
+    def loss(self, batch_inputs: Tensor, batch_data_samples: SampleList) -> Union[dict, list]:
         text_prompts = [
             data_samples.text for data_samples in batch_data_samples
         ]
@@ -426,14 +428,17 @@ class GroundingDINO(DINO):
             data_samples.gt_instances.labels
             for data_samples in batch_data_samples
         ]
-        
+
         ####################### custom #########################
         do_closed_set_training = False
+
+        # Run this code when creating the annotations and add 'tokens_positive' to each annotation
         aug_text_prompts = [('pear', 'nuggets', 'potato_gnocchi', 'basil', 'wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')]
+        aug_label_list = aug_text_prompts[0]
         _, _, aug_tokens_positive, _ = \
-            self.get_tokens_and_prompts(aug_text_prompts[0], True)
+            self.get_tokens_and_prompts(aug_label_list, True)
         #######################################################
-        
+
         if 'tokens_positive' in batch_data_samples[0]:
             tokens_positive = [
                 data_samples.tokens_positive
@@ -460,7 +465,7 @@ class GroundingDINO(DINO):
             if len(set(text_prompts)) == 1:
                 # All the text prompts are the same,
                 # so there is no need to calculate them multiple times.
-                tokenized, caption_string, tokens_positive, _ = \
+                tokenized, caption_string, tokens_positive, entities = \
                     self.get_tokens_and_prompts(
                         text_prompts[0], True)
                 new_text_prompts = [caption_string] * len(batch_inputs)
@@ -473,20 +478,24 @@ class GroundingDINO(DINO):
                             tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
                     else:  # open-set training
-                        new_tokens_positive = [
-                            aug_tokens_positive[label] for label in gt_label
-                        ]
+                        new_tokens_positive = self.get_tokens_positive_from_prompt(
+                           gt_label, entities, tokens_positive, aug_label_list)
+                        if self.logging_enabled:
+                            print(f"caption_string: {caption_string}")
+                            print(f"gt_label: {gt_label}")
+                            print(f"new_tokens_positive: {new_tokens_positive}")
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
+                        if self.logging_enabled:
+                            print(f"positive_map: {positive_map}")
                         positive_maps.append(positive_map)
 
             else:
-                # Text prompts differ for the different images in the batch,
-                # this can happen during open-set training. 
                 for text_prompt, gt_label in zip(text_prompts, gt_labels):
-                    tokenized, caption_string, tokens_positive, _ = \
+                    tokenized, caption_string, tokens_positive, entities = \
                         self.get_tokens_and_prompts(
-                            text_prompt, True)
+                            text_prompt, True) 
+                    new_text_prompts.append(caption_string)
                     if do_closed_set_training:
                         new_tokens_positive = [
                             tokens_positive[label] for label in gt_label
@@ -494,13 +503,16 @@ class GroundingDINO(DINO):
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
-                        new_text_prompts.append(caption_string)
                     else:  # open-set training
-                        new_tokens_positive = [
-                            aug_tokens_positive[label] for label in gt_label
-                        ]
+                        new_tokens_positive = self.get_tokens_positive_from_prompt(gt_label, entities, tokens_positive, aug_label_list)
+                        if self.logging_enabled:
+                            print(f"caption_string: {caption_string}")
+                            print(f"gt_label: {gt_label}")
+                            print(f"new_tokens_positive: {new_tokens_positive}")
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
+                        if self.logging_enabled:
+                            print(f"positive_map: {positive_map}")
                         positive_maps.append(positive_map)
 
         text_dict = self.language_model(new_text_prompts)
@@ -526,6 +538,32 @@ class GroundingDINO(DINO):
         losses = self.bbox_head.loss(
             **head_inputs_dict, batch_data_samples=batch_data_samples)
         return losses
+    
+    def get_tokens_positive_from_prompt(self, gt_label, entities, tokens_positive, aug_label_list):
+        if self.logging_enabled:
+            print(f"Entering get_tokens_positive_from_prompt with gt_label: {gt_label}, entities: {entities}, aug_label_list: {aug_label_list}")
+            print(f"tokens_positive: {tokens_positive}")
+
+        new_tokens_positive = []
+        for label in gt_label:
+            raw_label_text = aug_label_list[label.item()]  # Get the corresponding string from the augmented label list         
+            label_text = clean_label_name(raw_label_text)  # Clean the label using the clean_label_name method         
+            if self.logging_enabled:             
+                print(f"Processing label: {label}, raw_label_text: {raw_label_text}, cleaned_label_text: {label_text}")         
+            for idx, word in enumerate(entities):
+                if self.logging_enabled:
+                    print(f"Checking word: {word}, idx: {idx}")
+                if word == label_text:
+                    new_tokens_positive.append(tokens_positive[idx])
+                    break
+
+        if self.logging_enabled:
+            print(f"Exiting get_tokens_positive_from_prompt with new_tokens_positive: {new_tokens_positive}")
+        return new_tokens_positive
+
+
+
+
 
     def predict(self, batch_inputs, batch_data_samples, rescale: bool = True):
         text_prompts = []

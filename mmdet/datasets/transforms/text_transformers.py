@@ -242,6 +242,8 @@ class RandomSamplingNegPos(BaseTransform):
 @TRANSFORMS.register_module()
 class LoadTextAnnotations(BaseTransform):
     
+    #ToDo: refractor this code, replase method choose_n_based_on_probabilities,
+    #define probabilities as input (and normalize them to be sure that they sum up to one)
     def choose_n_based_on_probabilities(self, probabilities):
         random_value = random.uniform(0, 1)
         cumulative_probability = 0
@@ -253,15 +255,24 @@ class LoadTextAnnotations(BaseTransform):
     
     def get_extra_classes(self, true_classes: tuple, all_classes: tuple) -> tuple:
         # Define probabilities for choosing n wrong labels
-        probabilities = {0: 0.631578947368421, 1: 0.21052631578947367, 2: 0.10526315789473684, 3: 0.05263157894736842, 4: 0.02631578947368421, 5: 0.005263157894736842}
+        probabilities = {0: 0.6, 1: 0.2, 2: 0.1, 3: 0.05, 4: 0.035, 5: 0.015}
         
         # Choose a number n based on the defined probabilities
         n = self.choose_n_based_on_probabilities(probabilities)
         
         # Choose n random wrong labels from the set of all labels
-        extra_classes = random.sample([c for c in all_classes if c not in true_classes], n)
+        filtered_classes = [c for c in all_classes if c not in true_classes]
+        extra_classes = random.sample(filtered_classes, min(n, len(filtered_classes)))
         
         return extra_classes
+    
+    #def get_tokens_positive_for_aug_text(aug_text_data: tuple) -> list:
+        #aug_tokens_positive = []
+        
+        # each class name is treated as a separate sentence
+        #for class_name in aug_text_data:  
+            #aug_tokens_positive.append([[0, len(class_name)]])
+        #return aug_tokens_positive
 
     def transform(self, results: dict) -> dict:
             
@@ -296,5 +307,8 @@ class LoadTextAnnotations(BaseTransform):
             results['text'] = true_classes + tuple(extra_classes)
             #print('augmented text data:', results['text'])
             #print('augmented text data type:', type(results['text']))
+            
+            # Create list of tokens_positive for all the classes in the text prompt
+            #results['tokens_positive'] = get_tokens_positive_for_aug_text(results['text'])
         
         return results
