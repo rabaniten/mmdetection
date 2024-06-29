@@ -14,10 +14,10 @@ env_cfg = dict(
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 lang_model_name = 'bert-base-uncased'
 launcher = 'none'
-load_from = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/work_dirs/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
+load_from = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/pretrained_models/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-max_epochs = 24
+max_epochs = 1
 metainfo = dict(
     classes=(
     'pear',
@@ -190,7 +190,7 @@ test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/val/new_correct_val.json',
+        ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/val/open_set_val.json',
         backend_args=None,
         data_prefix=dict(img='/root/Sofia/Genioos/data/mini_datasets/v4/val/images/'),
         data_root='/root/Sofia/Genioos/data/mini_datasets/v4/val/',
@@ -221,13 +221,13 @@ test_dataloader = dict(
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(
-    ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/val/new_correct_val.json',
+    ann_file='/root/Sofia/Genioos/data/mini_datasets/v4/val/open_set_val.json',
     backend_args=None,
     format_only=False,
     metric='bbox',
     type='CocoMetric')
 
-train_cfg = dict(max_epochs=24, type='EpochBasedTrainLoop', val_interval=None)
+train_cfg = dict(max_epochs=1, type='EpochBasedTrainLoop', val_interval=None)
 train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=1,
