@@ -24,11 +24,6 @@ metainfo = dict(
     'nuggets',
     'potato_gnocchi',
     'basil',
-    'wine_red', 
-    'dates', 
-    'jam', 
-    'spring_roll_fried', 
-    'brioche',
     ))
 model = dict(
     as_two_stage=True,

@@ -16,7 +16,7 @@ env_cfg = dict(
     mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
 lang_model_name = 'bert-base-uncased'
 launcher = 'none'
-load_from = '/opt/ml/code/work_dirs/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
+load_from = '/opt/ml/code/pretrained_models/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
 max_epochs = 24
