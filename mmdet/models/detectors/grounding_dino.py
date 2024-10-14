@@ -18,7 +18,7 @@ from ..layers.transformer.grounding_dino_layers import (
 from .dino import DINO
 from .glip import (create_positive_map, create_positive_map_label_to_token,
                    run_ner)
-
+ALL_LABELS = ('chervil cream sauce', 'small sauce-glass', 'cream tart', 'white plate', 'chicken breast', 'tortellini', 'shallow bowl', 'cherry tomato', 'mixed dish of tortellini and chervil cream sauce', 'caesar salad', 'parmesan dressing', 'egg cooked', 'toast croutons', 'parmesan shavings', 'bacon', 'lettuce', 'mixed dish of caesar salad and dressing', 'colorful vegetable pan with soft egg noodles (spaetzle)', 'white plate without rim', 'capuns', 'soup of the day ratatouille cream', 'root vegetables', 'soup bowl', 'beer sauce', 'finger-shaped potato dumplings (schupfnudeln)', 'sauerkraut', 'smoked pork neck', 'roasted cashew nuts', 'hioumi', 'raspberry quark', 'natural yogurt', 'strawberry yogurt', 'apricot yogurt', 'raspberry yogurt', 'beans green', 'cream sauce', 'vegetable bolognese', 'potatoes', 'mixed dish of horn-shaped pasta (hoernli) and vegetable bolognese', 'caramel flan', 'large sauce-glass', 'fruit salad', 'soup of the day artichoke', 'veal sausage', 'onion sauce', 'small glass fruitsalad bowl', 'spanish tortilla with basil sauce', 'vanilla cream puffs', 'small quadratic plate-bowl', 'spanish tortilla', 'quadratic dessert-plate', 'horn-shaped pasta (hoernli)', 'radish', 'sausage and cheese salad', 'lollo bianco', 'house bread', 'soup of the day potato', 'vegetarian bami goreng', 'lollo rosso', 'soup of the day broccoli cream', 'mixed dish of spaghetti vegetable strips and saffron herb sauce', 'vegetable strips saffron-herb sauce', 'pureed green balls', 'spaghetti', 'pureed food in a special shape', 'eggplant moussaka', 'pureed meat slices', 'pureed food in oval shape', 'pureed broccoli', 'pureed mashed potatoes', 'spinach tart', 'turmeric sauce', 'pita bread', 'mixed dish of trout fillet spinach rice and sauce', 'sprout vegetables', 'scallion', 'herbal rice', 'soup of the day curry cream', 'lentil ragout', 'spinach', 'trout fillet', 'mixed meal of lentil ragout paneer pita and sprouts', 'quinoa patties', 'vegetables for quinoa patties', 'toast', 'filling of toast hawaii', 'onion red', 'cranberry', 'barley risotto', 'salad leaves', 'cheese tart', 'zucchetti', 'lemon panna cotta', 'parsley fritters', 'lemon', 'capers', 'smoked trout', 'trout tartare', 'soup of the day yellow pea', 'horseradish foam', 'butter', 'pesto sauce', 'vegetable lasagna', 'applesauce', 'broccoli', 'dill mashed potatoes', 'salmon cubes marinated', 'white wine sauce', 'brown sauce', 'pureed food in pyramid shape', 'penne rigate', 'pureed polenta', 'pureed balls', 'tagliatelle', 'pureed cauliflower', 'raspberry', 'raspberry mousse in pyramid shape', 'bolognese', 'white sauce', 'bell pepper sauce', 'chocolate mousse', 'round raspberry mousse', 'romanesco', 'slices', 'poultry stew', 'pureed salmon', 'pureed chicken thigh', 'pureed fries', 'pureed sausage', 'mixed dish of penne and bolognese', 'plate with red rim', 'mixed meal of soft egg noodles (spaetzle) and halloumi', 'veggie swiss macaroni and cheese', 'mixed dish of chicken bell pepper sauce romanesco and pasta', 'boiled meat salad seed oil', 'vegetable strudel', 'vegetable patch', 'herb quark dip', 'vegetables for boiled meat salad', 'plum tart', 'boiled meat', 'mixed meal of vegetable strudel and herb quark dip', 'gnocchi seitan pan', 'mixed meal of lamb stew bulgur and carrots', 'carrots', 'currant sheet cake', 'lamb stew', 'sauce', 'bulgur', 'mixed dish of gnocchi seitan pan and oyster mushrooms', 'vegetable salad with white beans', 'vegetables for green spelt risotto', 'green spelt risotto', 'rye bread', 'apple tart', 'bouillon', 'cold chicken breast', 'cocktail sauce', 'soup of the day carrot cream', 'curry dip', 'soup of the day lentil ginger', 'poulet cordon bleu', 'sliced seitan', 'mixed dish of poulet cordon bleu cauliflower soft egg noodles (spaetzle) and jus', 'mixed dish of sliced seitan pilaf rice and sugar peas', 'roasted cauliflower', 'pilau rice', 'soft egg noodles (spaetzle)', 'jus', 'sugar peas', 'sauce for sliced seitan', 'boiled potatoes', 'semolina porridge', 'cherry compote', 'cinnamon sugar', 'small plastic cup', 'oversoaked sliced chicken', 'mixed meal of semolina porridge and cherry compote', 'overly soft thick brie cheese', 'overly soft cottage cheese', 'mixed meal of meat cheese, mustard sauce and lyonnaise potatoes', 'oversoaked sliced veal', 'overly soft cream cheese', 'overly soft thin brie cheese', 'currants', 'lyonnaise potatoes', 'meat cheese', 'mustard sauce', 'soup of the day bell peppers', 'sliced quorn sauce zurich style', 'sliced quorn zurich style', 'colorful vegetables from zuchetti peas carrots and beans', 'hash brown (roesti)', 'bread dumplings', 'sauce poultry ragout', 'mixed dish of poultry ragout and bread dumplings', 'mixed meal of quorn vegetables and hash brown (roesti)', 'banana organic', 'croissant', 'lye croissant', 'coffee', 'jug lid on the ground', 'uncovered jug', 'jug covered with lid', 'orange juice', 'multigrain roll', 'scrambled eggs', 'milk', 'mueesli', 'large glass fruitsalad-bowl', 'milk roll', 'mozzarella', 'baked vegetables for mozzarella', 'wedges', 'chipolata sausage', 'vegetables for chipolata sausage', 'rocket', 'walnut', 'mixed meal of mozzarella salad, baked vegetables and house bread', 'vegetable piccata made from zuchetti eggplant and piccata mass', 'bramata slice', 'vegetables for piccata', 'cream', 'chocolate cake', 'fried rice', 'beef meatballs', 'spicy vegetable ragout', 'olives', 'cucumber', 'tomato', 'turkey breast', 'carrot', 'chili with vegetables', 'lenses brown', 'mixed dish of chili with vegetables lentils and romanesco', 'pear', 'apple', 'apricot tart', 'cheese crêpe', 'mixed meal of meatloaf peas mashed potatoes and sauce', 'soggy bread without crust', 'large square plate', 'oversoaked polenta', 'meatloaf', 'mashed potatoes', 'peas', 'soup of the day mushroom cream', 'cognac sauce', 'grated cheese', 'oversoaked chickpea curry', 'rice', 'oversoaked roast beef', 'oversoaked food in pyramid shape', 'swiss chard vegetable ragout', 'oversoaked chia pudding', 'oversoaked mixed roast beef', 'mixed dish of cream cheese sauce and swiss chard', 'oversoaked mixed chickpea curry', 'sardinian fregola', 'smoked sausage (landjaeger)', 'soup of the day leek cream', 'sardinian fregola with vegetables', 'vegetables for fregola', 'mustard', 'radish salad', 'fresh cheese praline', 'pickled cucumber', 'sliced quorn', 'soup of the day banana-coconut', 'bean cassoulet', 'salami', 'pickled vegetables', 'deli meat cheese', 'turkey', 'sour cream', 'cylindrical transparent shot glass', 'turkey ham', 'ricotta tortellini', 'potato vegetable curry', 'soup of the day sweetcorn', 'baked chickpea', 'cream sauce and tomato sauce', 'milk coffee', 'cherry jam', 'gruyere cheese', 'spreadable cheese', 'coffee cup', 'coffee plate', 'coffee yogurt', 'tilster cheese', 'brie cheese', 'margarine', 'appenzeller cheese', 'paprika sauce', 'bramata', 'green spelt dumplings', 'vegetable ragout for green spelt dumplings', 'chicken thigh steak', 'country cuts', 'veggie crispy bites', 'soup of the day tomatoes', 'vegetable salad for ham', 'country smoked ham', 'lye rolls', 'antipasti vegetables', 'tagliatelle tomato pesto antipasti', 'soup of the day beetroot', 'soy yogurt dip', 'vegan meatballs', 'vegetables for meatballs', 'yellow pea puree', 'boiled beef', 'horseradish bouillon', 'beef lasagna', 'eggplant cordon bleu', 'saffron risotto', 'bell pepper stew', 'pineapple-quark-mousse', 'tomato sauce', 'quinoa salad', 'dried tomatoes', 'endives orange salad', 'orange fillet', 'cashew nuts', 'creamy risotto', 'red onion', 'risotto', 'vegetable salad with quinoa', 'small glass bowl', 'vegetable salad for quinoa', 'thai glass noodle salad', 'cheese ravioli', 'fruit quark', 'pineapple', 'halibut', 'hummus', 'vegetables for halibut', 'asian dip', 'potato hash brown (roesti) with vegetables', 'oversoaked salmon fillet', 'oversoaked chickpea puree', 'bell pepper', 'port wine pears rucola risotto', 'soup of the day barley', 'rocket risotto', 'creamy polenta medium', 'beef patties in juicy sauce', 'merlot sauce', 'oversoaked perch fillet', 'oversoft food in crescent shape', 'mixed dish of rucola risotto gorgonzola and walnut', 'oversoaked mixed dish of salmon fillet, chickpea puree and bell peppers', 'oversoaked mixed dish of boiled beef polenta and carrots', 'mixed dish of beef patties in juicy sauce broccoli and polenta', 'oversoaked mixed dish of crescent-shaped perch fillets and zuchetti', 'potato herb patties', 'veggie cervalat sausage', 'colorful vegetables for veggie cervalat sausage', 'grisons barley soup', 'carrot puree', 'cod', 'ratatouille', 'soup of the day cauliflower cream', 'herbal semolina slice', 'crispy vegetable roll', 'rice noodle salad', 'soup of the day parmesan foam', 'creamed spinach', 'gnocchi pan tofu', 'homemade fishburgers', 'black bean puree', 'soup of the day zucchetti', 'roast beef', 'pizokel vegetable gratin', 'egg vinaigrette', 'cheesy soft egg noodles (kaesespaetzle)', 'cabbage salad', 'fennel salad for bowl', 'tree nut dressing', 'spelt marinated', 'feta marinated', 'beetroot cooked', 'iceberg lettuce', 'oversoaked smoked salmon', 'oversoaked mixed dish of smoked salmon zuchetti and panna cotta', 'mixed dish of protein bowl and multigrain roll', 'oversoaked fennel', 'oversoaked couscous', 'oversoaked turkey plate', 'lemon roulade', 'wild rice raw', 'homemade veggie burger', 'spicy tomato vegetable sauce', 'champignon organic', 'pork steak', 'gruyère', 'swiss macaroni and cheese', 'cantadou cheese', 'white bean puree', 'tilapia', 'burrito', 'pernod sauce', 'diced tomatoes', 'sliced beef', 'knot rolls', 'spelt goulash', 'french dressing', 'vegetables for salade nicoise consisting of beans spinach and lettuce', 'minced poultry patties', 'mixed dish of penne tofu and carbonara', 'carbonara tofu', 'rosemary sauce')
 
 def clean_label_name(name: str) -> str:
     name = re.sub(r'\(.*\)', '', name)
@@ -62,7 +62,7 @@ class GroundingDINO(DINO):
         self._special_tokens = '. '
         self.use_autocast = use_autocast
         #Set this variable equal to True here if you would like to get logs for debugging
-        self.logging_enabled = False
+        self.logging_enabled = True
         super().__init__(*args, **kwargs)
 
     def _init_layers(self) -> None:
@@ -138,8 +138,13 @@ class GroundingDINO(DINO):
         original_caption: Union[str, list, tuple],
         custom_entities: bool = False,
         enhanced_text_prompts: Optional[ConfigType] = None
-    ) -> Tuple[dict, str, list]:
+    ) -> Tuple[dict, str, list, list]:  # Added entities to the return type for completeness
         """Get the tokens positive and prompts for the caption."""
+
+        # Log inputs
+        if self.logging_enabled:
+            print(f"Entering get_tokens_and_prompts with original_caption: {original_caption}, custom_entities: {custom_entities}, enhanced_text_prompts: {enhanced_text_prompts}")
+
         if isinstance(original_caption, (list, tuple)) or custom_entities:
             if custom_entities and isinstance(original_caption, str):
                 original_caption = original_caption.strip(self._special_tokens)
@@ -182,7 +187,12 @@ class GroundingDINO(DINO):
             entities = noun_phrases
             caption_string = original_caption
 
-        return tokenized, caption_string, tokens_positive, entities
+        # Log outputs
+        if self.logging_enabled:
+            print(f"Exiting get_tokens_and_prompts with tokenized: {tokenized}, caption_string: {caption_string}, tokens_positive: {tokens_positive}, entities: {entities}")
+
+        return tokenized, caption_string, tokens_positive, entities  # Added entities to the return tuple
+
 
     def get_positive_map(self, tokenized, tokens_positive):
         positive_map = create_positive_map(
@@ -428,15 +438,22 @@ class GroundingDINO(DINO):
             data_samples.gt_instances.labels
             for data_samples in batch_data_samples
         ]
-
+        
+        print("gt labels inside grounding_dino.py", gt_labels)
+        temp = 'tokens_positive' in batch_data_samples[0]
+        print("tokens_positive in batch_data_samples[0]", temp)
+        print("batch_data_samples in grounding_dino.py", batch_data_samples)
+        print("batch_inputs in grounding_dino.py", batch_inputs)
+        print("text_prompts in grounding_dino.py", text_prompts)
+        
         ####################### custom #########################
         do_closed_set_training = False
 
         # Run this code when creating the annotations and add 'tokens_positive' to each annotation
-        aug_text_prompts = [('pear', 'nuggets', 'potato_gnocchi', 'basil', 'wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')]
+        aug_text_prompts = [ALL_LABELS] #[('pear', 'nuggets', 'potato_gnocchi', 'basil', 'wine_red', 'dates', 'jam', 'spring_roll_fried', 'brioche')]
         aug_label_list = aug_text_prompts[0]
-        _, _, aug_tokens_positive, _ = \
-            self.get_tokens_and_prompts(aug_label_list, True)
+        # _, _, aug_tokens_positive, _ = \
+         #    self.get_tokens_and_prompts(aug_label_list, True)
         #######################################################
 
         if 'tokens_positive' in batch_data_samples[0]:
@@ -478,6 +495,7 @@ class GroundingDINO(DINO):
                             tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
                     else:  # open-set training
+                        print("open set same text prompt in grounding_dino.py")
                         new_tokens_positive = self.get_tokens_positive_from_prompt(
                            gt_label, entities, tokens_positive, aug_label_list)
                         if self.logging_enabled:
@@ -504,6 +522,7 @@ class GroundingDINO(DINO):
                             tokenized, new_tokens_positive)
                         positive_maps.append(positive_map)
                     else:  # open-set training
+                        print("open set different text prompt in grounding_dino.py")
                         new_tokens_positive = self.get_tokens_positive_from_prompt(gt_label, entities, tokens_positive, aug_label_list)
                         if self.logging_enabled:
                             print(f"caption_string: {caption_string}")
@@ -543,22 +562,37 @@ class GroundingDINO(DINO):
         if self.logging_enabled:
             print(f"Entering get_tokens_positive_from_prompt with gt_label: {gt_label}, entities: {entities}, aug_label_list: {aug_label_list}")
             print(f"tokens_positive: {tokens_positive}")
-
         new_tokens_positive = []
+
+        # Iterate over the sorted unique labels
         for label in gt_label:
-            raw_label_text = aug_label_list[label.item()]  # Get the corresponding string from the augmented label list         
-            label_text = clean_label_name(raw_label_text)  # Clean the label using the clean_label_name method         
+            raw_label_text = aug_label_list[label.item()]  # Get the corresponding string from the augmented label list (no need for .item() here anymore)
+
+            if self.logging_enabled:
+                print("raw_label_text in get_tokens_positive_from_prompt", raw_label_text)
+
+            label_text = clean_label_name(raw_label_text)  # Clean the label using the clean_label_name method
+
             if self.logging_enabled:             
                 print(f"Processing label: {label}, raw_label_text: {raw_label_text}, cleaned_label_text: {label_text}")         
+
+            if self.logging_enabled:
+                print("entities in get_tokens_positive_from_prompt", entities)
+
+            # Find the corresponding entity in the entity list and append its tokens
+            was_word_found = False
             for idx, word in enumerate(entities):
                 if self.logging_enabled:
                     print(f"Checking word: {word}, idx: {idx}")
                 if word == label_text:
+                    was_word_found = True
                     new_tokens_positive.append(tokens_positive[idx])
                     break
-
+            if not was_word_found:
+                print("Warning: gt label was not found in text prompt")
         if self.logging_enabled:
             print(f"Exiting get_tokens_positive_from_prompt with new_tokens_positive: {new_tokens_positive}")
+
         return new_tokens_positive
 
 
