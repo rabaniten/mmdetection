@@ -10,8 +10,8 @@ from mmengine.config import Config, DictAction
 from mmengine.runner import Runner
 
 # new #
-import sys
-sys.path.insert(0, '/root/Sofia/Genioos/sofia_thesis_project/detection_models/codetr/mmdetection/') 
+#import sys
+#sys.path.insert(0, '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/mmdetection/') 
 # # # #
 
 from mmdet.engine.hooks.utils import trigger_visualization_hook
