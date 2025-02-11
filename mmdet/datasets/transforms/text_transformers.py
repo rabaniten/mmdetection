@@ -289,7 +289,7 @@ class LoadTextAnnotations(BaseTransform):
         else:                      
             # Extract true classes from annotations (original text data)
             true_classes = results['text'] 
-            print('raw text data:', true_classes)
+            #print('raw text data:', true_classes)
             #print('raw text data type:', type(true_classes))
             
             # Augment the current text data
@@ -297,7 +297,7 @@ class LoadTextAnnotations(BaseTransform):
             
             # Combine true classes and extra classes into a single tuple (augmented text data)
             results['text'] = true_classes + tuple(extra_classes)
-            print('augmented text data:', results['text'])
+            #print('augmented text data:', results['text'])
             #print('augmented text data type:', type(results['text']))
             
             # Create list of tokens_positive for all the classes in the text prompt

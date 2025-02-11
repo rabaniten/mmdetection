@@ -1,38 +1,38 @@
-# Local training and inference
-LOAD_FROM = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/pretrained_models/custom_grounding_dino_swin-t_finetune_16xb2_1x_coco_20230921_152544-5f234b20.pth'
-
-RESUME = False
-
-ANN_FILE_TRAINING = '/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_training/coco_train_annotations.json'
-ANN_FILE_VALIDATION = '/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_validation/coco_val_annotations.json'
-
-DATA_PREFIX_TRAIN = dict(img= '/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_training/images/')
-DATA_PREFIX_VAL = dict(img='/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_validation/images/')
-
-BATCH_SIZE_TRAIN = 1
-BATCH_SIZE_VAL = 1
-
-NUM_WORKER_TRAIN = 2
-NUM_WORKER_VAL = 2
-
-
-
-# # Training and inference in custom docker
-# LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
+# # Local training and inference
+# LOAD_FROM = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/trained_models/epoch_40.pth'
 
 # RESUME = False
 
-# ANN_FILE_TRAINING = '/opt/ml/input/data/train/instance_seg_train_no_crowd.json'
-# ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/instance_seg_val_no_crowd.json'
+# ANN_FILE_TRAINING = '/root/Sofia/Genioos/sofia_thesis_project/instance_segmentation_models/out_dirs/bbox_and_mask_annotations_obtained_from_gt_and_SAM_stadtpital_waid_train_data_coco_format_corrected_no_crowds_removed_small_masks.json'
+# ANN_FILE_VALIDATION = '/root/Sofia/Genioos/sofia_thesis_project/instance_segmentation_models/out_dirs/bbox_and_mask_annotations_obtained_from_gt_and_SAM_stadtpital_waid_val_data_coco_format_corrected_no_crowds_removed_small_masks.json'
 
-# DATA_PREFIX_TRAIN = dict(img= '/opt/ml/input/data/train/images/')
-# DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
+# DATA_PREFIX_TRAIN = dict(img= '/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_training/images/')
+# DATA_PREFIX_VAL = dict(img='/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_validation/images/')
 
 # BATCH_SIZE_TRAIN = 1
 # BATCH_SIZE_VAL = 1
 
 # NUM_WORKER_TRAIN = 2
 # NUM_WORKER_VAL = 2
+
+
+
+# Training and inference in custom docker
+LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
+
+RESUME = False
+
+ANN_FILE_TRAINING = '/opt/ml/input/data/train/instance_seg_train_no_crowd.json'
+ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/instance_seg_val_no_crowd.json'
+
+DATA_PREFIX_TRAIN = dict(img= '/opt/ml/input/data/train/images/')
+DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
+
+BATCH_SIZE_TRAIN = 1
+BATCH_SIZE_VAL = 1
+
+NUM_WORKER_TRAIN = 32
+NUM_WORKER_VAL = 32
 
 
 
@@ -417,7 +417,11 @@ val_dataloader = dict(
         data_prefix=DATA_PREFIX_VAL,  # Validation images
         filter_cfg=dict(filter_empty_gt=False),
         pipeline=[
-            dict(type='LoadImageFromFile'),
+            dict(backend_args=None, type='LoadImageFromFile'),
+            dict(keep_ratio=True, scale=(
+                800,
+                1333,
+            ), type='FixScaleResize'), 
             dict(type='LoadAnnotations', with_bbox=True),
             dict(type='LoadTextAnnotations'),  # For GroundingDINO
              dict(
@@ -441,7 +445,7 @@ val_dataloader = dict(
 val_cfg = dict(type='ValLoop')  
 
 val_evaluator = dict(
-    type='CocoMetric',
+    type='OpenSetCOCOMetric',
     ann_file=ANN_FILE_VALIDATION,
     metric=['bbox'],  # Metrics for both bounding boxes and segmentation
     classwise=True            # Enable class-wise mAP

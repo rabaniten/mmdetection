@@ -65,7 +65,7 @@ class GroundingDINO(DINO):
         self._special_tokens = '. '
         self.use_autocast = use_autocast
         #Set this variable equal to True here if you would like to get logs for debugging
-        self.logging_enabled = True
+        self.logging_enabled = False
         super().__init__(*args, **kwargs)
 
     def _init_layers(self) -> None:
