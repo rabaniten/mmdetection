@@ -65,7 +65,7 @@ class GroundingDINO(DINO):
         self._special_tokens = '. '
         self.use_autocast = use_autocast
         #Set this variable equal to True here if you would like to get logs for debugging
-        self.logging_enabled = False
+        self.logging_enabled = True
         super().__init__(*args, **kwargs)
 
     def _init_layers(self) -> None:
@@ -433,7 +433,7 @@ class GroundingDINO(DINO):
         ]
 
         ####################### custom #########################
-        do_closed_set_training = False
+        do_closed_set_training = True
 
         # Run this code when creating the annotations and add 'tokens_positive' to each annotation
         aug_text_prompts = [ALL_LABELS]
@@ -480,6 +480,10 @@ class GroundingDINO(DINO):
                 new_text_prompts = [caption_string] * len(batch_inputs)
                 for gt_label in gt_labels:
                     if do_closed_set_training:
+                        if self.logging_enabled:
+                            print("gt_label: ", gt_label)
+                            print("tokens_positive: ", tokens_positive)
+                            print("text_prompts: ", text_prompts)
                         new_tokens_positive = [
                             tokens_positive[label] for label in gt_label
                         ]
