@@ -34,7 +34,7 @@ NUM_WORKER_TRAIN = 10
 NUM_WORKER_VAL = 10
 
 
-CLASSES =(
+CLASSES = (
     "Coffee Mug Lid",
     "Coffee Mug Lid (White)",
     "Opaque Plate Cover",
@@ -42,8 +42,10 @@ CLASSES =(
     "Plastic Wrap",
     "Salad Lid",
     "Soup Lid",
-    "Transparent Plate Cover"
-    )
+    "Transparent Plate Cover",
+    "Cover that occludes food",
+    "Cover that is above its tableware"
+)
 
 
 NUM_CLASSES = len(CLASSES)
@@ -452,10 +454,15 @@ val_dataloader = dict(
     sampler=dict(shuffle=False, type='DefaultSampler')  # No shuffling for validation
 )
 
+custom_imports = dict(
+    imports=['mmdet.evaluation.metrics.coco_metric_open_set_detection'],  # Full module path
+    allow_failed_imports=False  # Ensures import failure raises an error
+)
+
 val_cfg = dict(type='ValLoop')
 
 val_evaluator = dict(
-    type='CocoMetric',
+    type='OpenSetCOCOMetric',
     ann_file=ANN_FILE_VALIDATION,
     metric=['bbox'],  # Metrics for both bounding boxes and segmentation
     classwise=True            # Enable class-wise mAP
@@ -516,7 +523,7 @@ test_cfg = dict(type='TestLoop')
 # )
 
 test_evaluator = dict(
-    type='CocoMetric',
+    type='OpenSetCOCOMetric',
     ann_file=ANN_FILE_VALIDATION,
     metric=['bbox'],  # Metrics for bounding boxes
     classwise=True  # Enable class-wise mAP for detailed evaluation
