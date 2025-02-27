@@ -418,20 +418,22 @@ val_dataloader = dict(
     persistent_workers=True,
     dataset=dict(
         type='CocoDataset',
+        return_classes=True,
         metainfo=dict(classes=CLASSES),
         # ToDo: load the validation set name dynamically
         ann_file=ANN_FILE_VALIDATION,  # Validation annotations
         data_prefix=DATA_PREFIX_VAL,  # Validation images
         filter_cfg=dict(filter_empty_gt=False),
-        pipeline=[
+        pipeline = [
             dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                800,
-                1333,
-            ), type='FixScaleResize'), 
+            dict(
+                keep_ratio=True,
+                scale=(800, 1333),
+                type='FixScaleResize'
+            ),
             dict(type='LoadAnnotations', with_bbox=True),
-            #dict(type='LoadTextAnnotations'),  # For GroundingDINO
-             dict(
+            # dict(type='LoadTextAnnotations'),  # For GroundingDINO
+            dict(
                 meta_keys=(
                     'img_id',
                     'img_path',
@@ -441,15 +443,16 @@ val_dataloader = dict(
                     'flip',
                     'flip_direction',
                     'text',
-                    'custom_entities',
+                    'custom_entities'
                 ),
-                type='PackDetInputs'),
+                type='PackDetInputs'
+            )
         ]
     ),
     sampler=dict(shuffle=False, type='DefaultSampler')  # No shuffling for validation
 )
 
-val_cfg = dict(type='ValLoop')  
+val_cfg = dict(type='ValLoop')
 
 val_evaluator = dict(
     type='CocoMetric',
