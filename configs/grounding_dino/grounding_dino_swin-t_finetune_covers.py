@@ -489,6 +489,7 @@ test_dataloader = dict(
     persistent_workers=True,
     dataset=dict(
         type='CocoDataset',
+        return_classes=True, # Note: crucial to set this!!
         metainfo=dict(classes=CLASSES),
         ann_file=ANN_FILE_VALIDATION,  # Using validation set for testing
         data_prefix=DATA_PREFIX_VAL,  # Test images from validation dataset
