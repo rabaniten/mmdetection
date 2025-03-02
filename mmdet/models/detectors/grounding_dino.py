@@ -578,88 +578,115 @@ class GroundingDINO(DINO):
 
 
 
+    import warnings
+    import copy
+    
     def predict(self, batch_inputs, batch_data_samples, rescale: bool = True):
+        print("🔍 Debugging `batch_data_samples` structure:")
+        for idx, data_sample in enumerate(batch_data_samples):
+            print(f"\n📌 Sample {idx}: {data_sample}")
+            print(f"✅ Available keys: {dir(data_sample)}")  # List all attributes in the object
+    
         text_prompts = []
         enhanced_text_prompts = []
         tokens_positives = []
+    
         for data_samples in batch_data_samples:
-            text_prompts.append(data_samples.text)
-            if 'caption_prompt' in data_samples:
+            # Print raw data sample before processing
+            print(f"\n🔹 Processing data sample: {data_samples}")
+    
+            # Extract `text` safely
+            if hasattr(data_samples, "text"):
+                text_prompts.append(data_samples.text)
+                print(f"📝 Extracted text: {data_samples.text}")
+            else:
+                text_prompts.append(None)
+                print("⚠️ Warning: `text` attribute is missing.")
+    
+            # Extract `caption_prompt` safely
+            if hasattr(data_samples, "caption_prompt"):
                 enhanced_text_prompts.append(data_samples.caption_prompt)
+                print(f"📢 Extracted caption prompt: {data_samples.caption_prompt}")
             else:
                 enhanced_text_prompts.append(None)
-            tokens_positives.append(data_samples.get('tokens_positive', None))
-
-        if 'custom_entities' in batch_data_samples[0]:
-            # Assuming that the `custom_entities` flag
-            # inside a batch is always the same. For single image inference
+                print("⚠️ Warning: `caption_prompt` attribute is missing.")
+    
+            # Extract `tokens_positive` safely
+            if hasattr(data_samples, "tokens_positive"):
+                tokens_positives.append(data_samples.tokens_positive)
+                print(f"🟢 Extracted tokens_positive: {data_samples.tokens_positive}")
+            else:
+                tokens_positives.append(None)
+                print("⚠️ Warning: `tokens_positive` attribute is missing.")
+    
+        # Extract `custom_entities` flag
+        if hasattr(batch_data_samples[0], "custom_entities"):
             custom_entities = batch_data_samples[0].custom_entities
+            print(f"🔖 Custom entities detected: {custom_entities}")
         else:
             custom_entities = False
+            print("⚠️ Warning: `custom_entities` attribute is missing.")
+    
+        # Process text prompts and token positives
         if len(text_prompts) == 1:
-            # All the text prompts are the same,
-            # so there is no need to calculate them multiple times.
             _positive_maps_and_prompts = [
                 self.get_tokens_positive_and_prompts(
-                    text_prompts[0], custom_entities, enhanced_text_prompts[0],
-                    tokens_positives[0])
+                    text_prompts[0], custom_entities, enhanced_text_prompts[0], tokens_positives[0]
+                )
             ] * len(batch_inputs)
         else:
             _positive_maps_and_prompts = [
-                self.get_tokens_positive_and_prompts(text_prompt,
-                                                     custom_entities,
-                                                     enhanced_text_prompt,
-                                                     tokens_positive)
+                self.get_tokens_positive_and_prompts(
+                    text_prompt, custom_entities, enhanced_text_prompt, tokens_positive
+                )
                 for text_prompt, enhanced_text_prompt, tokens_positive in zip(
-                    text_prompts, enhanced_text_prompts, tokens_positives)
+                    text_prompts, enhanced_text_prompts, tokens_positives
+                )
             ]
-        token_positive_maps, text_prompts, _, entities = zip(
-            *_positive_maps_and_prompts)
-
-        # image feature extraction
+    
+        token_positive_maps, text_prompts, _, entities = zip(*_positive_maps_and_prompts)
+    
+        print(f"\n✅ Processed token_positive_maps: {token_positive_maps}")
+        print(f"✅ Processed text_prompts: {text_prompts}")
+        print(f"✅ Processed entities: {entities}")
+    
+        # Extract image features
         visual_feats = self.extract_feat(batch_inputs)
-
+    
         if isinstance(text_prompts[0], list):
-            # chunked text prompts, only bs=1 is supported
-            assert len(batch_inputs) == 1
-            count = 0
+            assert len(batch_inputs) == 1, "❌ Error: Only batch size 1 is supported for chunked text prompts."
             results_list = []
-
+            count = 0
             entities = [[item for lst in entities[0] for item in lst]]
-
+    
             for b in range(len(text_prompts[0])):
                 text_prompts_once = [text_prompts[0][b]]
                 token_positive_maps_once = token_positive_maps[0][b]
                 text_dict = self.language_model(text_prompts_once)
-                # text feature map layer
+    
                 if self.text_feat_map is not None:
-                    text_dict['embedded'] = self.text_feat_map(
-                        text_dict['embedded'])
-
-                batch_data_samples[
-                    0].token_positive_map = token_positive_maps_once
-
-                head_inputs_dict = self.forward_transformer(
-                    copy.deepcopy(visual_feats), text_dict, batch_data_samples)
+                    text_dict["embedded"] = self.text_feat_map(text_dict["embedded"])
+    
+                batch_data_samples[0].token_positive_map = token_positive_maps_once
+    
+                head_inputs_dict = self.forward_transformer(copy.deepcopy(visual_feats), text_dict, batch_data_samples)
                 pred_instances = self.bbox_head.predict(
-                    **head_inputs_dict,
-                    rescale=rescale,
-                    batch_data_samples=batch_data_samples)[0]
-
+                    **head_inputs_dict, rescale=rescale, batch_data_samples=batch_data_samples
+                )[0]
+    
                 if len(pred_instances) > 0:
                     pred_instances.labels += count
                 count += len(token_positive_maps_once)
                 results_list.append(pred_instances)
+    
             results_list = [results_list[0].cat(results_list)]
             is_rec_tasks = [False] * len(results_list)
         else:
-            # extract text feats
             text_dict = self.language_model(list(text_prompts))
-            # text feature map layer
+    
             if self.text_feat_map is not None:
-                text_dict['embedded'] = self.text_feat_map(
-                    text_dict['embedded'])
-
+                text_dict["embedded"] = self.text_feat_map(text_dict["embedded"])
+    
             is_rec_tasks = []
             for i, data_samples in enumerate(batch_data_samples):
                 if token_positive_maps[i] is not None:
@@ -667,16 +694,15 @@ class GroundingDINO(DINO):
                 else:
                     is_rec_tasks.append(True)
                 data_samples.token_positive_map = token_positive_maps[i]
-
-            head_inputs_dict = self.forward_transformer(
-                visual_feats, text_dict, batch_data_samples)
+    
+            head_inputs_dict = self.forward_transformer(visual_feats, text_dict, batch_data_samples)
             results_list = self.bbox_head.predict(
-                **head_inputs_dict,
-                rescale=rescale,
-                batch_data_samples=batch_data_samples)
-
+                **head_inputs_dict, rescale=rescale, batch_data_samples=batch_data_samples
+            )
+    
         for data_sample, pred_instances, entity, is_rec_task in zip(
-                batch_data_samples, results_list, entities, is_rec_tasks):
+            batch_data_samples, results_list, entities, is_rec_tasks
+        ):
             if len(pred_instances) > 0:
                 label_names = []
                 for labels in pred_instances.labels:
@@ -685,14 +711,16 @@ class GroundingDINO(DINO):
                         continue
                     if labels >= len(entity):
                         warnings.warn(
-                            'The unexpected output indicates an issue with '
-                            'named entity recognition. You can try '
-                            'setting custom_entities=True and running '
-                            'again to see if it helps.')
-                        label_names.append('unobject')
+                            "❌ Unexpected output: Possible Named Entity Recognition issue. "
+                            "Try setting `custom_entities=True` and re-running."
+                        )
+                        label_names.append("unobject")
                     else:
                         label_names.append(entity[labels])
-                # for visualization
+    
                 pred_instances.label_names = label_names
             data_sample.pred_instances = pred_instances
+    
+        print("✅ Successfully completed prediction and assigned results to batch data samples.")
         return batch_data_samples
+

@@ -1,13 +1,14 @@
-# # Local training and inference
-# LOAD_FROM = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/trained_models/epoch_40.pth'
+# Local training and inference
+# LOAD_FROM = '/home/sagemaker-user/Genioos/sofia_thesis_project/detection_models/grounding_dino/pretrained_models/epoch_40_swint-ogc_covers.pth'
 
 # RESUME = False
+# DO_SAVE_VISUALIZATIONS = True
 
-# ANN_FILE_TRAINING = '/root/Sofia/Genioos/sofia_thesis_project/instance_segmentation_models/out_dirs/bbox_and_mask_annotations_obtained_from_gt_and_SAM_stadtpital_waid_train_data_coco_format_corrected_no_crowds_removed_small_masks.json'
-# ANN_FILE_VALIDATION = '/root/Sofia/Genioos/sofia_thesis_project/instance_segmentation_models/out_dirs/bbox_and_mask_annotations_obtained_from_gt_and_SAM_stadtpital_waid_val_data_coco_format_corrected_no_crowds_removed_small_masks.json'
+# ANN_FILE_TRAINING = '/home/sagemaker-user/data/Covers/Stadtspital-Waid/500_imgs/val/annotations/instances_val.json'
+# ANN_FILE_VALIDATION = '/home/sagemaker-user/data/Covers/Stadtspital-Waid/500_imgs/train/annotations/instances_train.json'
 
-# DATA_PREFIX_TRAIN = dict(img= '/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_training/images/')
-# DATA_PREFIX_VAL = dict(img='/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_validation/images/')
+# DATA_PREFIX_TRAIN = dict(img='/home/sagemaker-user/data/Covers/Stadtspital-Waid/500_imgs/val/images/')
+# DATA_PREFIX_VAL = dict(img='/home/sagemaker-user/data/Covers/Stadtspital-Waid/500_imgs/train/images/')
 
 # BATCH_SIZE_TRAIN = 1
 # BATCH_SIZE_VAL = 1
@@ -20,11 +21,12 @@
 LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
 
 RESUME = False
+DO_SAVE_VISUALIZATIONS = True
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/annotations/instances_train.json'
 ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/annotations/instances_val.json'
 
-DATA_PREFIX_TRAIN = dict(img= '/opt/ml/input/data/train/images/')
+DATA_PREFIX_TRAIN = dict(img='/opt/ml/input/data/train/images/')
 DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
 
 BATCH_SIZE_TRAIN = 1
@@ -33,8 +35,7 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 10
 NUM_WORKER_VAL = 10
 
-
-CLASSES = (
+CLASSES =(
     "Coffee Mug Lid",
     "Coffee Mug Lid (White)",
     "Opaque Plate Cover",
@@ -46,7 +47,6 @@ CLASSES = (
     "Cover that occludes food",
     "Cover that is above its tableware"
 )
-
 
 NUM_CLASSES = len(CLASSES)
 
@@ -65,7 +65,11 @@ default_hooks = dict(
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
     timer=dict(type='IterTimerHook'),
-    visualization=dict(type='DetVisualizationHook'))
+    visualization=dict(type='DetVisualizationHook',
+                       draw=DO_SAVE_VISUALIZATIONS,
+                       interval=1,
+                       test_out_dir='/opt/ml/output/vis_results')
+)
 default_scope = 'mmdet'
 env_cfg = dict(
     cudnn_benchmark=False,
@@ -445,10 +449,9 @@ val_dataloader = dict(
                     'flip',
                     'flip_direction',
                     'text',
-                    'custom_entities'
+                    'custom_entities',
                 ),
-                type='PackDetInputs'
-            )
+                type='PackDetInputs'),
         ]
     ),
     sampler=dict(shuffle=False, type='DefaultSampler')  # No shuffling for validation
@@ -465,18 +468,19 @@ val_evaluator = dict(
     type='OpenSetCOCOMetric',
     ann_file=ANN_FILE_VALIDATION,
     metric=['bbox'],  # Metrics for both bounding boxes and segmentation
-    classwise=True            # Enable class-wise mAP
+    classwise=True,            # Enable class-wise mAP
 )
 
 vis_backends = [
-    dict(type='LocalVisBackend'),
+    dict(type='LocalVisBackend', save_dir='/opt/ml/output/vis_results')
 ]
+
 visualizer = dict(
     name='visualizer',
     type='DetLocalVisualizer',
-    vis_backends=[
-        dict(type='LocalVisBackend'),
-    ])
+    vis_backends=vis_backends
+)
+
 work_dir = '/opt/ml/checkpoints'
 
 test_dataloader = dict(
@@ -526,5 +530,6 @@ test_evaluator = dict(
     type='OpenSetCOCOMetric',
     ann_file=ANN_FILE_VALIDATION,
     metric=['bbox'],  # Metrics for bounding boxes
-    classwise=True  # Enable class-wise mAP for detailed evaluation
+    classwise=True,  # Enable class-wise mAP for detailed evaluation
+    outfile_prefix='/opt/ml/output/vis_results/eval_'  # ✅ No trailing comma
 )
