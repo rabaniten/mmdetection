@@ -18,9 +18,9 @@
 
 
 # Training and inference in custom docker
-LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
+LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
 
-RESUME = False
+RESUME = True
 DO_SAVE_VISUALIZATIONS = True
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/annotations/instances_train.json'
@@ -68,6 +68,7 @@ default_hooks = dict(
     visualization=dict(type='DetVisualizationHook',
                        draw=DO_SAVE_VISUALIZATIONS,
                        interval=1,
+                       score_thr=0.3,
                        test_out_dir='/opt/ml/output/vis_results')
 )
 default_scope = 'mmdet'
@@ -80,7 +81,7 @@ launcher = 'none'
 load_from = LOAD_FROM
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-max_epochs = 40
+max_epochs = 80
 metainfo = dict(
     classes= CLASSES
 )
