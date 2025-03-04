@@ -32,8 +32,8 @@ DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
 BATCH_SIZE_TRAIN = 1
 BATCH_SIZE_VAL = 1
 
-NUM_WORKER_TRAIN = 10
-NUM_WORKER_VAL = 10
+NUM_WORKER_TRAIN = 32
+NUM_WORKER_VAL = 32
 
 CLASSES =(
     "Coffee Mug Lid",
@@ -60,7 +60,7 @@ backend_args = None
 data_root = '/opt/ml/input/data/'
 dataset_type = 'CocoDataset'
 default_hooks = dict(
-    checkpoint=dict(interval=1, type='CheckpointHook', by_epoch=True, max_keep_ckpts=3),
+    checkpoint=dict(interval=1, type='CheckpointHook', by_epoch=True, max_keep_ckpts=10),
     logger=dict(interval=50, type='LoggerHook'),
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
