@@ -33,18 +33,22 @@ class OpenSetCOCOMetric(CocoMetric):
             image["file_name"]: image["id"] for image in self.coco_gt.dataset["images"]
         }
 
+        # mmdetection internally uses labels corresponding to position in `classes` 
+        # in config (which should correspond to categories in annotations), 
+        # hence, we should not use original category IDs.
+        
         # Mapping: category name → category ID
         self.global_prompt_to_index = {
-            cat["name"]: cat["id"] for cat in self.coco_gt.dataset["categories"]
+            cat["name"]: idx + 1 for idx, cat in enumerate(self.coco_gt.dataset["categories"])
         }
 
-        # Mapping: category ID → category name
-        self.cat_id_to_name = {
-            cat["id"]: cat["name"] for cat in self.coco_gt.dataset["categories"]
-        }
+        # # Mapping: category ID → category name
+        # self.cat_id_to_name = {
+        #     cat["id"]: cat["name"] for cat in self.coco_gt.dataset["categories"]
+        # }
 
-        # Store all possible category names
-        self.all_category_names = [cat["name"] for cat in self.coco_gt.dataset["categories"]]
+        # # Store all possible category names
+        # self.all_category_names = [cat["name"] for cat in self.coco_gt.dataset["categories"]]
 
 
     def process(self, data_batch, data_samples):

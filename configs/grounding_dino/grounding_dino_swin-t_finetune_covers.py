@@ -18,7 +18,7 @@
 
 
 # Training and inference in custom docker
-LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
+LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_80.pth'
 
 RESUME = True
 DO_SAVE_VISUALIZATIONS = True
@@ -81,7 +81,7 @@ launcher = 'none'
 load_from = LOAD_FROM
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-max_epochs = 80
+max_epochs = 40
 metainfo = dict(
     classes= CLASSES
 )
