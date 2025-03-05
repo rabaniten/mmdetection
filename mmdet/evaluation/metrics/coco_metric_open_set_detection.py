@@ -42,6 +42,9 @@ class OpenSetCOCOMetric(CocoMetric):
             cat["name"]: idx + 1 for idx, cat in enumerate(self.coco_gt.dataset["categories"])
         }
 
+        print("global_prompt_to_index", global_prompt_to_index)
+        print("self.coco_gt.dataset["categories"]", self.coco_gt.dataset["categories"])
+
         # # Mapping: category ID → category name
         # self.cat_id_to_name = {
         #     cat["id"]: cat["name"] for cat in self.coco_gt.dataset["categories"]
@@ -83,6 +86,7 @@ class OpenSetCOCOMetric(CocoMetric):
                 print("text_promt", text_prompt)
                 print("category_name", category_name)
                 category_id = self.global_prompt_to_index.get(category_name, -1)
+                print("mapped label id", category_id) 
                 if category_id != -1:
                     category_id -= 1 # MMdetection starts with zero for category id, and COCO with 1
 
