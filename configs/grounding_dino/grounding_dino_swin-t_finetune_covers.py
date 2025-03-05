@@ -24,10 +24,10 @@ RESUME = True
 DO_SAVE_VISUALIZATIONS = True
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/annotations/instances_train.json'
-ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/annotations/instances_val.json'
+ANN_FILE_VALIDATION = '/opt/ml/input/data/train/annotations/instances_train.json'
 
 DATA_PREFIX_TRAIN = dict(img='/opt/ml/input/data/train/images/')
-DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
+DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/train/images/')
 
 BATCH_SIZE_TRAIN = 1
 BATCH_SIZE_VAL = 1
