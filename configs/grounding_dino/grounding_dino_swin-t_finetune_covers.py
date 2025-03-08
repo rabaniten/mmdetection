@@ -533,5 +533,5 @@ test_evaluator = dict(
     ann_file=ANN_FILE_VALIDATION,
     metric=['bbox'],  # Metrics for bounding boxes
     classwise=True,  # Enable class-wise mAP for detailed evaluation
-    outfile_prefix='/opt/ml/output/vis_results/eval_'  # ✅ No trailing comma
+    outfile_prefix='/opt/ml/output/vis_results/eval_'
 )

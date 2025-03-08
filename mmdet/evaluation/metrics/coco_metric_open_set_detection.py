@@ -28,10 +28,6 @@ class OpenSetCOCOMetric(CocoMetric):
         # Load COCO ground truth annotations
         self.coco_gt = COCO(self.ann_file)
 
-        # Mapping: filename → image ID
-        self.img_ids_dict = {
-            image["file_name"]: image["id"] for image in self.coco_gt.dataset["images"]
-        }
 
         # mmdetection internally uses labels corresponding to position in `classes` 
         # in config (which should correspond to categories in annotations), 
@@ -39,12 +35,14 @@ class OpenSetCOCOMetric(CocoMetric):
         
         # Mapping: category name → category ID
         self.global_prompt_to_index = {
-            cat["name"]: idx + 1 for idx, cat in enumerate(self.coco_gt.dataset["categories"])
+            cat["name"]: cat["id"] for cat in self.coco_gt.dataset["categories"]
         }
 
-        print("global_prompt_to_index", global_prompt_to_index)
-        print("self.coco_gt.dataset["categories"]", self.coco_gt.dataset["categories"])
-
+        # # Mapping: filename → image ID
+        # self.img_ids_dict = {
+        #     image["file_name"]: image["id"] for image in self.coco_gt.dataset["images"]
+        # }
+    
         # # Mapping: category ID → category name
         # self.cat_id_to_name = {
         #     cat["id"]: cat["name"] for cat in self.coco_gt.dataset["categories"]
@@ -62,7 +60,6 @@ class OpenSetCOCOMetric(CocoMetric):
             # Retrieve correct image ID
             img_id = data_sample.get("img_id", None)
 
-            print("data sample", data_sample)
 
             # Extract predicted instances safely
             pred_instances = data_sample.get("pred_instances", None)
@@ -81,21 +78,13 @@ class OpenSetCOCOMetric(CocoMetric):
 
             mapped_labels = []
             for label_idx in pred_instances["labels"].tolist():  # ✅ Use dictionary access
-                print("label_idx", label_idx)
                 category_name = text_prompt[label_idx]
-                print("text_promt", text_prompt)
-                print("category_name", category_name)
                 category_id = self.global_prompt_to_index.get(category_name, -1)
-                print("mapped label id", category_id) 
-                if category_id != -1:
-                    category_id -= 1 # MMdetection starts with zero for category id, and COCO with 1
-
                 if category_id == -1:
                     warnings.warn(f"Category '{category_name}' not found in COCO categories.")
 
                 mapped_labels.append(category_id)
 
-            print("mapped labels", mapped_labels)
             # ✅ Convert mapped labels to a PyTorch tensor
             pred_instances["labels"] = torch.tensor(mapped_labels, dtype=torch.int64, device='cuda')
 
