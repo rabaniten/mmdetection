@@ -36,16 +36,7 @@ NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
 CLASSES = (
-    "Black Coffee Mug Lid",
-    "White Coffee Mug Lid",
-    "Opaque Plate Cover",
-    "Other Lid or Cover",
-    "Plastic Wrap",
-    "Salad Lid",
-    "Soup Lid",
-    "Transparent Plate Cover",
-    "Cover that occludes food",
-    "Cover that is above its tableware"
+    "Tray"
 )
 
 NUM_CLASSES = len(CLASSES)
