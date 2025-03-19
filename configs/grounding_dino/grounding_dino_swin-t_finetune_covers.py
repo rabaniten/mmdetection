@@ -20,7 +20,7 @@
 # Training and inference in custom docker
 LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
 
-RESUME = True
+RESUME = False
 DO_SAVE_VISUALIZATIONS = True
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/annotations/instances_train.json'
@@ -35,11 +35,11 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
-CLASSES =(
-    "Coffee Mug Lid",
-    "Coffee Mug Lid (White)",
+CLASSES = (
+    "Black Coffee Mug Lid",
+    "White Coffee Mug Lid",
     "Opaque Plate Cover",
-    "Other Lid/Cover",
+    "Other Lid or Cover",
     "Plastic Wrap",
     "Salad Lid",
     "Soup Lid",
