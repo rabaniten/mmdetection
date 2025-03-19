@@ -18,7 +18,7 @@
 
 
 # Training and inference in custom docker
-LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_80.pth'
+LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
 
 RESUME = True
 DO_SAVE_VISUALIZATIONS = True
@@ -60,7 +60,7 @@ backend_args = None
 data_root = '/opt/ml/input/data/'
 dataset_type = 'CocoDataset'
 default_hooks = dict(
-    checkpoint=dict(interval=1, type='CheckpointHook', by_epoch=True, max_keep_ckpts=10),
+    checkpoint=dict(interval=1, type='CheckpointHook', by_epoch=True, max_keep_ckpts=80),
     logger=dict(interval=50, type='LoggerHook'),
     param_scheduler=dict(type='ParamSchedulerHook'),
     sampler_seed=dict(type='DistSamplerSeedHook'),
@@ -81,7 +81,7 @@ launcher = 'none'
 load_from = LOAD_FROM
 log_level = 'INFO'
 log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-max_epochs = 40
+max_epochs = 80
 metainfo = dict(
     classes= CLASSES
 )
