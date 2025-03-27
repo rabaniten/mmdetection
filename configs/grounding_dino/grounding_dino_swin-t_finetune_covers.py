@@ -36,7 +36,25 @@ NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
 CLASSES = (
-    "Tray"
+    "coffee cup",
+    "coffee plate",
+    "cylindrical transparent shot glass",
+    "jug",
+    "large glass fruitsalad-bowl",
+    "large sauce-glass",
+    "large square plate",
+    "other tableware",
+    "plate with red rim",
+    "quadratic dessert-plate",
+    "shallow bowl",
+    "small glass bowl",
+    "small glass fruitsalad bowl",
+    "small plastic cup",
+    "small quadratic plate-bowl",
+    "small sauce-glass",
+    "soup bowl",
+    "white plate",
+    "white plate without rim",
 )
 
 NUM_CLASSES = len(CLASSES)
