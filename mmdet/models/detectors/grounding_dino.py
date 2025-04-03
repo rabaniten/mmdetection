@@ -616,7 +616,7 @@ class GroundingDINO(DINO):
         ]
 
         ####################### custom #########################
-        do_closed_set_training = True
+        do_closed_set_training = False
 
         # Run this code when creating the annotations and add 'tokens_positive' to each annotation
         aug_text_prompts = [ALL_LABELS]
