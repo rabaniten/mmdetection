@@ -18,10 +18,10 @@
 
 
 # Training and inference in custom docker
-LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
+LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_30.pth'  # Load from epoch 30
 # LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
 
-RESUME = False
+RESUME = True  # Enable resume to continue training
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/combined_annotations_base_names_merged_categories_with_stefi_val.json'
 ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/instance_seg_val_no_crowd_base_names_merged_categories_with_nutritionist.json'
@@ -35,7 +35,7 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
-MAX_EPOCHS = 30
+MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
 
 
 CLASSES = (
@@ -808,12 +808,16 @@ backend_args = None
 data_root = '/opt/ml/input/data/'
 dataset_type = 'CocoDataset'
 default_hooks = dict(
-    checkpoint=dict(interval=5, type='CheckpointHook', by_epoch=True, max_keep_ckpts=10),
-    logger=dict(interval=50, type='LoggerHook'),
-    param_scheduler=dict(type='ParamSchedulerHook'),
-    sampler_seed=dict(type='DistSamplerSeedHook'),
     timer=dict(type='IterTimerHook'),
-    visualization=dict(type='DetVisualizationHook'))
+    logger=dict(type='LoggerHook', interval=50),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    checkpoint=dict(type='CheckpointHook', interval=5, by_epoch=True, max_keep_ckpts=10),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    visualization=dict(type='DetVisualizationHook',
+                      draw=True,
+                      interval=1,
+                      show=False)
+)
 default_scope = 'mmdet'
 env_cfg = dict(
     cudnn_benchmark=False,
@@ -999,165 +1003,168 @@ train_dataloader = dict(
     batch_sampler=dict(type='AspectRatioBatchSampler'),
     batch_size=BATCH_SIZE_TRAIN,
     dataset=dict(
-        #ToDo: Set the filename from the jupyter notebook (instead of hardcoing here)
-        #Define name of annotation file
-        ann_file=ANN_FILE_TRAINING,
-        backend_args=None,
-        data_prefix=DATA_PREFIX_TRAIN,
-        data_root='/opt/ml/input/data/',
-        filter_cfg=dict(filter_empty_gt=False, min_size=32),
-        pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),  # new
-            dict(prob=0.5, type='RandomFlip'),
-            dict(
-                transforms=[
-                    [
-                        dict(
-                            keep_ratio=True,
-                            scales=[
-                                (
-                                    480,
-                                    1333,
-                                ),
-                                (
-                                    512,
-                                    1333,
-                                ),
-                                (
-                                    544,
-                                    1333,
-                                ),
-                                (
-                                    576,
-                                    1333,
-                                ),
-                                (
-                                    608,
-                                    1333,
-                                ),
-                                (
-                                    640,
-                                    1333,
-                                ),
-                                (
-                                    672,
-                                    1333,
-                                ),
-                                (
-                                    704,
-                                    1333,
-                                ),
-                                (
-                                    736,
-                                    1333,
-                                ),
-                                (
-                                    768,
-                                    1333,
-                                ),
-                                (
-                                    800,
-                                    1333,
-                                ),
-                            ],
-                            type='RandomChoiceResize'),
-                    ],
-                    [
-                        dict(
-                            keep_ratio=True,
-                            scales=[
-                                (
-                                    400,
-                                    4200,
-                                ),
-                                (
-                                    500,
-                                    4200,
-                                ),
-                                (
+        type='ClassBalancedDataset',
+        dataset=dict(
+            type='CocoDataset',
+            ann_file=ANN_FILE_TRAINING,
+            backend_args=None,
+            data_prefix=DATA_PREFIX_TRAIN,
+            data_root='/opt/ml/input/data/',
+            filter_cfg=dict(filter_empty_gt=False, min_size=32),
+            pipeline=[
+                dict(backend_args=None, type='LoadImageFromFile'),
+                dict(type='LoadAnnotations', with_bbox=True),
+                dict(type='LoadTextAnnotations'),
+                dict(prob=0.5, type='RandomFlip'),
+                dict(
+                    transforms=[
+                        [
+                            dict(
+                                keep_ratio=True,
+                                scales=[
+                                    (
+                                        480,
+                                        1333,
+                                    ),
+                                    (
+                                        512,
+                                        1333,
+                                    ),
+                                    (
+                                        544,
+                                        1333,
+                                    ),
+                                    (
+                                        576,
+                                        1333,
+                                    ),
+                                    (
+                                        608,
+                                        1333,
+                                    ),
+                                    (
+                                        640,
+                                        1333,
+                                    ),
+                                    (
+                                        672,
+                                        1333,
+                                    ),
+                                    (
+                                        704,
+                                        1333,
+                                    ),
+                                    (
+                                        736,
+                                        1333,
+                                    ),
+                                    (
+                                        768,
+                                        1333,
+                                    ),
+                                    (
+                                        800,
+                                        1333,
+                                    ),
+                                ],
+                                type='RandomChoiceResize'),
+                        ],
+                        [
+                            dict(
+                                keep_ratio=True,
+                                scales=[
+                                    (
+                                        400,
+                                        4200,
+                                    ),
+                                    (
+                                        500,
+                                        4200,
+                                    ),
+                                    (
+                                        600,
+                                        4200,
+                                    ),
+                                ],
+                                type='RandomChoiceResize'),
+                            dict(
+                                allow_negative_crop=True,
+                                crop_size=(
+                                    384,
                                     600,
-                                    4200,
                                 ),
-                            ],
-                            type='RandomChoiceResize'),
-                        dict(
-                            allow_negative_crop=True,
-                            crop_size=(
-                                384,
-                                600,
-                            ),
-                            crop_type='absolute_range',
-                            type='RandomCrop'),
-                        dict(
-                            keep_ratio=True,
-                            scales=[
-                                (
-                                    480,
-                                    1333,
-                                ),
-                                (
-                                    512,
-                                    1333,
-                                ),
-                                (
-                                    544,
-                                    1333,
-                                ),
-                                (
-                                    576,
-                                    1333,
-                                ),
-                                (
-                                    608,
-                                    1333,
-                                ),
-                                (
-                                    640,
-                                    1333,
-                                ),
-                                (
-                                    672,
-                                    1333,
-                                ),
-                                (
-                                    704,
-                                    1333,
-                                ),
-                                (
-                                    736,
-                                    1333,
-                                ),
-                                (
-                                    768,
-                                    1333,
-                                ),
-                                (
-                                    800,
-                                    1333,
-                                ),
-                            ],
-                            type='RandomChoiceResize'),
+                                crop_type='absolute_range',
+                                type='RandomCrop'),
+                            dict(
+                                keep_ratio=True,
+                                scales=[
+                                    (
+                                        480,
+                                        1333,
+                                    ),
+                                    (
+                                        512,
+                                        1333,
+                                    ),
+                                    (
+                                        544,
+                                        1333,
+                                    ),
+                                    (
+                                        576,
+                                        1333,
+                                    ),
+                                    (
+                                        608,
+                                        1333,
+                                    ),
+                                    (
+                                        640,
+                                        1333,
+                                    ),
+                                    (
+                                        672,
+                                        1333,
+                                    ),
+                                    (
+                                        704,
+                                        1333,
+                                    ),
+                                    (
+                                        736,
+                                        1333,
+                                    ),
+                                    (
+                                        768,
+                                        1333,
+                                    ),
+                                    (
+                                        800,
+                                        1333,
+                                    ),
+                                ],
+                                type='RandomChoiceResize'),
+                        ],
                     ],
-                ],
-                type='RandomChoice'),
-            dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'flip',
-                    'flip_direction',
-                    'text',
-                    'custom_entities',
-                ),
-                type='PackDetInputs'),
-        ],
-        return_classes=True,
-        type='CocoDataset'),
+                    type='RandomChoice'),
+                dict(
+                    meta_keys=(
+                        'img_id',
+                        'img_path',
+                        'ori_shape',
+                        'img_shape',
+                        'scale_factor',
+                        'flip',
+                        'flip_direction',
+                        'text',
+                        'custom_entities',
+                    ),
+                    type='PackDetInputs'),
+            ],
+            return_classes=True,
+        ),
+        oversample_thr=0.005,
+    ),
     num_workers=NUM_WORKER_TRAIN,
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler')
@@ -1209,14 +1216,15 @@ val_evaluator = dict(
 )
 
 vis_backends = [
-    dict(type='LocalVisBackend'),
+    dict(type='LocalVisBackend',
+         save_dir='/opt/ml/checkpoints/vis_results'),  # Explicitly set save directory
 ]
 visualizer = dict(
     name='visualizer',
     type='DetLocalVisualizer',
-    vis_backends=[
-        dict(type='LocalVisBackend'),
-    ])
+    vis_backends=vis_backends,
+    save_dir='/opt/ml/checkpoints/vis_results'  # Explicitly set save directory
+)
 work_dir = '/opt/ml/checkpoints'
 
 test_dataloader = dict(
