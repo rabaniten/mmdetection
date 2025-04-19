@@ -24,7 +24,7 @@ LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e
 RESUME = False
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/combined_annotations_base_names_merged_categories_with_stefi_val.json'
-ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/combined_annotations_base_names_merged_categories_with_stefi_val.json'
+ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/instance_seg_val_no_crowd_base_names_merged_categories_with_nutritionist.json'
 
 DATA_PREFIX_TRAIN = dict(img= '/opt/ml/input/data/train/images/')
 DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
@@ -32,8 +32,8 @@ DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
 BATCH_SIZE_TRAIN = 1
 BATCH_SIZE_VAL = 1
 
-NUM_WORKER_TRAIN = 8
-NUM_WORKER_VAL = 8
+NUM_WORKER_TRAIN = 32
+NUM_WORKER_VAL = 32
 
 MAX_EPOCHS = 30
 
