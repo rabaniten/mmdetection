@@ -18,13 +18,13 @@
 
 
 # Training and inference in custom docker
-LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_30.pth'  # Load from epoch 30
+LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_50.pth'  # Load from epoch 30
 # LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
 
 RESUME = True  # Enable resume to continue training
 
 ANN_FILE_TRAINING = '/opt/ml/input/data/train/combined_annotations_base_names_merged_categories_with_stefi_val.json'
-ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/instance_seg_val_no_crowd_base_names_merged_categories_with_nutritionist.json'
+ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/combined_annotations_base_names_merged_categories_with_stefi_val.json'
 
 DATA_PREFIX_TRAIN = dict(img= '/opt/ml/input/data/train/images/')
 DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
@@ -815,7 +815,7 @@ default_hooks = dict(
     sampler_seed=dict(type='DistSamplerSeedHook'),
     visualization=dict(type='DetVisualizationHook',
                       draw=True,
-                      interval=1,
+                      interval=100000,
                       show=False)
 )
 default_scope = 'mmdet'
