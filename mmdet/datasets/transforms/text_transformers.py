@@ -872,14 +872,16 @@ class LoadTextAnnotations(BaseTransform):
     def get_extra_classes(self, true_classes: tuple, all_classes: tuple) -> tuple:
         # Define probabilities for choosing n wrong labels with uniform distribution
         # Allow up to 15 additional labels
-        max_extra_labels = 15
+        max_extra_labels = 50
         probabilities = {i: 1/(max_extra_labels+1) for i in range(max_extra_labels+1)}
         
         # Choose a number n based on the defined probabilities
         n = self.choose_n_based_on_probabilities(probabilities)
         
         # Choose n random wrong labels from the set of all labels
-        filtered_classes = [c for c in all_classes if c not in true_classes]
+        # Exclude 'other food' and 'almost empty' from additional classes
+        excluded_classes = {'other food', 'almost empty'}
+        filtered_classes = [c for c in all_classes if c not in true_classes and c not in excluded_classes]
         extra_classes = random.sample(filtered_classes, min(n, len(filtered_classes)))
         
         return extra_classes
