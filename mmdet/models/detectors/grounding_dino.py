@@ -1034,14 +1034,21 @@ class GroundingDINO(DINO):
 
 
     def loss(self, batch_inputs: Tensor, batch_data_samples: SampleList) -> Union[dict, list]:
+        print("\n=== Grounding DINO Loss Debug Info ===")
+        print(f"Number of batch inputs: {len(batch_inputs)}")
+        print(f"Number of data samples: {len(batch_data_samples)}")
+        
         text_prompts = [
             data_samples.text for data_samples in batch_data_samples
         ]
+        print(f"Text prompts: {text_prompts}")
 
         gt_labels = [
             data_samples.gt_instances.labels
             for data_samples in batch_data_samples
         ]
+        print(f"Ground truth labels: {gt_labels}")
+        print(f"Number of labels in first sample: {len(gt_labels[0])}")
 
         ####################### custom #########################
         do_closed_set_training = False
@@ -1060,10 +1067,12 @@ class GroundingDINO(DINO):
         #######################################################
 
         if 'tokens_positive' in batch_data_samples[0]:
+            print("\nUsing pre-computed tokens_positive")
             tokens_positive = [
                 data_samples.tokens_positive
                 for data_samples in batch_data_samples
             ]
+            print(f"Tokens positive shape: {[len(t) for t in tokens_positive]}")
             positive_maps = []
             for token_positive, text_prompt, gt_label in zip(
                     tokens_positive, text_prompts, gt_labels):
@@ -1075,114 +1084,154 @@ class GroundingDINO(DINO):
                 new_tokens_positive = [
                     token_positive[label.item()] for label in gt_label
                 ]
+                print(f"New tokens positive length: {len(new_tokens_positive)}")
                 _, positive_map = self.get_positive_map(
                     tokenized, new_tokens_positive)
+                print(f"Positive map shape: {positive_map.shape}")
                 positive_maps.append(positive_map)
             new_text_prompts = text_prompts
         else:
+            print("\nComputing tokens_positive")
             new_text_prompts = []
             positive_maps = []
             if len(set(text_prompts)) == 1:
-                # All the text prompts are the same,
-                # so there is no need to calculate them multiple times.
+                print("All text prompts are the same")
                 tokenized, caption_string, tokens_positive, entities = \
                     self.get_tokens_and_prompts(
                         text_prompts[0], True)
+                print(f"Caption string: {caption_string}")
+                print(f"Number of tokens positive: {len(tokens_positive)}")
+                print(f"Number of entities: {len(entities)}")
                 new_text_prompts = [caption_string] * len(batch_inputs)
                 for gt_label in gt_labels:
                     if do_closed_set_training:
-                        if self.logging_enabled:
-                            print("gt_label: ", gt_label)
-                            print("tokens_positive: ", tokens_positive)
-                            print("text_prompts: ", text_prompts)
+                        print(f"Closed set training - gt_label: {gt_label}")
                         new_tokens_positive = [
                             tokens_positive[label] for label in gt_label
                         ]
+                        print(f"New tokens positive length: {len(new_tokens_positive)}")
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
+                        print(f"Positive map shape: {positive_map.shape}")
                         positive_maps.append(positive_map)
                     else:  # open-set training
+                        print(f"Open set training - gt_label: {gt_label}")
                         new_tokens_positive = self.get_tokens_positive_from_prompt(
                            gt_label, entities, tokens_positive, aug_label_list)
-                        if self.logging_enabled:
-                            print(f"caption_string: {caption_string}")
-                            print(f"gt_label: {gt_label}")
-                            print(f"new_tokens_positive: {new_tokens_positive}")
+                        print(f"New tokens positive length: {len(new_tokens_positive)}")
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
-                        if self.logging_enabled:
-                            print(f"positive_map: {positive_map}")
+                        print(f"Positive map shape: {positive_map.shape}")
                         positive_maps.append(positive_map)
 
             else:
+                print("Different text prompts for each sample")
                 for text_prompt, gt_label in zip(text_prompts, gt_labels):
                     tokenized, caption_string, tokens_positive, entities = \
                         self.get_tokens_and_prompts(
                             text_prompt, True) 
+                    print(f"Caption string: {caption_string}")
+                    print(f"Number of tokens positive: {len(tokens_positive)}")
+                    print(f"Number of entities: {len(entities)}")
                     new_text_prompts.append(caption_string)
                     if do_closed_set_training:
                         new_tokens_positive = [
                             tokens_positive[label] for label in gt_label
                         ]
+                        print(f"New tokens positive length: {len(new_tokens_positive)}")
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
+                        print(f"Positive map shape: {positive_map.shape}")
                         positive_maps.append(positive_map)
                     else:  # open-set training
-                        new_tokens_positive = self.get_tokens_positive_from_prompt(gt_label, entities, tokens_positive, aug_label_list)
-                        if self.logging_enabled:
-                            print(f"caption_string: {caption_string}")
-                            print(f"gt_label: {gt_label}")
-                            print(f"new_tokens_positive: {new_tokens_positive}")
+                        new_tokens_positive = self.get_tokens_positive_from_prompt(
+                            gt_label, entities, tokens_positive, aug_label_list)
+                        print(f"New tokens positive length: {len(new_tokens_positive)}")
                         _, positive_map = self.get_positive_map(
                             tokenized, new_tokens_positive)
-                        if self.logging_enabled:
-                            print(f"positive_map: {positive_map}")
+                        print(f"Positive map shape: {positive_map.shape}")
                         positive_maps.append(positive_map)
 
         text_dict = self.language_model(new_text_prompts)
         if self.text_feat_map is not None:
             text_dict['embedded'] = self.text_feat_map(text_dict['embedded'])
-
+        
+        print("\nSetting positive maps for data samples")
         for i, data_samples in enumerate(batch_data_samples):
             positive_map = positive_maps[i].to(
                 batch_inputs.device).bool().float()
             text_token_mask = text_dict['text_token_mask'][i]
+            print(f"Sample {i}:")
+            print(f"Positive map shape: {positive_map.shape}")
+            print(f"Text token mask shape: {text_token_mask.shape}")
+            print(f"Number of instances: {len(data_samples.gt_instances)}")
             data_samples.gt_instances.positive_maps = positive_map
             data_samples.gt_instances.text_token_mask = \
                 text_token_mask.unsqueeze(0).repeat(
                     len(positive_map), 1)
+            print(f"Final text token mask shape: {data_samples.gt_instances.text_token_mask.shape}")
+        
+        print("\nExtracting features and computing losses")
         if self.use_autocast:
             with autocast(enabled=True):
                 visual_features = self.extract_feat(batch_inputs)
         else:
             visual_features = self.extract_feat(batch_inputs)
+        
         head_inputs_dict = self.forward_transformer(visual_features, text_dict,
                                                     batch_data_samples)
 
         losses = self.bbox_head.loss(
             **head_inputs_dict, batch_data_samples=batch_data_samples)
+        print("=== End of Grounding DINO Loss Debug Info ===\n")
         return losses
     
     def get_tokens_positive_from_prompt(self, gt_label, entities, tokens_positive, aug_label_list):
-        if self.logging_enabled:
-            print(f"Entering get_tokens_positive_from_prompt with gt_label: {gt_label}, entities: {entities}, aug_label_list: {aug_label_list}")
-            print(f"tokens_positive: {tokens_positive}")
-
+        print("\n=== Token Matching Debug Info ===")
+        print(f"Ground truth label indices: {gt_label}")
+        print(f"Number of entities: {len(entities)}")
+        print(f"Number of tokens positive: {len(tokens_positive)}")
+        print(f"Number of augmented labels: {len(aug_label_list)}")
+        
         new_tokens_positive = []
         for label in gt_label:
-            raw_label_text = aug_label_list[label.item()]  # Get the corresponding string from the augmented label list         
-            label_text = clean_label_name(raw_label_text)  # Clean the label using the clean_label_name method         
-            if self.logging_enabled:             
-                print(f"Processing label: {label}, raw_label_text: {raw_label_text}, cleaned_label_text: {label_text}")         
+            raw_label_text = aug_label_list[label.item()]
+            label_text = clean_label_name(raw_label_text)
+            print(f"\nProcessing label {label.item()}:")
+            print(f"Raw label text: {raw_label_text}")
+            print(f"Cleaned label text: {label_text}")
+            print(f"Available entities: {entities}")
+            
+            # Try exact match first
+            found = False
             for idx, word in enumerate(entities):
-                if self.logging_enabled:
-                    print(f"Checking word: {word}, idx: {idx}")
                 if word == label_text:
+                    print(f"Found exact match at index {idx}")
                     new_tokens_positive.append(tokens_positive[idx])
+                    found = True
                     break
-
-        if self.logging_enabled:
-            print(f"Exiting get_tokens_positive_from_prompt with new_tokens_positive: {new_tokens_positive}")
+            
+            # If no exact match, try partial match
+            if not found:
+                print("No exact match found, trying partial match")
+                for idx, word in enumerate(entities):
+                    if label_text in word or word in label_text:
+                        print(f"Found partial match at index {idx}: {word}")
+                        new_tokens_positive.append(tokens_positive[idx])
+                        found = True
+                        break
+            
+            if not found:
+                print(f"WARNING: No match found for label: {label_text}")
+                # Add a default token positive if no match is found
+                if len(tokens_positive) > 0:
+                    print("Using first token positive as fallback")
+                    new_tokens_positive.append(tokens_positive[0])
+                else:
+                    print("ERROR: No tokens_positive available for fallback")
+        
+        print(f"\nFinal new_tokens_positive length: {len(new_tokens_positive)}")
+        print("=== End Token Matching Debug Info ===\n")
         return new_tokens_positive
 
 
