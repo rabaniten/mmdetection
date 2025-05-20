@@ -872,7 +872,7 @@ class LoadTextAnnotations(BaseTransform):
     def get_extra_classes(self, true_classes: tuple, all_classes: tuple) -> tuple:
         # Define probabilities for choosing n wrong labels with uniform distribution
         # Allow up to 15 additional labels
-        max_extra_labels = 50
+        max_extra_labels = 4
         probabilities = {i: 1/(max_extra_labels+1) for i in range(max_extra_labels+1)}
         
         # Choose a number n based on the defined probabilities
