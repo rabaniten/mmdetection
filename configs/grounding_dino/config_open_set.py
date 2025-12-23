@@ -22,12 +22,8 @@ LOAD_FROM = "/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e
 
 RESUME = False  # Enable resume to continue training
 
-ANN_FILE_TRAINING = (
-    "/opt/ml/input/data/train/combined_annotations_merged_categories.json"
-)
-ANN_FILE_VALIDATION = (
-    "/opt/ml/input/data/validation/combined_annotations_merged_categories.json"
-)
+ANN_FILE_TRAINING = "/opt/ml/input/data/train/annotations/instances_train.json"
+ANN_FILE_VALIDATION = "/opt/ml/input/data/validation/annotations/instances_val.json"
 
 DATA_PREFIX_TRAIN = dict(img="/opt/ml/input/data/train/images/")
 DATA_PREFIX_VAL = dict(img="/opt/ml/input/data/validation/images/")
