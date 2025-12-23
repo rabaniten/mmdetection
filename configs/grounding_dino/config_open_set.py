@@ -16,18 +16,21 @@
 # NUM_WORKER_VAL = 2
 
 
-
 # Training and inference in custom docker
-LOAD_FROM = '/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth'
+LOAD_FROM = "/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth"
 # LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
 
 RESUME = False  # Enable resume to continue training
 
-ANN_FILE_TRAINING = '/opt/ml/input/data/train/combined_annotations_merged_categories.json'
-ANN_FILE_VALIDATION = '/opt/ml/input/data/validation/combined_annotations_merged_categories.json'
+ANN_FILE_TRAINING = (
+    "/opt/ml/input/data/train/combined_annotations_merged_categories.json"
+)
+ANN_FILE_VALIDATION = (
+    "/opt/ml/input/data/validation/combined_annotations_merged_categories.json"
+)
 
-DATA_PREFIX_TRAIN = dict(img= '/opt/ml/input/data/train/images/')
-DATA_PREFIX_VAL = dict(img='/opt/ml/input/data/validation/images/')
+DATA_PREFIX_TRAIN = dict(img="/opt/ml/input/data/train/images/")
+DATA_PREFIX_VAL = dict(img="/opt/ml/input/data/validation/images/")
 
 BATCH_SIZE_TRAIN = 1
 BATCH_SIZE_VAL = 1
@@ -39,618 +42,14 @@ MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
 
 
 CLASSES = (
-    "apple",
-    "apple cookie",
-    "applesauce",
-    "apricot yoghurt",
-    "apricot yogurt",
-    "arugula",
-    "balsamic dressing",
-    "bami goreng",
-    "beans",
-    "beef",
-    "beet ginger salad",
-    "bell pepper",
-    "bircher muesli",
-    "birchermuesli",
-    "boiled beef",
-    "boiled beef salad",
-    "bolognaise",
-    "bolognese",
-    "bramata slice",
-    "bread",
-    "bread dumpling",
-    "bread roll",
-    "breaded poultry meatball",
-    "brie",
-    "broccoli",
-    "broth",
-    "brownie",
-    "bulgur",
-    "burrito",
-    "butter",
-    "cabbage salad",
-    "capers",
-    "caramel flan",
-    "carbonara tofu",
-    "carrot",
-    "cashew nuts",
-    "cauliflower",
-    "cheese",
-    "cheese crepe",
-    "cheese ravioli",
-    "cheesecake",
-    "cherry tomato",
-    "chicken",
-    "chickpea puree",
-    "chickpea triangles",
-    "chipolata",
-    "chocolate",
-    "chocolate bar",
-    "chocolate drink",
-    "chocolate ice cream",
-    "chocolate mousse",
-    "chocolate yogurt",
-    "cocktail sauce",
-    "cod",
-    "coffee",
-    "coffee cream",
-    "compote",
-    "cream",
-    "cream sauce",
-    "cream slice",
-    "croissant",
-    "cucumber",
-    "cured ham",
-    "curry sauce",
-    "diced tomatoes",
-    "dip",
-    "dressing",
-    "egg",
-    "eggplant",
-    "eggplant moussaka",
-    "fish",
-    "french dressing",
-    "french salad dressing",
-    "fruit quark",
-    "fruit salad",
-    "goulash soup",
-    "grana padano",
-    "grated cheese",
-    "gravy",
-    "green beans",
-    "gruyere",
-    "hash brown (roesti)",
-    "hawaiian toast",
-    "herb potato patty",
-    "horseradish foam",
-    "hummus",
-    "italian dressing",
-    "jam",
-    "lard",
-    "lasagna",
-    "leek",
-    "legume salad",
-    "lemon",
-    "lemon sorbet",
-    "lettuce",
-    "lollo rosso",
-    "lye bread",
-    "mashed peas",
-    "mashed potato",
-    "mashed potatoes",
-    "meatloaf",
-    "milk",
-    "milk coffee",
-    "minced beef sauce",
-    "mint",
-    "mixed salad",
-    "multigrain roll",
-    "mushrooms",
-    "mustard",
-    "nut cake",
-    "olive",
-    "orange",
-    "orange juice",
-    "other food",
-    "panna cotta",
-    "paprika sauce",
-    "parsley",
-    "parsley fritters",
-    "pasta",
-    "peas",
-    "pepper",
-    "pizokel vegetable gratin",
-    "plain yogurt",
-    "plum crumble",
-    "plum muffin",
-    "polenta",
-    "pork steak",
-    "potato",
-    "poultry ragout",
-    "protein powder",
-    "pureed bratwurst",
-    "pureed carrot",
-    "pureed chickpeas",
-    "pureed omelette",
-    "quinoa",
-    "radicchio rosso",
-    "radish",
-    "rasberry",
-    "raspberry",
-    "ratatouille",
-    "ravioli",
-    "rice",
-    "rice noodle salad",
-    "risotto",
-    "romanesco",
-    "ruccola",
-    "salad",
-    "salad dressing",
-    "salami",
-    "salmon",
-    "sandwich",
-    "sauce",
-    "sausage",
-    "sausage cheese salad",
-    "scrambled eggs",
-    "sliced quorn sauce",
-    "sliced veal",
-    "soft cheese",
-    "soft egg noodles (spaetzle)",
-    "soup",
-    "sour cream",
-    "spaghetti",
-    "spinach",
-    "spring onions",
-    "strawberry ice cream",
-    "sugar peas",
-    "sweet potato",
-    "swiss chard vegetable ragout",
-    "tart",
-    "tea",
-    "thai glass noodle salad",
-    "tiramisu",
-    "toast",
-    "tomato",
-    "tomato sauce",
-    "tomato vegetable sauce",
-    "tortellini",
-    "turkey breast",
-    "vanilla cream",
-    "vanilla ice cream",
-    "vegan meatballs",
-    "vegetable bolognese",
-    "vegetable curry",
-    "vegetable piccata",
-    "vegetable ragout",
-    "vegetable salad",
-    "vegetables",
-    "vegetarian burger",
-    "wedges",
-    "whipped cream",
-    "yogourt plain",
-    "yogurt",
-    "zucchini",
-    "almost empty",
-    "bacon",
-    "banana",
-    "bead",
-    "bean cassoulet",
-    "beef braised slice",
-    "beef meatballs",
-    "beef roast",
-    "bellpeper",
-    "black bean puree",
-    "bok choy",
-    "bramata",
-    "bread without crust",
-    "brocoli",
-    "capuns",
-    "chili with vegetables",
-    "chives",
-    "chocolate icecream",
-    "cinnamon sugar",
-    "corn",
-    "cream cheese",
-    "croutons",
-    "endive orange salad",
-    "fregola",
-    "fresh cheese praline",
-    "fried onions",
-    "herb cream",
-    "herb semolina slice",
-    "herbs cheese bite",
-    "honey",
-    "kohlrabi",
-    "lamb stew",
-    "lemon roulade",
-    "macaroni and cheese",
-    "margarine",
-    "mashed pasta",
-    "milkcoffee",
-    "muffin",
-    "mustard greens",
-    "nuts",
-    "ovomaltine",
-    "peperonata",
-    "pickle",
-    "pickled cucumber",
-    "pita bread",
-    "pomegranate",
-    "porridge",
-    "protein drink",
-    "pureed beef",
-    "pureed cauliflower",
-    "pureed chicken",
-    "pureed salmon",
-    "quinoa patty",
-    "radish salad",
-    "raspberry yogurt",
-    "red chicory",
-    "roll bread",
-    "rye bread",
-    "sardinian fregola",
-    "seitan strips",
-    "smoked salmon",
-    "spanish tortilla",
-    "spelt dumplings",
-    "spelt goulash",
-    "spring onion",
-    "springroll",
-    "strawberry yogurt",
-    "tilsiter",
-    "tofu",
-    "turkey cold cut",
-    "veal cheek",
-    "vegetable strudel",
-    "veggie crispy bites",
-    "white bean puree",
-    "yeast roll",
-    "apple juice",
-    "bag of ovaltine",
-    "beef tartare",
-    "beetroot",
-    "buttered pretzel",
-    "caper butter sauce",
-    "carrot appetizer",
-    "celery",
-    "cheese plate",
-    "chicken cordon bleu",
-    "chili pepper",
-    "chocolate powder bag",
-    "coffee yogurt",
-    "cold cuts",
-    "cottage cheese",
-    "country cuts",
-    "cranberry",
-    "cress",
-    "dried tomato",
-    "duchess potatoes",
-    "eggplant cordon bleu",
-    "eggplant piccata",
-    "emmental cheese",
-    "fish burger",
-    "fruit",
-    "gnocchi",
-    "gnocchi seitan pan",
-    "golden berry",
-    "grape",
-    "gruyere",
-    "halloumi",
-    "herbs",
-    "hollandaise sauce",
-    "horseradish bouillon",
-    "jam sandwich cookie",
-    "ketchup",
-    "kiwi",
-    "lamb",
-    "lentil ragout",
-    "mashed black beans",
-    "mashed semolina",
-    "mayonnaise",
-    "millet slice",
-    "oil",
-    "olives",
-    "onion",
-    "peanuts",
-    "pear",
-    "peeled carrot",
-    "plum",
-    "potato dumplings",
-    "pureed polenta",
-    "quail breast",
-    "quark",
-    "red cabbage",
-    "red pepperoncini",
-    "rusk",
-    "sachertorte",
-    "shrimps",
-    "sliced quorn",
-    "smoked trout",
-    "sour cabbage",
-    "swedish cake",
-    "sweet and sour carrot",
-    "thin chocolate decoration",
-    "trout tartare",
-    "veal steak",
-    "vegetable stew",
-    "walnut",
-    "whole grain rice cake",
-    "wine",
-    "apple mousse",
-    "apple sauce",
-    "apricot quark",
-    "balsamic sauce",
-    "berry",
-    "blackened",
-    "chanterelle parsley risotto",
-    "cheese ball",
-    "chocolate yogourt",
-    "colorful vegetables for veggie cervalat sausage",
-    "dried apricots",
-    "dried meat",
-    "emmentaler",
-    "energie supplement",
-    "extra protein",
-    "frech salad dressing",
-    "green peas",
-    "italian sauce",
-    "lamb's lettuce (nuesslisalat / nuessli)",
-    "mozzarella salad",
-    "pickles",
-    "plums",
-    "protein supplement",
-    "pumpkin seeds",
-    "raw egg",
-    "salt",
-    "snow peas",
-    "stawberry yogourt",
-    "sugar",
-    "toasted bread",
-    "turnip cabbage",
-    "\"salade nicoise\"",
-    "aufschnittteller",
-    "aufschnittteller vvg",
-    "broth for halibut",
-    "cabbage",
-    "cacao powder",
-    "choernlibroetli",
-    "endive",
-    "energy cream",
-    "lactose free dessert",
-    "oversoaked cauliflower",
-    "peppermint",
-    "quorn strips in cream sauce",
-    "roesti",
-    "salt and pepper",
-    "scrambled egg",
-    "vanilla ice",
-    "vegan nuggets",
-    "baked chickpea",
-    "chocolate cake",
-    "mozzarella",
-    "thyme",
-    "tilster cheese",
-    "turmeric",
-    "small sauce-glass",
-    "white plate",
-    "shallow bowl",
-    "caesar salad",
-    "parmesan dressing",
-    "egg cooked",
-    "toast croutons",
-    "parmesan shavings",
-    "white plate without rim",
-    "soup of the day ratatouille cream",
-    "soup-bowl",
-    "finger-shaped potato dumplings (schupfnudeln)",
-    "hioumi",
-    "natural yogurt",
-    "beans green",
-    "horn-shaped pasta (hoernli)",
-    "big sauce-glass",
-    "soup of the day artichoke",
-    "glass fruitsalad-bowl",
-    "vanilla cream puffs",
-    "small quadratic plate-bowl",
-    "basil pesto",
-    "quadratic dessert-plate",
-    "sausage and cheese salad",
-    "lollo bianco",
-    "house bread",
-    "soup of the day potato",
-    "vegetarian bami goreng",
-    "soup of the day broccoli cream",
-    "vegetable strips",
-    "saffron herb sauce",
-    "vegetable strips saffron-herb sauce",
-    "pureed green balls",
-    "pureed food in a special shape",
-    "pureed meat slices",
-    "pureed food in oval shape",
-    "pureed broccoli",
-    "pureed mashed potatoes",
-    "sprout vegetables",
-    "scallion",
-    "herbal rice",
-    "soup of the day curry cream",
-    "paneer",
-    "quinoa patties",
-    "vegetables for quinoa patties",
-    "turkey ham",
-    "pineapple",
-    "onion red",
-    "barley risotto",
-    "lemon panna cotta",
-    "soup of the day yellow pea",
-    "dill mashed potatoes",
-    "salmon cubes marinated",
-    "brown sauce",
-    "pureed food in pyramid shape",
-    "penne rigate",
-    "pureed balls",
-    "raspberry mousse in pyramid shape",
-    "white sauce",
-    "round raspberry mousse",
-    "slices",
-    "poultry stew",
-    "pureed chicken thigh",
-    "pureed fries",
-    "pureed sausage",
-    "plate with red rim",
-    "veggie swiss macaroni and cheese",
-    "poulet",
-    "boiled meat salad seed oil",
-    "vegetable patch",
-    "boiled meat",
-    "currant sheet cake",
-    "bulgur sauce",
-    "sliced seitan",
-    "oyster mushrooms",
-    "vegetables for green spelt risotto",
-    "green spelt risotto",
-    "bouillon",
-    "cold chicken breast",
-    "soup of the day carrot cream",
-    "curry dip",
-    "soup of the day lentil ginger",
-    "poulet cordon bleu",
-    "pilau rice",
-    "roasted cauliflower",
-    "sauce for sliced seitan",
-    "small plastic cup",
-    "overly soft thick brie cheese",
-    "overly soft cottage cheese",
-    "meat cheese",
-    "lyonnaise potatoes",
-    "oversoaked sliced veal",
-    "overly soft cream cheese",
-    "overly soft thin brie cheese",
-    "currants",
-    "soup of the day bell peppers",
-    "sliced quorn zurich style",
-    "colorful vegetables from zuchetti peas carrots and beans",
-    "bread dumplings",
-    "sauce poultry ragout",
-    "banana organic",
-    "lye croissant",
-    "lid on the ground",
-    "uncovered jug",
-    "jug covered with lid",
-    "mueesli",
-    "large glass fruitsalad-bowl",
-    "milk roll",
-    "baked vegetables for mozzarella",
-    "chipolata sausage",
-    "rucola",
-    "oven vegetables",
-    "zuchetti",
-    "piccata mass",
-    "vegetables for piccata",
-    "spicy vegetable ragout",
-    "lenses brown",
-    "lenses",
-    "soggy bread without crust",
-    "big square plate",
-    "soup of the day mushroom cream",
-    "oversoaked roast beef",
-    "oversoaked food in pyramid shape",
-    "oversoaked chia pudding",
-    "oversoaked mixed roast beef",
-    "cheese sauce",
-    " swiss chard",
-    "oversoaked mixed chickpea curry",
-    "smoked sausage (landjaeger)",
-    "soup of the day leek cream",
-    "vegetables for fregola",
-    "soup of the day banana-coconut",
-    "pickled vegetables",
-    "deli meat cheese",
-    "turkey",
-    "cylindrical transparent shot-glass",
-    "ricotta tortellini",
-    "potato vegetable curry",
-    "soup of the day sweetcorn",
-    "cherry jam",
-    "coffee cup",
-    "coffee plate",
-    "appenzeller cheese",
-    "green spelt dumplings",
-    "vegetable ragout for green spelt dumplings",
-    "chicken thigh steak",
-    "soup of the day tomatoes",
-    "vegetable salad for ham",
-    "country smoked ham",
-    "lye rolls",
-    "antipasti vegetables",
-    "tagliatelle tomato pesto antipasti",
-    "soup of the day beetroot",
-    "bell pepper stew",
-    "pineapple-quark-mousse",
-    "quinoa salad",
-    "dried tomatoes",
-    "endives orange salad",
-    "orange fillet",
-    "mascarpone",
-    "shiitake",
-    "little glass bowl",
-    "vegetable salad for quinoa",
-    "asian dip",
-    "potato hash brown (roesti) with vegetables",
-    "oversoaked salmon fillet",
-    "oversoaked chickpea puree",
-    "port wine pears rucola risotto",
-    "soup of the day barley",
-    "gorgonzola",
-    "creamy polenta medium",
-    "beef patties in juicy sauce",
-    "merlot sauce",
-    "oversoaked perch fillet",
-    "oversoft food in crescent shape",
-    "rocket risotto",
-    "oversoaked bell peppers",
-    "oversoakeboiled beef",
-    "oversoakeboiled polenta",
-    "oversoaked carrots",
-    "soft zuchetti",
-    "veggie cervalat sausage",
-    "grisons barley soup",
-    "soup of the day cauliflower cream",
-    "herbal semolina slice",
-    "crispy vegetable roll",
-    "soup of the day parmesan foam",
-    "gnocchi pan tofu",
-    "homemade fishburgers",
-    "soup of the day zucchetti",
-    "egg vinaigrette",
-    "cheesy soft egg noodles (kaesespaetzle)",
-    "fennel salad for bowl",
-    "tree nut dressing",
-    "spelt marinated",
-    "feta marinated",
-    "beetroot cooked",
-    "oversoaked smoked salmon",
-    "softened panna cotta",
-    "protein bowl",
-    "oversoaked fennel",
-    "oversoaked couscous",
-    "oversoaked turkey plate",
-    "wild rice raw",
-    "homemade veggie burger",
-    "champignon organic",
-    "swiss macaroni and cheese",
-    "cantadou cheese",
-    "sliced beef",
-    "knot rolls",
-    "minced poultry patties",
-    "carbonara",
-    "blueberry",
-    "cold cut meatloaf",
-    "fruit yoghurt",
-    "lollo green",
-    "strawberry yoghurt",
-    "yoghurt",
+    "transparent plate cover",
+    "soup cover",
+    "metallic plate cover",
+    "rectangular metallic cover",
+    "other cover",
+    "plastic wrap",
+    "cover that is above its tableware",
+    "cover that occludes food",
 )
 
 
@@ -845,39 +244,39 @@ CLASSES = (
 NUM_CLASSES = len(CLASSES)
 
 evaluation = dict(
-    interval=1,         # Evaluate after every epoch
-    metric='bbox',       # Use bounding box metrics
-    classwise=True       # Enables per-class AP logging
+    interval=1,  # Evaluate after every epoch
+    metric="bbox",  # Use bounding box metrics
+    classwise=True,  # Enables per-class AP logging
 )
 auto_scale_lr = dict(base_batch_size=32, enable=True)
 backend_args = None
-data_root = '/opt/ml/input/data/'
-dataset_type = 'CocoDataset'
+data_root = "/opt/ml/input/data/"
+dataset_type = "CocoDataset"
 default_hooks = dict(
-    timer=dict(type='IterTimerHook'),
-    logger=dict(type='LoggerHook', interval=50),
-    param_scheduler=dict(type='ParamSchedulerHook'),
-    checkpoint=dict(type='CheckpointHook', interval=5, by_epoch=True, max_keep_ckpts=10),
-    sampler_seed=dict(type='DistSamplerSeedHook'),
-    visualization=dict(type='DetVisualizationHook',
-                      draw=True,
-                      interval=100000,
-                      show=False)
+    timer=dict(type="IterTimerHook"),
+    logger=dict(type="LoggerHook", interval=50),
+    param_scheduler=dict(type="ParamSchedulerHook"),
+    checkpoint=dict(
+        type="CheckpointHook", interval=5, by_epoch=True, max_keep_ckpts=10
+    ),
+    sampler_seed=dict(type="DistSamplerSeedHook"),
+    visualization=dict(
+        type="DetVisualizationHook", draw=True, interval=100000, show=False
+    ),
 )
-default_scope = 'mmdet'
+default_scope = "mmdet"
 env_cfg = dict(
     cudnn_benchmark=False,
-    dist_cfg=dict(backend='nccl'),
-    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
-lang_model_name = 'bert-base-uncased'
-launcher = 'none'
-load_from = LOAD_FROM
-log_level = 'INFO'
-log_processor = dict(by_epoch=True, type='LogProcessor', window_size=50)
-max_epochs = MAX_EPOCHS
-metainfo = dict(
-    classes= CLASSES
+    dist_cfg=dict(backend="nccl"),
+    mp_cfg=dict(mp_start_method="fork", opencv_num_threads=0),
 )
+lang_model_name = "bert-base-uncased"
+launcher = "none"
+load_from = LOAD_FROM
+log_level = "INFO"
+log_processor = dict(by_epoch=True, type="LogProcessor", window_size=50)
+max_epochs = MAX_EPOCHS
+metainfo = dict(classes=CLASSES)
 
 # #ToDo: remove....?
 # class_weight = [1.0, 1.0, 0.89, 1.0, 0.14, 1.0, 1.0, 0.63, 0.11, 1.0, 0.48, 0.25, 0.19, 0.29, 0.53, 1.0, 1.0, 1.0, 0.33, 1.0, 0.09, 1.0, 1, 0.09, 1.0, 0.5, 0.38, 0.54, 1.0, 1.0, 1.0, 0.9, 1.0, 0.97, 0.98, 0.96, 0.3, 1.0, 1.0, 0.8, 0.95, 0.17, 1.0, 0.8, 1.0, 1.0, 0.83, 1.0, 1.0, 1.0, 1.0, 1.0, 0.57, 1.0, 1.0, 0.69, 1.0, 0.83, 0.45, 1.0, 1.0, 1.0, 1.0, 1.0, 0.17, 1.0, 1.0, 0.54, 1.0, 0.46, 0.6, 1.0, 1.0, 0.62, 0.83, 0.68, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.33, 1.0, 0.75, 0.32, 0.24, 0.75, 1.0, 1.0, 0.67, 0.56, 0.77, 0.17, 0.85, 0.31, 0.8, 1.0, 0.67, 1.0, 1.0, 1.0, 0.69, 1.0, 0.9, 0.59, 0.8, 0.15, 1.0, 1.0, 0.75, 0.12, 0.8, 0.23, 0.86, 0.75, 0.57, 0.8, 0.8, 1.0, 1.0, 1.0, 0.67, 0.46, 0.75, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.67, 1.0, 1.0, 0.6, 1.0, 1.0, 1.0, 0.39, 1.0, 1.0, 1.0, 1.0, 0.28, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.67, 1.0, 1.0, 0.17, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.41, 0.29, 1.0, 0.15, 0.83, 1.0, 1.0, 1.0, 1.0, 0.42, 1.0, 0.19, 1.0, 0.16, 1.0, 1.0, 0.42, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 0.62, 1.0, 0.23, 1.0, 1.0, 0.55, 0.8, 0.7, 0.86, 0.63, 1.0, 1.0, 0.82, 1.0, 1.0, 1.0, 1.0, 0.77, 0.14, 1.0, 0.12, 0.21, 1.0, 1.0, 1.0, 0.6, 1.0, 1.0, 0.33, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8, 1.0, 0.5, 1.0, 0.39, 0.45, 0.37, 0.58, 0.28, 1.0, 0.83, 1.0, 1.0, 1.0, 0.92, 1.0, 0.6, 1.0, 0.82, 0.45, 1.0, 0.67, 1.0, 1.0, 1.0, 1.0, 0.6, 0.67, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.36, 1.0, 1.0, 1.0, 0.2, 0.5, 0.71, 1.0, 1.0, 1.0, 0.15, 0.67, 0.42, 0.86, 0.89, 0.16, 1.0, 1.0, 0.67, 1.0, 1.0, 0.92, 1.0, 1.0, 1.0, 1.0, 0.42, 1.0, 1.0, 0.33, 1.0, 0.83, 0.3, 1.0, 1.0, 0.1, 0.33, 1.0, 1.0, 1.0, 0.43, 0.18, 0.5, 1.0, 0.75, 0.33, 1.0, 1.0, 0.62, 1.0, 1.0, 1.0, 1.0, 1.0, 0.87, 1.0, 1.0, 1.0, 0.38, 0.69, 1.0, 1.0, 1.0, 1.0, 0.67, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.12, 1.0, 0.13, 1.0, 1.0, 0.31, 1.0, 0.75, 0.38, 1.0, 1.0, 0.75, 0.44, 0.75, 0.24, 0.44, 1.0, 1.0, 0.08, 1.0, 1.0, 1.0, 1.0, 0.36, 0.45, 1.0, 0.67, 1.0, 0.6, 1.0, 1.0, 0.67, 0.4, 1.0, 1.0, 1.0, 1.0, 0.5, 0.33, 1.0, 0.29, 0.38, 1.0, 0.8, 1.0, 0.67, 1.0, 0.67, 0.33, 0.25, 1.0, 0.22, 1.0, 1.0, 1.0, 1.0, 1.0, 0.54, 1.0, 0.5, 1.0, 0.12, 1.0, 1.0, 1.0, 0.5, 0.75, 0.5, 0.6, 1.0, 1.0, 1.0, 1.0, 0.25, 0.8, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0]
@@ -911,23 +310,22 @@ model = dict(
         patch_norm=True,
         qk_scale=None,
         qkv_bias=True,
-        type='SwinTransformer',
+        type="SwinTransformer",
         window_size=7,
-        with_cp=True),
+        with_cp=True,
+    ),
     bbox_head=dict(
         contrastive_cfg=dict(bias=False, log_scale=0.0, max_text_len=256),
-        loss_bbox=dict(loss_weight=5.0, type='L1Loss'),
+        loss_bbox=dict(loss_weight=5.0, type="L1Loss"),
         loss_cls=dict(
-            alpha=0.25,
-            gamma=2.0,
-            loss_weight=1.0,
-            type='FocalLoss',
-            use_sigmoid=True),
-        loss_iou=dict(loss_weight=2.0, type='GIoULoss'),
+            alpha=0.25, gamma=2.0, loss_weight=1.0, type="FocalLoss", use_sigmoid=True
+        ),
+        loss_iou=dict(loss_weight=2.0, type="GIoULoss"),
         # ToDo: set the number of classes automatically.
         num_classes=NUM_CLASSES,
         sync_cls_avg_factor=True,
-        type='GroundingDINOHead'),
+        type="GroundingDINOHead",
+    ),
     data_preprocessor=dict(
         bgr_to_rgb=True,
         mean=[
@@ -941,50 +339,52 @@ model = dict(
             57.12,
             57.375,
         ],
-        type='DetDataPreprocessor'),
+        type="DetDataPreprocessor",
+    ),
     decoder=dict(
         layer_cfg=dict(
             cross_attn_cfg=dict(dropout=0.0, embed_dims=256, num_heads=8),
             cross_attn_text_cfg=dict(dropout=0.0, embed_dims=256, num_heads=8),
-            ffn_cfg=dict(
-                embed_dims=256, feedforward_channels=2048, ffn_drop=0.0),
-            self_attn_cfg=dict(dropout=0.0, embed_dims=256, num_heads=8)),
+            ffn_cfg=dict(embed_dims=256, feedforward_channels=2048, ffn_drop=0.0),
+            self_attn_cfg=dict(dropout=0.0, embed_dims=256, num_heads=8),
+        ),
         num_layers=6,
         post_norm_cfg=None,
-        return_intermediate=True),
+        return_intermediate=True,
+    ),
     dn_cfg=dict(
         box_noise_scale=1.0,
         group_cfg=dict(dynamic=True, num_dn_queries=100, num_groups=None),
-        label_noise_scale=0.5),
+        label_noise_scale=0.5,
+    ),
     encoder=dict(
         fusion_layer_cfg=dict(
-            embed_dim=1024,
-            init_values=0.0001,
-            l_dim=256,
-            num_heads=4,
-            v_dim=256),
+            embed_dim=1024, init_values=0.0001, l_dim=256, num_heads=4, v_dim=256
+        ),
         layer_cfg=dict(
-            ffn_cfg=dict(
-                embed_dims=256, feedforward_channels=2048, ffn_drop=0.0),
-            self_attn_cfg=dict(dropout=0.0, embed_dims=256, num_levels=4)),
+            ffn_cfg=dict(embed_dims=256, feedforward_channels=2048, ffn_drop=0.0),
+            self_attn_cfg=dict(dropout=0.0, embed_dims=256, num_levels=4),
+        ),
         num_cp=6,
         num_layers=6,
         text_layer_cfg=dict(
-            ffn_cfg=dict(
-                embed_dims=256, feedforward_channels=1024, ffn_drop=0.0),
-            self_attn_cfg=dict(dropout=0.0, embed_dims=256, num_heads=4))),
+            ffn_cfg=dict(embed_dims=256, feedforward_channels=1024, ffn_drop=0.0),
+            self_attn_cfg=dict(dropout=0.0, embed_dims=256, num_heads=4),
+        ),
+    ),
     language_model=dict(
         add_pooling_layer=False,
-        name='bert-base-uncased',
+        name="bert-base-uncased",
         pad_to_max=False,
         special_tokens_list=[
-            '[CLS]',
-            '[SEP]',
-            '.',
-            '?',
+            "[CLS]",
+            "[SEP]",
+            ".",
+            "?",
         ],
-        type='BertModel',
-        use_sub_sentence_represent=True),
+        type="BertModel",
+        use_sub_sentence_represent=True,
+    ),
     neck=dict(
         act_cfg=None,
         bias=True,
@@ -994,43 +394,47 @@ model = dict(
             768,
         ],
         kernel_size=1,
-        norm_cfg=dict(num_groups=32, type='GN'),
+        norm_cfg=dict(num_groups=32, type="GN"),
         num_outs=4,
         out_channels=256,
-        type='ChannelMapper'),
+        type="ChannelMapper",
+    ),
     num_queries=900,
-    positional_encoding=dict(
-        normalize=True, num_feats=128, offset=0.0, temperature=20),
+    positional_encoding=dict(normalize=True, num_feats=128, offset=0.0, temperature=20),
     test_cfg=dict(max_per_img=300),
     train_cfg=dict(
         assigner=dict(
             match_costs=[
-                dict(type='BinaryFocalLossCost', weight=2.0),
-                dict(box_format='xywh', type='BBoxL1Cost', weight=5.0),
-                dict(iou_mode='giou', type='IoUCost', weight=2.0),
+                dict(type="BinaryFocalLossCost", weight=2.0),
+                dict(box_format="xywh", type="BBoxL1Cost", weight=5.0),
+                dict(iou_mode="giou", type="IoUCost", weight=2.0),
             ],
-            type='HungarianAssigner')),
-    type='GroundingDINO',
-    with_box_refine=True)
+            type="HungarianAssigner",
+        )
+    ),
+    type="GroundingDINO",
+    with_box_refine=True,
+)
 optim_wrapper = dict(
     clip_grad=dict(max_norm=0.1, norm_type=2),
-    optimizer=dict(lr=0.0001, type='AdamW', weight_decay=0.0001),
+    optimizer=dict(lr=0.0001, type="AdamW", weight_decay=0.0001),
     paramwise_cfg=dict(
         custom_keys=dict(
-            absolute_pos_embed=dict(decay_mult=0.0),
-            backbone=dict(lr_mult=0.1))),
-    type='OptimWrapper')
+            absolute_pos_embed=dict(decay_mult=0.0), backbone=dict(lr_mult=0.1)
+        )
+    ),
+    type="OptimWrapper",
+)
 
 param_scheduler = [
     # Warm-up scheduler
     dict(
-        type='LinearLR',          # Linear warm-up
-        start_factor=0.001,       # Starting LR is 0.1% of the base LR
-        by_epoch=False,           # Apply warm-up by iteration, not by epoch
-        begin=0,                  # Start from the very first iteration
-        end=50                    # End at the 50th iteration # original: 250
+        type="LinearLR",  # Linear warm-up
+        start_factor=0.001,  # Starting LR is 0.1% of the base LR
+        by_epoch=False,  # Apply warm-up by iteration, not by epoch
+        begin=0,  # Start from the very first iteration
+        end=50,  # End at the 50th iteration # original: 250
     )
-    
     # Uncomment the section below if you want to apply a linear decay after warm-up
     # dict(
     #     type='LinearLR',         # Linear learning rate decay
@@ -1044,22 +448,22 @@ param_scheduler = [
 
 resume = RESUME
 
-train_cfg = dict(max_epochs = max_epochs, type='EpochBasedTrainLoop', val_interval=1)
+train_cfg = dict(max_epochs=max_epochs, type="EpochBasedTrainLoop", val_interval=1)
 train_dataloader = dict(
-    batch_sampler=dict(type='AspectRatioBatchSampler'),
+    batch_sampler=dict(type="AspectRatioBatchSampler"),
     batch_size=BATCH_SIZE_TRAIN,
     dataset=dict(
-        type='CocoDataset',
+        type="CocoDataset",
         ann_file=ANN_FILE_TRAINING,
         backend_args=None,
         data_prefix=DATA_PREFIX_TRAIN,
-        data_root='/opt/ml/input/data/',
+        data_root="/opt/ml/input/data/",
         filter_cfg=dict(filter_empty_gt=False, min_size=32),
         pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),
-            dict(prob=0.5, type='RandomFlip'),
+            dict(backend_args=None, type="LoadImageFromFile"),
+            dict(type="LoadAnnotations", with_bbox=True),
+            dict(type="LoadTextAnnotations"),
+            dict(prob=0.5, type="RandomFlip"),
             dict(
                 transforms=[
                     [
@@ -1111,7 +515,8 @@ train_dataloader = dict(
                                     1333,
                                 ),
                             ],
-                            type='RandomChoiceResize'),
+                            type="RandomChoiceResize",
+                        ),
                     ],
                     [
                         dict(
@@ -1130,15 +535,17 @@ train_dataloader = dict(
                                     4200,
                                 ),
                             ],
-                            type='RandomChoiceResize'),
+                            type="RandomChoiceResize",
+                        ),
                         dict(
                             allow_negative_crop=True,
                             crop_size=(
                                 384,
                                 600,
                             ),
-                            crop_type='absolute_range',
-                            type='RandomCrop'),
+                            crop_type="absolute_range",
+                            type="RandomCrop",
+                        ),
                         dict(
                             keep_ratio=True,
                             scales=[
@@ -1187,29 +594,32 @@ train_dataloader = dict(
                                     1333,
                                 ),
                             ],
-                            type='RandomChoiceResize'),
+                            type="RandomChoiceResize",
+                        ),
                     ],
                 ],
-                type='RandomChoice'),
+                type="RandomChoice",
+            ),
             dict(
                 meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'flip',
-                    'flip_direction',
-                    'text',
-                    'custom_entities',
+                    "img_id",
+                    "img_path",
+                    "ori_shape",
+                    "img_shape",
+                    "scale_factor",
+                    "flip",
+                    "flip_direction",
+                    "text",
+                    "custom_entities",
                 ),
-                type='PackDetInputs'),
+                type="PackDetInputs",
+            ),
         ],
         return_classes=True,
     ),
     num_workers=NUM_WORKER_TRAIN,
     persistent_workers=True,
-    sampler=dict(shuffle=True, type='DefaultSampler')
+    sampler=dict(shuffle=True, type="DefaultSampler"),
 )
 
 val_dataloader = dict(
@@ -1217,103 +627,116 @@ val_dataloader = dict(
     num_workers=NUM_WORKER_VAL,
     persistent_workers=True,
     dataset=dict(
-        type='CocoDataset',
+        type="CocoDataset",
         # ToDo: load the validation set name dynamically
         ann_file=ANN_FILE_VALIDATION,  # Validation annotations
         data_prefix=DATA_PREFIX_VAL,  # Validation images
         filter_cfg=dict(filter_empty_gt=False),
         pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                800,
-                1333,
-            ), type='FixScaleResize'), 
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),  # For GroundingDINO
-             dict(
-                meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'flip',
-                    'flip_direction',
-                    'text',
-                    'custom_entities',
+            dict(backend_args=None, type="LoadImageFromFile"),
+            dict(
+                keep_ratio=True,
+                scale=(
+                    800,
+                    1333,
                 ),
-                type='PackDetInputs'),
-        ]
+                type="FixScaleResize",
+            ),
+            dict(type="LoadAnnotations", with_bbox=True),
+            dict(type="LoadTextAnnotations"),  # For GroundingDINO
+            dict(
+                meta_keys=(
+                    "img_id",
+                    "img_path",
+                    "ori_shape",
+                    "img_shape",
+                    "scale_factor",
+                    "flip",
+                    "flip_direction",
+                    "text",
+                    "custom_entities",
+                ),
+                type="PackDetInputs",
+            ),
+        ],
     ),
-    sampler=dict(shuffle=False, type='DefaultSampler')  # No shuffling for validation
+    sampler=dict(shuffle=False, type="DefaultSampler"),  # No shuffling for validation
 )
 
-val_cfg = dict(type='ValLoop')  
+val_cfg = dict(type="ValLoop")
 
 val_evaluator = dict(
-    type='OpenSetCOCOMetric',
+    type="OpenSetCOCOMetric",
     ann_file=ANN_FILE_VALIDATION,
-    metric=['bbox'],  # Metrics for both bounding boxes and segmentation
-    classwise=True            # Enable class-wise mAP
+    metric=["bbox"],  # Metrics for both bounding boxes and segmentation
+    classwise=True,  # Enable class-wise mAP
 )
 
 vis_backends = [
-    dict(type='LocalVisBackend',
-         save_dir='/opt/ml/checkpoints/vis_results'),  # Explicitly set save directory
+    dict(
+        type="LocalVisBackend", save_dir="/opt/ml/checkpoints/vis_results"
+    ),  # Explicitly set save directory
 ]
 visualizer = dict(
-    name='visualizer',
-    type='DetLocalVisualizer',
+    name="visualizer",
+    type="DetLocalVisualizer",
     vis_backends=vis_backends,
-    save_dir='/opt/ml/checkpoints/vis_results'  # Explicitly set save directory
+    save_dir="/opt/ml/checkpoints/vis_results",  # Explicitly set save directory
 )
-work_dir = '/opt/ml/checkpoints'
+work_dir = "/opt/ml/checkpoints"
 
 test_dataloader = dict(
     batch_size=BATCH_SIZE_VAL,
     num_workers=NUM_WORKER_VAL,
     persistent_workers=True,
     dataset=dict(
-        type='CocoDataset',
+        type="CocoDataset",
         ann_file=ANN_FILE_VALIDATION,  # Using validation set for testing
         data_prefix=DATA_PREFIX_VAL,  # Test images from validation dataset
         filter_cfg=dict(filter_empty_gt=False),
         pipeline=[
-            dict(backend_args=None, type='LoadImageFromFile'),
-            dict(keep_ratio=True, scale=(
-                800,
-                1333,
-            ), type='FixScaleResize'),
-            dict(type='LoadAnnotations', with_bbox=True),
-            dict(type='LoadTextAnnotations'),  # For GroundingDINO
+            dict(backend_args=None, type="LoadImageFromFile"),
+            dict(
+                keep_ratio=True,
+                scale=(
+                    800,
+                    1333,
+                ),
+                type="FixScaleResize",
+            ),
+            dict(type="LoadAnnotations", with_bbox=True),
+            dict(type="LoadTextAnnotations"),  # For GroundingDINO
             dict(
                 meta_keys=(
-                    'img_id',
-                    'img_path',
-                    'ori_shape',
-                    'img_shape',
-                    'scale_factor',
-                    'flip',
-                    'flip_direction',
-                    'text',
-                    'custom_entities',
+                    "img_id",
+                    "img_path",
+                    "ori_shape",
+                    "img_shape",
+                    "scale_factor",
+                    "flip",
+                    "flip_direction",
+                    "text",
+                    "custom_entities",
                 ),
-                type='PackDetInputs'),
-        ]
+                type="PackDetInputs",
+            ),
+        ],
     ),
-    sampler=dict(shuffle=False, type='DefaultSampler')  # No shuffling for test
+    sampler=dict(shuffle=False, type="DefaultSampler"),  # No shuffling for test
 )
 
-test_cfg = dict(type='TestLoop')  
+test_cfg = dict(type="TestLoop")
 
 custom_imports = dict(
-    imports=['mmdet.evaluation.metrics.coco_metric_open_set_detection'],  # Full module path
-    allow_failed_imports=False  # Ensures import failure raises an error
+    imports=[
+        "mmdet.evaluation.metrics.coco_metric_open_set_detection"
+    ],  # Full module path
+    allow_failed_imports=False,  # Ensures import failure raises an error
 )
 
 test_evaluator = dict(
-    type='OpenSetCOCOMetric',
+    type="OpenSetCOCOMetric",
     ann_file=ANN_FILE_VALIDATION,
-    metric=['bbox'],  # Metrics for bounding boxes
-    classwise=True  # Enable class-wise mAP for detailed evaluation
+    metric=["bbox"],  # Metrics for bounding boxes
+    classwise=True,  # Enable class-wise mAP for detailed evaluation
 )

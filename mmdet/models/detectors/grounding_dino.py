@@ -14,630 +14,28 @@ from mmdet.structures import OptSampleList, SampleList
 from mmdet.utils import ConfigType
 from ..layers import SinePositionalEncoding
 from ..layers.transformer.grounding_dino_layers import (
-    GroundingDinoTransformerDecoder, GroundingDinoTransformerEncoder)
+    GroundingDinoTransformerDecoder,
+    GroundingDinoTransformerEncoder,
+)
 from .dino import DINO
-from .glip import (create_positive_map, create_positive_map_label_to_token,
-                   run_ner)
+from .glip import create_positive_map, create_positive_map_label_to_token, run_ner
 
 ALL_LABELS = (
-    "apple",
-    "apple cookie",
-    "applesauce",
-    "apricot yoghurt",
-    "apricot yogurt",
-    "arugula",
-    "balsamic dressing",
-    "bami goreng",
-    "beans",
-    "beef",
-    "beet ginger salad",
-    "bell pepper",
-    "bircher muesli",
-    "birchermuesli",
-    "boiled beef",
-    "boiled beef salad",
-    "bolognaise",
-    "bolognese",
-    "bramata slice",
-    "bread",
-    "bread dumpling",
-    "bread roll",
-    "breaded poultry meatball",
-    "brie",
-    "broccoli",
-    "broth",
-    "brownie",
-    "bulgur",
-    "burrito",
-    "butter",
-    "cabbage salad",
-    "capers",
-    "caramel flan",
-    "carbonara tofu",
-    "carrot",
-    "cashew nuts",
-    "cauliflower",
-    "cheese",
-    "cheese crepe",
-    "cheese ravioli",
-    "cheesecake",
-    "cherry tomato",
-    "chicken",
-    "chickpea puree",
-    "chickpea triangles",
-    "chipolata",
-    "chocolate",
-    "chocolate bar",
-    "chocolate drink",
-    "chocolate ice cream",
-    "chocolate mousse",
-    "chocolate yogurt",
-    "cocktail sauce",
-    "cod",
-    "coffee",
-    "coffee cream",
-    "compote",
-    "cream",
-    "cream sauce",
-    "cream slice",
-    "croissant",
-    "cucumber",
-    "cured ham",
-    "curry sauce",
-    "diced tomatoes",
-    "dip",
-    "dressing",
-    "egg",
-    "eggplant",
-    "eggplant moussaka",
-    "fish",
-    "french dressing",
-    "french salad dressing",
-    "fruit quark",
-    "fruit salad",
-    "goulash soup",
-    "grana padano",
-    "grated cheese",
-    "gravy",
-    "green beans",
-    "gruyere",
-    "hash brown (roesti)",
-    "hawaiian toast",
-    "herb potato patty",
-    "horseradish foam",
-    "hummus",
-    "italian dressing",
-    "jam",
-    "lard",
-    "lasagna",
-    "leek",
-    "legume salad",
-    "lemon",
-    "lemon sorbet",
-    "lettuce",
-    "lollo rosso",
-    "lye bread",
-    "mashed peas",
-    "mashed potato",
-    "mashed potatoes",
-    "meatloaf",
-    "milk",
-    "milk coffee",
-    "minced beef sauce",
-    "mint",
-    "mixed salad",
-    "multigrain roll",
-    "mushrooms",
-    "mustard",
-    "nut cake",
-    "olive",
-    "orange",
-    "orange juice",
-    "other food",
-    "panna cotta",
-    "paprika sauce",
-    "parsley",
-    "parsley fritters",
-    "pasta",
-    "peas",
-    "pepper",
-    "pizokel vegetable gratin",
-    "plain yogurt",
-    "plum crumble",
-    "plum muffin",
-    "polenta",
-    "pork steak",
-    "potato",
-    "poultry ragout",
-    "protein powder",
-    "pureed bratwurst",
-    "pureed carrot",
-    "pureed chickpeas",
-    "pureed omelette",
-    "quinoa",
-    "radicchio rosso",
-    "radish",
-    "rasberry",
-    "raspberry",
-    "ratatouille",
-    "ravioli",
-    "rice",
-    "rice noodle salad",
-    "risotto",
-    "romanesco",
-    "ruccola",
-    "salad",
-    "salad dressing",
-    "salami",
-    "salmon",
-    "sandwich",
-    "sauce",
-    "sausage",
-    "sausage cheese salad",
-    "scrambled eggs",
-    "sliced quorn sauce",
-    "sliced veal",
-    "soft cheese",
-    "soft egg noodles (spaetzle)",
-    "soup",
-    "sour cream",
-    "spaghetti",
-    "spinach",
-    "spring onions",
-    "strawberry ice cream",
-    "sugar peas",
-    "sweet potato",
-    "swiss chard vegetable ragout",
-    "tart",
-    "tea",
-    "thai glass noodle salad",
-    "tiramisu",
-    "toast",
-    "tomato",
-    "tomato sauce",
-    "tomato vegetable sauce",
-    "tortellini",
-    "turkey breast",
-    "vanilla cream",
-    "vanilla ice cream",
-    "vegan meatballs",
-    "vegetable bolognese",
-    "vegetable curry",
-    "vegetable piccata",
-    "vegetable ragout",
-    "vegetable salad",
-    "vegetables",
-    "vegetarian burger",
-    "wedges",
-    "whipped cream",
-    "yogourt plain",
-    "yogurt",
-    "zucchini",
-    "almost empty",
-    "bacon",
-    "banana",
-    "bead",
-    "bean cassoulet",
-    "beef braised slice",
-    "beef meatballs",
-    "beef roast",
-    "bellpeper",
-    "black bean puree",
-    "bok choy",
-    "bramata",
-    "bread without crust",
-    "brocoli",
-    "capuns",
-    "chili with vegetables",
-    "chives",
-    "chocolate icecream",
-    "cinnamon sugar",
-    "corn",
-    "cream cheese",
-    "croutons",
-    "endive orange salad",
-    "fregola",
-    "fresh cheese praline",
-    "fried onions",
-    "herb cream",
-    "herb semolina slice",
-    "herbs cheese bite",
-    "honey",
-    "kohlrabi",
-    "lamb stew",
-    "lemon roulade",
-    "macaroni and cheese",
-    "margarine",
-    "mashed pasta",
-    "milkcoffee",
-    "muffin",
-    "mustard greens",
-    "nuts",
-    "ovomaltine",
-    "peperonata",
-    "pickle",
-    "pickled cucumber",
-    "pita bread",
-    "pomegranate",
-    "porridge",
-    "protein drink",
-    "pureed beef",
-    "pureed cauliflower",
-    "pureed chicken",
-    "pureed salmon",
-    "quinoa patty",
-    "radish salad",
-    "raspberry yogurt",
-    "red chicory",
-    "roll bread",
-    "rye bread",
-    "sardinian fregola",
-    "seitan strips",
-    "smoked salmon",
-    "spanish tortilla",
-    "spelt dumplings",
-    "spelt goulash",
-    "spring onion",
-    "springroll",
-    "strawberry yogurt",
-    "tilsiter",
-    "tofu",
-    "turkey cold cut",
-    "veal cheek",
-    "vegetable strudel",
-    "veggie crispy bites",
-    "white bean puree",
-    "yeast roll",
-    "apple juice",
-    "bag of ovaltine",
-    "beef tartare",
-    "beetroot",
-    "buttered pretzel",
-    "caper butter sauce",
-    "carrot appetizer",
-    "celery",
-    "cheese plate",
-    "chicken cordon bleu",
-    "chili pepper",
-    "chocolate powder bag",
-    "coffee yogurt",
-    "cold cuts",
-    "cottage cheese",
-    "country cuts",
-    "cranberry",
-    "cress",
-    "dried tomato",
-    "duchess potatoes",
-    "eggplant cordon bleu",
-    "eggplant piccata",
-    "emmental cheese",
-    "fish burger",
-    "fruit",
-    "gnocchi",
-    "gnocchi seitan pan",
-    "golden berry",
-    "grape",
-    "gruyere",
-    "halloumi",
-    "herbs",
-    "hollandaise sauce",
-    "horseradish bouillon",
-    "jam sandwich cookie",
-    "ketchup",
-    "kiwi",
-    "lamb",
-    "lentil ragout",
-    "mashed black beans",
-    "mashed semolina",
-    "mayonnaise",
-    "millet slice",
-    "oil",
-    "olives",
-    "onion",
-    "peanuts",
-    "pear",
-    "peeled carrot",
-    "plum",
-    "potato dumplings",
-    "pureed polenta",
-    "quail breast",
-    "quark",
-    "red cabbage",
-    "red pepperoncini",
-    "rusk",
-    "sachertorte",
-    "shrimps",
-    "sliced quorn",
-    "smoked trout",
-    "sour cabbage",
-    "swedish cake",
-    "sweet and sour carrot",
-    "thin chocolate decoration",
-    "trout tartare",
-    "veal steak",
-    "vegetable stew",
-    "walnut",
-    "whole grain rice cake",
-    "wine",
-    "apple mousse",
-    "apple sauce",
-    "apricot quark",
-    "balsamic sauce",
-    "berry",
-    "blackened",
-    "chanterelle parsley risotto",
-    "cheese ball",
-    "chocolate yogourt",
-    "colorful vegetables for veggie cervalat sausage",
-    "dried apricots",
-    "dried meat",
-    "emmentaler",
-    "energie supplement",
-    "extra protein",
-    "frech salad dressing",
-    "green peas",
-    "italian sauce",
-    "lamb's lettuce (nuesslisalat / nuessli)",
-    "mozzarella salad",
-    "pickles",
-    "plums",
-    "protein supplement",
-    "pumpkin seeds",
-    "raw egg",
-    "salt",
-    "snow peas",
-    "stawberry yogourt",
-    "sugar",
-    "toasted bread",
-    "turnip cabbage",
-    "\"salade nicoise\"",
-    "aufschnittteller",
-    "aufschnittteller vvg",
-    "broth for halibut",
-    "cabbage",
-    "cacao powder",
-    "choernlibroetli",
-    "endive",
-    "energy cream",
-    "lactose free dessert",
-    "oversoaked cauliflower",
-    "peppermint",
-    "quorn strips in cream sauce",
-    "roesti",
-    "salt and pepper",
-    "scrambled egg",
-    "vanilla ice",
-    "vegan nuggets",
-    "baked chickpea",
-    "chocolate cake",
-    "mozzarella",
-    "thyme",
-    "tilster cheese",
-    "turmeric",
-    "small sauce-glass",
-    "white plate",
-    "shallow bowl",
-    "caesar salad",
-    "parmesan dressing",
-    "egg cooked",
-    "toast croutons",
-    "parmesan shavings",
-    "white plate without rim",
-    "soup of the day ratatouille cream",
-    "soup-bowl",
-    "finger-shaped potato dumplings (schupfnudeln)",
-    "hioumi",
-    "natural yogurt",
-    "beans green",
-    "horn-shaped pasta (hoernli)",
-    "big sauce-glass",
-    "soup of the day artichoke",
-    "glass fruitsalad-bowl",
-    "vanilla cream puffs",
-    "small quadratic plate-bowl",
-    "basil pesto",
-    "quadratic dessert-plate",
-    "sausage and cheese salad",
-    "lollo bianco",
-    "house bread",
-    "soup of the day potato",
-    "vegetarian bami goreng",
-    "soup of the day broccoli cream",
-    "vegetable strips",
-    "saffron herb sauce",
-    "vegetable strips saffron-herb sauce",
-    "pureed green balls",
-    "pureed food in a special shape",
-    "pureed meat slices",
-    "pureed food in oval shape",
-    "pureed broccoli",
-    "pureed mashed potatoes",
-    "sprout vegetables",
-    "scallion",
-    "herbal rice",
-    "soup of the day curry cream",
-    "paneer",
-    "quinoa patties",
-    "vegetables for quinoa patties",
-    "turkey ham",
-    "pineapple",
-    "onion red",
-    "barley risotto",
-    "lemon panna cotta",
-    "soup of the day yellow pea",
-    "dill mashed potatoes",
-    "salmon cubes marinated",
-    "brown sauce",
-    "pureed food in pyramid shape",
-    "penne rigate",
-    "pureed balls",
-    "raspberry mousse in pyramid shape",
-    "white sauce",
-    "round raspberry mousse",
-    "slices",
-    "poultry stew",
-    "pureed chicken thigh",
-    "pureed fries",
-    "pureed sausage",
-    "plate with red rim",
-    "veggie swiss macaroni and cheese",
-    "poulet",
-    "boiled meat salad seed oil",
-    "vegetable patch",
-    "boiled meat",
-    "currant sheet cake",
-    "bulgur sauce",
-    "sliced seitan",
-    "oyster mushrooms",
-    "vegetables for green spelt risotto",
-    "green spelt risotto",
-    "bouillon",
-    "cold chicken breast",
-    "soup of the day carrot cream",
-    "curry dip",
-    "soup of the day lentil ginger",
-    "poulet cordon bleu",
-    "pilau rice",
-    "roasted cauliflower",
-    "sauce for sliced seitan",
-    "small plastic cup",
-    "overly soft thick brie cheese",
-    "overly soft cottage cheese",
-    "meat cheese",
-    "lyonnaise potatoes",
-    "oversoaked sliced veal",
-    "overly soft cream cheese",
-    "overly soft thin brie cheese",
-    "currants",
-    "soup of the day bell peppers",
-    "sliced quorn zurich style",
-    "colorful vegetables from zuchetti peas carrots and beans",
-    "bread dumplings",
-    "sauce poultry ragout",
-    "banana organic",
-    "lye croissant",
-    "lid on the ground",
-    "uncovered jug",
-    "jug covered with lid",
-    "mueesli",
-    "large glass fruitsalad-bowl",
-    "milk roll",
-    "baked vegetables for mozzarella",
-    "chipolata sausage",
-    "rucola",
-    "oven vegetables",
-    "zuchetti",
-    "piccata mass",
-    "vegetables for piccata",
-    "spicy vegetable ragout",
-    "lenses brown",
-    "lenses",
-    "soggy bread without crust",
-    "big square plate",
-    "soup of the day mushroom cream",
-    "oversoaked roast beef",
-    "oversoaked food in pyramid shape",
-    "oversoaked chia pudding",
-    "oversoaked mixed roast beef",
-    "cheese sauce",
-    " swiss chard",
-    "oversoaked mixed chickpea curry",
-    "smoked sausage (landjaeger)",
-    "soup of the day leek cream",
-    "vegetables for fregola",
-    "soup of the day banana-coconut",
-    "pickled vegetables",
-    "deli meat cheese",
-    "turkey",
-    "cylindrical transparent shot-glass",
-    "ricotta tortellini",
-    "potato vegetable curry",
-    "soup of the day sweetcorn",
-    "cherry jam",
-    "coffee cup",
-    "coffee plate",
-    "appenzeller cheese",
-    "green spelt dumplings",
-    "vegetable ragout for green spelt dumplings",
-    "chicken thigh steak",
-    "soup of the day tomatoes",
-    "vegetable salad for ham",
-    "country smoked ham",
-    "lye rolls",
-    "antipasti vegetables",
-    "tagliatelle tomato pesto antipasti",
-    "soup of the day beetroot",
-    "bell pepper stew",
-    "pineapple-quark-mousse",
-    "quinoa salad",
-    "dried tomatoes",
-    "endives orange salad",
-    "orange fillet",
-    "mascarpone",
-    "shiitake",
-    "little glass bowl",
-    "vegetable salad for quinoa",
-    "asian dip",
-    "potato hash brown (roesti) with vegetables",
-    "oversoaked salmon fillet",
-    "oversoaked chickpea puree",
-    "port wine pears rucola risotto",
-    "soup of the day barley",
-    "gorgonzola",
-    "creamy polenta medium",
-    "beef patties in juicy sauce",
-    "merlot sauce",
-    "oversoaked perch fillet",
-    "oversoft food in crescent shape",
-    "rocket risotto",
-    "oversoaked bell peppers",
-    "oversoakeboiled beef",
-    "oversoakeboiled polenta",
-    "oversoaked carrots",
-    "soft zuchetti",
-    "veggie cervalat sausage",
-    "grisons barley soup",
-    "soup of the day cauliflower cream",
-    "herbal semolina slice",
-    "crispy vegetable roll",
-    "soup of the day parmesan foam",
-    "gnocchi pan tofu",
-    "homemade fishburgers",
-    "soup of the day zucchetti",
-    "egg vinaigrette",
-    "cheesy soft egg noodles (kaesespaetzle)",
-    "fennel salad for bowl",
-    "tree nut dressing",
-    "spelt marinated",
-    "feta marinated",
-    "beetroot cooked",
-    "oversoaked smoked salmon",
-    "softened panna cotta",
-    "protein bowl",
-    "oversoaked fennel",
-    "oversoaked couscous",
-    "oversoaked turkey plate",
-    "wild rice raw",
-    "homemade veggie burger",
-    "champignon organic",
-    "swiss macaroni and cheese",
-    "cantadou cheese",
-    "sliced beef",
-    "knot rolls",
-    "minced poultry patties",
-    "carbonara",
-    "blueberry",
-    "cold cut meatloaf",
-    "fruit yoghurt",
-    "lollo green",
-    "strawberry yoghurt",
-    "yoghurt",
+    "transparent plate cover",
+    "soup cover",
+    "metallic plate cover",
+    "rectangular metallic cover",
+    "other cover",
+    "plastic wrap",
+    "cover that is above its tableware",
+    "cover that occludes food",
 )
 
+
 def clean_label_name(name: str) -> str:
-    name = re.sub(r'\(.*\)', '', name)
-    name = re.sub(r'_', ' ', name)
-    name = re.sub(r'  ', ' ', name)
+    name = re.sub(r"\(.*\)", "", name)
+    name = re.sub(r"_", " ", name)
+    name = re.sub(r"  ", " ", name)
     return name
 
 
@@ -645,12 +43,12 @@ def chunks(lst: list, n: int) -> list:
     """Yield successive n-sized chunks from lst."""
     all_ = []
     for i in range(0, len(lst), n):
-        data_index = lst[i:i + n]
+        data_index = lst[i : i + n]
         all_.append(data_index)
     counter = 0
     for i in all_:
         counter += len(i)
-    assert (counter == len(lst))
+    assert counter == len(lst)
 
     return all_
 
@@ -666,34 +64,30 @@ class GroundingDINO(DINO):
     <https://github.com/IDEA-Research/GroundingDINO>`_.
     """
 
-    def __init__(self,
-                 language_model,
-                 *args,
-                 use_autocast=False,
-                 **kwargs) -> None:
-
+    def __init__(self, language_model, *args, use_autocast=False, **kwargs) -> None:
         self.language_model_cfg = language_model
-        self._special_tokens = '. '
+        self._special_tokens = ". "
         self.use_autocast = use_autocast
-        #Set this variable equal to True here if you would like to get logs for debugging
+        # Set this variable equal to True here if you would like to get logs for debugging
         self.logging_enabled = False
         super().__init__(*args, **kwargs)
 
     def _init_layers(self) -> None:
         """Initialize layers except for backbone, neck and bbox_head."""
-        self.positional_encoding = SinePositionalEncoding(
-            **self.positional_encoding)
+        self.positional_encoding = SinePositionalEncoding(**self.positional_encoding)
         self.encoder = GroundingDinoTransformerEncoder(**self.encoder)
         self.decoder = GroundingDinoTransformerDecoder(**self.decoder)
         self.embed_dims = self.encoder.embed_dims
         self.query_embedding = nn.Embedding(self.num_queries, self.embed_dims)
         num_feats = self.positional_encoding.num_feats
-        assert num_feats * 2 == self.embed_dims, \
-            f'embed_dims should be exactly 2 times of num_feats. ' \
-            f'Found {self.embed_dims} and {num_feats}.'
+        assert num_feats * 2 == self.embed_dims, (
+            f"embed_dims should be exactly 2 times of num_feats. "
+            f"Found {self.embed_dims} and {num_feats}."
+        )
 
         self.level_embed = nn.Parameter(
-            torch.Tensor(self.num_feature_levels, self.embed_dims))
+            torch.Tensor(self.num_feature_levels, self.embed_dims)
+        )
         self.memory_trans_fc = nn.Linear(self.embed_dims, self.embed_dims)
         self.memory_trans_norm = nn.LayerNorm(self.embed_dims)
 
@@ -702,7 +96,8 @@ class GroundingDINO(DINO):
         self.text_feat_map = nn.Linear(
             self.language_model.language_backbone.body.language_dim,
             self.embed_dims,
-            bias=True)
+            bias=True,
+        )
 
     def init_weights(self) -> None:
         """Initialize weights for Transformer and other components."""
@@ -711,38 +106,38 @@ class GroundingDINO(DINO):
         nn.init.xavier_uniform_(self.text_feat_map.weight.data)
 
     def to_enhance_text_prompts(self, original_caption, enhanced_text_prompts):
-        caption_string = ''
+        caption_string = ""
         tokens_positive = []
         for idx, word in enumerate(original_caption):
             if word in enhanced_text_prompts:
                 enhanced_text_dict = enhanced_text_prompts[word]
-                if 'prefix' in enhanced_text_dict:
-                    caption_string += enhanced_text_dict['prefix']
+                if "prefix" in enhanced_text_dict:
+                    caption_string += enhanced_text_dict["prefix"]
                 start_i = len(caption_string)
-                if 'name' in enhanced_text_dict:
-                    caption_string += enhanced_text_dict['name']
+                if "name" in enhanced_text_dict:
+                    caption_string += enhanced_text_dict["name"]
                 else:
                     caption_string += word
                 end_i = len(caption_string)
                 tokens_positive.append([[start_i, end_i]])
 
-                if 'suffix' in enhanced_text_dict:
-                    caption_string += enhanced_text_dict['suffix']
+                if "suffix" in enhanced_text_dict:
+                    caption_string += enhanced_text_dict["suffix"]
             else:
                 tokens_positive.append(
-                    [[len(caption_string),
-                      len(caption_string) + len(word)]])
+                    [[len(caption_string), len(caption_string) + len(word)]]
+                )
                 caption_string += word
             caption_string += self._special_tokens
         return caption_string, tokens_positive
 
     def to_plain_text_prompts(self, original_caption):
-        caption_string = ''
+        caption_string = ""
         tokens_positive = []
         for idx, word in enumerate(original_caption):
             tokens_positive.append(
-                [[len(caption_string),
-                  len(caption_string) + len(word)]])
+                [[len(caption_string), len(caption_string) + len(word)]]
+            )
             caption_string += word
             caption_string += self._special_tokens
         return caption_string, tokens_positive
@@ -751,24 +146,25 @@ class GroundingDINO(DINO):
         self,
         original_caption: Union[str, list, tuple],
         custom_entities: bool = False,
-        enhanced_text_prompts: Optional[ConfigType] = None
+        enhanced_text_prompts: Optional[ConfigType] = None,
     ) -> Tuple[dict, str, list]:
         """Get the tokens positive and prompts for the caption."""
         if isinstance(original_caption, (list, tuple)) or custom_entities:
             if custom_entities and isinstance(original_caption, str):
                 original_caption = original_caption.strip(self._special_tokens)
                 original_caption = original_caption.split(self._special_tokens)
-                original_caption = list(
-                    filter(lambda x: len(x) > 0, original_caption))
+                original_caption = list(filter(lambda x: len(x) > 0, original_caption))
 
             original_caption = [clean_label_name(i) for i in original_caption]
 
             if custom_entities and enhanced_text_prompts is not None:
                 caption_string, tokens_positive = self.to_enhance_text_prompts(
-                    original_caption, enhanced_text_prompts)
+                    original_caption, enhanced_text_prompts
+                )
             else:
                 caption_string, tokens_positive = self.to_plain_text_prompts(
-                    original_caption)
+                    original_caption
+                )
 
             # NOTE: Tokenizer in Grounding DINO is different from
             # that in GLIP. The tokenizer in GLIP will pad the
@@ -776,12 +172,12 @@ class GroundingDINO(DINO):
             # in Grounding DINO will not.
             tokenized = self.language_model.tokenizer(
                 [caption_string],
-                padding='max_length'
-                if self.language_model.pad_to_max else 'longest',
-                return_tensors='pt')
+                padding="max_length" if self.language_model.pad_to_max else "longest",
+                return_tensors="pt",
+            )
             entities = original_caption
         else:
-            if not original_caption.endswith('.'):
+            if not original_caption.endswith("."):
                 original_caption = original_caption + self._special_tokens
             # NOTE: Tokenizer in Grounding DINO is different from
             # that in GLIP. The tokenizer in GLIP will pad the
@@ -789,9 +185,9 @@ class GroundingDINO(DINO):
             # in Grounding DINO will not.
             tokenized = self.language_model.tokenizer(
                 [original_caption],
-                padding='max_length'
-                if self.language_model.pad_to_max else 'longest',
-                return_tensors='pt')
+                padding="max_length" if self.language_model.pad_to_max else "longest",
+                return_tensors="pt",
+            )
             tokens_positive, noun_phrases = run_ner(original_caption)
             entities = noun_phrases
             caption_string = original_caption
@@ -803,9 +199,12 @@ class GroundingDINO(DINO):
             tokenized,
             tokens_positive,
             max_num_entities=self.bbox_head.cls_branches[
-                self.decoder.num_layers].max_text_len)
+                self.decoder.num_layers
+            ].max_text_len,
+        )
         positive_map_label_to_token = create_positive_map_label_to_token(
-            positive_map, plus=1)
+            positive_map, plus=1
+        )
         return positive_map_label_to_token, positive_map
 
     def get_tokens_positive_and_prompts(
@@ -830,59 +229,68 @@ class GroundingDINO(DINO):
         """
         if tokens_positive is not None:
             if tokens_positive == -1:
-                if not original_caption.endswith('.'):
+                if not original_caption.endswith("."):
                     original_caption = original_caption + self._special_tokens
                 return None, original_caption, None, original_caption
             else:
-                if not original_caption.endswith('.'):
+                if not original_caption.endswith("."):
                     original_caption = original_caption + self._special_tokens
                 tokenized = self.language_model.tokenizer(
                     [original_caption],
-                    padding='max_length'
-                    if self.language_model.pad_to_max else 'longest',
-                    return_tensors='pt')
-                positive_map_label_to_token, positive_map = \
-                    self.get_positive_map(tokenized, tokens_positive)
+                    padding="max_length"
+                    if self.language_model.pad_to_max
+                    else "longest",
+                    return_tensors="pt",
+                )
+                positive_map_label_to_token, positive_map = self.get_positive_map(
+                    tokenized, tokens_positive
+                )
 
                 entities = []
                 for token_positive in tokens_positive:
                     instance_entities = []
                     for t in token_positive:
-                        instance_entities.append(original_caption[t[0]:t[1]])
-                    entities.append(' / '.join(instance_entities))
-                return positive_map_label_to_token, original_caption, \
-                    positive_map, entities
+                        instance_entities.append(original_caption[t[0] : t[1]])
+                    entities.append(" / ".join(instance_entities))
+                return (
+                    positive_map_label_to_token,
+                    original_caption,
+                    positive_map,
+                    entities,
+                )
 
-        chunked_size = self.test_cfg.get('chunked_size', -1)
+        chunked_size = self.test_cfg.get("chunked_size", -1)
         if not self.training and chunked_size > 0:
-            assert isinstance(original_caption,
-                              (list, tuple)) or custom_entities is True
+            assert (
+                isinstance(original_caption, (list, tuple)) or custom_entities is True
+            )
             all_output = self.get_tokens_positive_and_prompts_chunked(
-                original_caption, enhanced_text_prompt)
-            positive_map_label_to_token, \
-                caption_string, \
-                positive_map, \
-                entities = all_output
+                original_caption, enhanced_text_prompt
+            )
+            positive_map_label_to_token, caption_string, positive_map, entities = (
+                all_output
+            )
         else:
-            tokenized, caption_string, tokens_positive, entities = \
+            tokenized, caption_string, tokens_positive, entities = (
                 self.get_tokens_and_prompts(
-                    original_caption, custom_entities, enhanced_text_prompt)
+                    original_caption, custom_entities, enhanced_text_prompt
+                )
+            )
             positive_map_label_to_token, positive_map = self.get_positive_map(
-                tokenized, tokens_positive)
-        return positive_map_label_to_token, caption_string, \
-            positive_map, entities
+                tokenized, tokens_positive
+            )
+        return positive_map_label_to_token, caption_string, positive_map, entities
 
     def get_tokens_positive_and_prompts_chunked(
-            self,
-            original_caption: Union[list, tuple],
-            enhanced_text_prompts: Optional[ConfigType] = None):
-        chunked_size = self.test_cfg.get('chunked_size', -1)
+        self,
+        original_caption: Union[list, tuple],
+        enhanced_text_prompts: Optional[ConfigType] = None,
+    ):
+        chunked_size = self.test_cfg.get("chunked_size", -1)
         original_caption = [clean_label_name(i) for i in original_caption]
 
         original_caption_chunked = chunks(original_caption, chunked_size)
-        ids_chunked = chunks(
-            list(range(1,
-                       len(original_caption) + 1)), chunked_size)
+        ids_chunked = chunks(list(range(1, len(original_caption) + 1)), chunked_size)
 
         positive_map_label_to_token_chunked = []
         caption_string_chunked = []
@@ -892,29 +300,36 @@ class GroundingDINO(DINO):
         for i in range(len(ids_chunked)):
             if enhanced_text_prompts is not None:
                 caption_string, tokens_positive = self.to_enhance_text_prompts(
-                    original_caption_chunked[i], enhanced_text_prompts)
+                    original_caption_chunked[i], enhanced_text_prompts
+                )
             else:
                 caption_string, tokens_positive = self.to_plain_text_prompts(
-                    original_caption_chunked[i])
-            tokenized = self.language_model.tokenizer([caption_string],
-                                                      return_tensors='pt')
+                    original_caption_chunked[i]
+                )
+            tokenized = self.language_model.tokenizer(
+                [caption_string], return_tensors="pt"
+            )
             if tokenized.input_ids.shape[1] > self.language_model.max_tokens:
-                warnings.warn('Inputting a text that is too long will result '
-                              'in poor prediction performance. '
-                              'Please reduce the --chunked-size.')
+                warnings.warn(
+                    "Inputting a text that is too long will result "
+                    "in poor prediction performance. "
+                    "Please reduce the --chunked-size."
+                )
             positive_map_label_to_token, positive_map = self.get_positive_map(
-                tokenized, tokens_positive)
+                tokenized, tokens_positive
+            )
 
             caption_string_chunked.append(caption_string)
-            positive_map_label_to_token_chunked.append(
-                positive_map_label_to_token)
+            positive_map_label_to_token_chunked.append(positive_map_label_to_token)
             positive_map_chunked.append(positive_map)
             entities_chunked.append(original_caption_chunked[i])
 
-        return positive_map_label_to_token_chunked, \
-            caption_string_chunked, \
-            positive_map_chunked, \
-            entities_chunked
+        return (
+            positive_map_label_to_token_chunked,
+            caption_string_chunked,
+            positive_map_chunked,
+            entities_chunked,
+        )
 
     def forward_transformer(
         self,
@@ -923,24 +338,33 @@ class GroundingDINO(DINO):
         batch_data_samples: OptSampleList = None,
     ) -> Dict:
         encoder_inputs_dict, decoder_inputs_dict = self.pre_transformer(
-            img_feats, batch_data_samples)
+            img_feats, batch_data_samples
+        )
 
         encoder_outputs_dict = self.forward_encoder(
-            **encoder_inputs_dict, text_dict=text_dict)
+            **encoder_inputs_dict, text_dict=text_dict
+        )
 
         tmp_dec_in, head_inputs_dict = self.pre_decoder(
-            **encoder_outputs_dict, batch_data_samples=batch_data_samples)
+            **encoder_outputs_dict, batch_data_samples=batch_data_samples
+        )
         decoder_inputs_dict.update(tmp_dec_in)
 
         decoder_outputs_dict = self.forward_decoder(**decoder_inputs_dict)
         head_inputs_dict.update(decoder_outputs_dict)
         return head_inputs_dict
 
-    def forward_encoder(self, feat: Tensor, feat_mask: Tensor,
-                        feat_pos: Tensor, spatial_shapes: Tensor,
-                        level_start_index: Tensor, valid_ratios: Tensor,
-                        text_dict: Dict) -> Dict:
-        text_token_mask = text_dict['text_token_mask']
+    def forward_encoder(
+        self,
+        feat: Tensor,
+        feat_mask: Tensor,
+        feat_pos: Tensor,
+        spatial_shapes: Tensor,
+        level_start_index: Tensor,
+        valid_ratios: Tensor,
+        text_dict: Dict,
+    ) -> Dict:
+        text_token_mask = text_dict["text_token_mask"]
         memory, memory_text = self.encoder(
             query=feat,
             query_pos=feat_pos,
@@ -949,16 +373,18 @@ class GroundingDINO(DINO):
             level_start_index=level_start_index,
             valid_ratios=valid_ratios,
             # for text encoder
-            memory_text=text_dict['embedded'],
+            memory_text=text_dict["embedded"],
             text_attention_mask=~text_token_mask,
-            position_ids=text_dict['position_ids'],
-            text_self_attention_masks=text_dict['masks'])
+            position_ids=text_dict["position_ids"],
+            text_self_attention_masks=text_dict["masks"],
+        )
         encoder_outputs_dict = dict(
             memory=memory,
             memory_mask=feat_mask,
             spatial_shapes=spatial_shapes,
             memory_text=memory_text,
-            text_token_mask=text_token_mask)
+            text_token_mask=text_token_mask,
+        )
         return encoder_outputs_dict
 
     def pre_decoder(
@@ -973,40 +399,47 @@ class GroundingDINO(DINO):
         bs, _, c = memory.shape
 
         output_memory, output_proposals = self.gen_encoder_output_proposals(
-            memory, memory_mask, spatial_shapes)
+            memory, memory_mask, spatial_shapes
+        )
 
-        enc_outputs_class = self.bbox_head.cls_branches[
-            self.decoder.num_layers](output_memory, memory_text,
-                                     text_token_mask)
+        enc_outputs_class = self.bbox_head.cls_branches[self.decoder.num_layers](
+            output_memory, memory_text, text_token_mask
+        )
         cls_out_features = self.bbox_head.cls_branches[
-            self.decoder.num_layers].max_text_len
-        enc_outputs_coord_unact = self.bbox_head.reg_branches[
-            self.decoder.num_layers](output_memory) + output_proposals
+            self.decoder.num_layers
+        ].max_text_len
+        enc_outputs_coord_unact = (
+            self.bbox_head.reg_branches[self.decoder.num_layers](output_memory)
+            + output_proposals
+        )
 
         # NOTE The DINO selects top-k proposals according to scores of
         # multi-class classification, while DeformDETR, where the input
         # is `enc_outputs_class[..., 0]` selects according to scores of
         # binary classification.
         topk_indices = torch.topk(
-            enc_outputs_class.max(-1)[0], k=self.num_queries, dim=1)[1]
+            enc_outputs_class.max(-1)[0], k=self.num_queries, dim=1
+        )[1]
 
         topk_score = torch.gather(
-            enc_outputs_class, 1,
-            topk_indices.unsqueeze(-1).repeat(1, 1, cls_out_features))
+            enc_outputs_class,
+            1,
+            topk_indices.unsqueeze(-1).repeat(1, 1, cls_out_features),
+        )
         topk_coords_unact = torch.gather(
-            enc_outputs_coord_unact, 1,
-            topk_indices.unsqueeze(-1).repeat(1, 1, 4))
+            enc_outputs_coord_unact, 1, topk_indices.unsqueeze(-1).repeat(1, 1, 4)
+        )
         topk_coords = topk_coords_unact.sigmoid()
         topk_coords_unact = topk_coords_unact.detach()
 
         query = self.query_embedding.weight[:, None, :]
         query = query.repeat(1, bs, 1).transpose(0, 1)
         if self.training:
-            dn_label_query, dn_bbox_query, dn_mask, dn_meta = \
-                self.dn_query_generator(batch_data_samples)
+            dn_label_query, dn_bbox_query, dn_mask, dn_meta = self.dn_query_generator(
+                batch_data_samples
+            )
             query = torch.cat([dn_label_query, query], dim=1)
-            reference_points = torch.cat([dn_bbox_query, topk_coords_unact],
-                                         dim=1)
+            reference_points = torch.cat([dn_bbox_query, topk_coords_unact], dim=1)
         else:
             reference_points = topk_coords_unact
             dn_mask, dn_meta = None, None
@@ -1023,24 +456,27 @@ class GroundingDINO(DINO):
         # NOTE DINO calculates encoder losses on scores and coordinates
         # of selected top-k encoder queries, while DeformDETR is of all
         # encoder queries.
-        head_inputs_dict = dict(
-            enc_outputs_class=topk_score,
-            enc_outputs_coord=topk_coords,
-            dn_meta=dn_meta) if self.training else dict()
+        head_inputs_dict = (
+            dict(
+                enc_outputs_class=topk_score,
+                enc_outputs_coord=topk_coords,
+                dn_meta=dn_meta,
+            )
+            if self.training
+            else dict()
+        )
         # append text_feats to head_inputs_dict
-        head_inputs_dict['memory_text'] = memory_text
-        head_inputs_dict['text_token_mask'] = text_token_mask
+        head_inputs_dict["memory_text"] = memory_text
+        head_inputs_dict["text_token_mask"] = text_token_mask
         return decoder_inputs_dict, head_inputs_dict
 
-
-    def loss(self, batch_inputs: Tensor, batch_data_samples: SampleList) -> Union[dict, list]:
-        text_prompts = [
-            data_samples.text for data_samples in batch_data_samples
-        ]
+    def loss(
+        self, batch_inputs: Tensor, batch_data_samples: SampleList
+    ) -> Union[dict, list]:
+        text_prompts = [data_samples.text for data_samples in batch_data_samples]
 
         gt_labels = [
-            data_samples.gt_instances.labels
-            for data_samples in batch_data_samples
+            data_samples.gt_instances.labels for data_samples in batch_data_samples
         ]
 
         ####################### custom #########################
@@ -1049,34 +485,35 @@ class GroundingDINO(DINO):
         # Run this code when creating the annotations and add 'tokens_positive' to each annotation
         aug_text_prompts = [ALL_LABELS]
         aug_label_list = aug_text_prompts[0]
-#         # Split aug_label_list into chunks that fit within the model's max token limit
-#         # ToDo: do not hardcode factor of 5, but count number of tokens
-#         chunked_aug_label_list = chunks(aug_label_list, self.language_model.max_tokens // 5)
+        #         # Split aug_label_list into chunks that fit within the model's max token limit
+        #         # ToDo: do not hardcode factor of 5, but count number of tokens
+        #         chunked_aug_label_list = chunks(aug_label_list, self.language_model.max_tokens // 5)
 
-#         aug_tokens_positive = []
-#         for chunk in chunked_aug_label_list:
-#             _, _, tokens_positive, _ = self.get_tokens_and_prompts(chunk, True)
-#             aug_tokens_positive.extend(tokens_positive)
+        #         aug_tokens_positive = []
+        #         for chunk in chunked_aug_label_list:
+        #             _, _, tokens_positive, _ = self.get_tokens_and_prompts(chunk, True)
+        #             aug_tokens_positive.extend(tokens_positive)
         #######################################################
 
-        if 'tokens_positive' in batch_data_samples[0]:
+        if "tokens_positive" in batch_data_samples[0]:
             tokens_positive = [
-                data_samples.tokens_positive
-                for data_samples in batch_data_samples
+                data_samples.tokens_positive for data_samples in batch_data_samples
             ]
             positive_maps = []
             for token_positive, text_prompt, gt_label in zip(
-                    tokens_positive, text_prompts, gt_labels):
+                tokens_positive, text_prompts, gt_labels
+            ):
                 tokenized = self.language_model.tokenizer(
                     [text_prompt],
-                    padding='max_length'
-                    if self.language_model.pad_to_max else 'longest',
-                    return_tensors='pt')
+                    padding="max_length"
+                    if self.language_model.pad_to_max
+                    else "longest",
+                    return_tensors="pt",
+                )
                 new_tokens_positive = [
                     token_positive[label.item()] for label in gt_label
                 ]
-                _, positive_map = self.get_positive_map(
-                    tokenized, new_tokens_positive)
+                _, positive_map = self.get_positive_map(tokenized, new_tokens_positive)
                 positive_maps.append(positive_map)
             new_text_prompts = text_prompts
         else:
@@ -1085,9 +522,9 @@ class GroundingDINO(DINO):
             if len(set(text_prompts)) == 1:
                 # All the text prompts are the same,
                 # so there is no need to calculate them multiple times.
-                tokenized, caption_string, tokens_positive, entities = \
-                    self.get_tokens_and_prompts(
-                        text_prompts[0], True)
+                tokenized, caption_string, tokens_positive, entities = (
+                    self.get_tokens_and_prompts(text_prompts[0], True)
+                )
                 new_text_prompts = [caption_string] * len(batch_inputs)
                 for gt_label in gt_labels:
                     if do_closed_set_training:
@@ -1099,81 +536,99 @@ class GroundingDINO(DINO):
                             tokens_positive[label] for label in gt_label
                         ]
                         _, positive_map = self.get_positive_map(
-                            tokenized, new_tokens_positive)
+                            tokenized, new_tokens_positive
+                        )
                         positive_maps.append(positive_map)
                     else:  # open-set training
                         new_tokens_positive = self.get_tokens_positive_from_prompt(
-                           gt_label, entities, tokens_positive, aug_label_list)
+                            gt_label, entities, tokens_positive, aug_label_list
+                        )
                         if self.logging_enabled:
                             print(f"caption_string: {caption_string}")
                             print(f"gt_label: {gt_label}")
                             print(f"new_tokens_positive: {new_tokens_positive}")
                         _, positive_map = self.get_positive_map(
-                            tokenized, new_tokens_positive)
+                            tokenized, new_tokens_positive
+                        )
                         if self.logging_enabled:
                             print(f"positive_map: {positive_map}")
                         positive_maps.append(positive_map)
 
             else:
                 for text_prompt, gt_label in zip(text_prompts, gt_labels):
-                    tokenized, caption_string, tokens_positive, entities = \
-                        self.get_tokens_and_prompts(
-                            text_prompt, True) 
+                    tokenized, caption_string, tokens_positive, entities = (
+                        self.get_tokens_and_prompts(text_prompt, True)
+                    )
                     new_text_prompts.append(caption_string)
                     if do_closed_set_training:
                         new_tokens_positive = [
                             tokens_positive[label] for label in gt_label
                         ]
                         _, positive_map = self.get_positive_map(
-                            tokenized, new_tokens_positive)
+                            tokenized, new_tokens_positive
+                        )
                         positive_maps.append(positive_map)
                     else:  # open-set training
-                        new_tokens_positive = self.get_tokens_positive_from_prompt(gt_label, entities, tokens_positive, aug_label_list)
+                        new_tokens_positive = self.get_tokens_positive_from_prompt(
+                            gt_label, entities, tokens_positive, aug_label_list
+                        )
                         if self.logging_enabled:
                             print(f"caption_string: {caption_string}")
                             print(f"gt_label: {gt_label}")
                             print(f"new_tokens_positive: {new_tokens_positive}")
                         _, positive_map = self.get_positive_map(
-                            tokenized, new_tokens_positive)
+                            tokenized, new_tokens_positive
+                        )
                         if self.logging_enabled:
                             print(f"positive_map: {positive_map}")
                         positive_maps.append(positive_map)
 
         text_dict = self.language_model(new_text_prompts)
         if self.text_feat_map is not None:
-            text_dict['embedded'] = self.text_feat_map(text_dict['embedded'])
+            text_dict["embedded"] = self.text_feat_map(text_dict["embedded"])
 
         for i, data_samples in enumerate(batch_data_samples):
-            positive_map = positive_maps[i].to(
-                batch_inputs.device).bool().float()
-            text_token_mask = text_dict['text_token_mask'][i]
+            positive_map = positive_maps[i].to(batch_inputs.device).bool().float()
+            text_token_mask = text_dict["text_token_mask"][i]
             data_samples.gt_instances.positive_maps = positive_map
-            data_samples.gt_instances.text_token_mask = \
-                text_token_mask.unsqueeze(0).repeat(
-                    len(positive_map), 1)
+            data_samples.gt_instances.text_token_mask = text_token_mask.unsqueeze(
+                0
+            ).repeat(len(positive_map), 1)
         if self.use_autocast:
             with autocast(enabled=True):
                 visual_features = self.extract_feat(batch_inputs)
         else:
             visual_features = self.extract_feat(batch_inputs)
-        head_inputs_dict = self.forward_transformer(visual_features, text_dict,
-                                                    batch_data_samples)
+        head_inputs_dict = self.forward_transformer(
+            visual_features, text_dict, batch_data_samples
+        )
 
         losses = self.bbox_head.loss(
-            **head_inputs_dict, batch_data_samples=batch_data_samples)
+            **head_inputs_dict, batch_data_samples=batch_data_samples
+        )
         return losses
-    
-    def get_tokens_positive_from_prompt(self, gt_label, entities, tokens_positive, aug_label_list):
+
+    def get_tokens_positive_from_prompt(
+        self, gt_label, entities, tokens_positive, aug_label_list
+    ):
         if self.logging_enabled:
-            print(f"Entering get_tokens_positive_from_prompt with gt_label: {gt_label}, entities: {entities}, aug_label_list: {aug_label_list}")
+            print(
+                f"Entering get_tokens_positive_from_prompt with gt_label: {gt_label}, entities: {entities}, aug_label_list: {aug_label_list}"
+            )
             print(f"tokens_positive: {tokens_positive}")
 
         new_tokens_positive = []
         for label in gt_label:
-            raw_label_text = aug_label_list[label.item()]  # Get the corresponding string from the augmented label list         
-            label_text = clean_label_name(raw_label_text)  # Clean the label using the clean_label_name method         
-            if self.logging_enabled:             
-                print(f"Processing label: {label}, raw_label_text: {raw_label_text}, cleaned_label_text: {label_text}")         
+            raw_label_text = aug_label_list[
+                label.item()
+            ]  # Get the corresponding string from the augmented label list
+            label_text = clean_label_name(
+                raw_label_text
+            )  # Clean the label using the clean_label_name method
+            if self.logging_enabled:
+                print(
+                    f"Processing label: {label}, raw_label_text: {raw_label_text}, cleaned_label_text: {label_text}"
+                )
             for idx, word in enumerate(entities):
                 if self.logging_enabled:
                     print(f"Checking word: {word}, idx: {idx}")
@@ -1182,12 +637,10 @@ class GroundingDINO(DINO):
                     break
 
         if self.logging_enabled:
-            print(f"Exiting get_tokens_positive_from_prompt with new_tokens_positive: {new_tokens_positive}")
+            print(
+                f"Exiting get_tokens_positive_from_prompt with new_tokens_positive: {new_tokens_positive}"
+            )
         return new_tokens_positive
-
-
-
-
 
     def predict(self, batch_inputs, batch_data_samples, rescale: bool = True):
         text_prompts = []
@@ -1195,13 +648,13 @@ class GroundingDINO(DINO):
         tokens_positives = []
         for data_samples in batch_data_samples:
             text_prompts.append(data_samples.text)
-            if 'caption_prompt' in data_samples:
+            if "caption_prompt" in data_samples:
                 enhanced_text_prompts.append(data_samples.caption_prompt)
             else:
                 enhanced_text_prompts.append(None)
-            tokens_positives.append(data_samples.get('tokens_positive', None))
+            tokens_positives.append(data_samples.get("tokens_positive", None))
 
-        if 'custom_entities' in batch_data_samples[0]:
+        if "custom_entities" in batch_data_samples[0]:
             # Assuming that the `custom_entities` flag
             # inside a batch is always the same. For single image inference
             custom_entities = batch_data_samples[0].custom_entities
@@ -1212,20 +665,24 @@ class GroundingDINO(DINO):
             # so there is no need to calculate them multiple times.
             _positive_maps_and_prompts = [
                 self.get_tokens_positive_and_prompts(
-                    text_prompts[0], custom_entities, enhanced_text_prompts[0],
-                    tokens_positives[0])
+                    text_prompts[0],
+                    custom_entities,
+                    enhanced_text_prompts[0],
+                    tokens_positives[0],
+                )
             ] * len(batch_inputs)
         else:
             _positive_maps_and_prompts = [
-                self.get_tokens_positive_and_prompts(text_prompt,
-                                                     custom_entities,
-                                                     enhanced_text_prompt,
-                                                     tokens_positive)
+                self.get_tokens_positive_and_prompts(
+                    text_prompt, custom_entities, enhanced_text_prompt, tokens_positive
+                )
                 for text_prompt, enhanced_text_prompt, tokens_positive in zip(
-                    text_prompts, enhanced_text_prompts, tokens_positives)
+                    text_prompts, enhanced_text_prompts, tokens_positives
+                )
             ]
         token_positive_maps, text_prompts, _, entities = zip(
-            *_positive_maps_and_prompts)
+            *_positive_maps_and_prompts
+        )
 
         # image feature extraction
         visual_feats = self.extract_feat(batch_inputs)
@@ -1244,18 +701,18 @@ class GroundingDINO(DINO):
                 text_dict = self.language_model(text_prompts_once)
                 # text feature map layer
                 if self.text_feat_map is not None:
-                    text_dict['embedded'] = self.text_feat_map(
-                        text_dict['embedded'])
+                    text_dict["embedded"] = self.text_feat_map(text_dict["embedded"])
 
-                batch_data_samples[
-                    0].token_positive_map = token_positive_maps_once
+                batch_data_samples[0].token_positive_map = token_positive_maps_once
 
                 head_inputs_dict = self.forward_transformer(
-                    copy.deepcopy(visual_feats), text_dict, batch_data_samples)
+                    copy.deepcopy(visual_feats), text_dict, batch_data_samples
+                )
                 pred_instances = self.bbox_head.predict(
                     **head_inputs_dict,
                     rescale=rescale,
-                    batch_data_samples=batch_data_samples)[0]
+                    batch_data_samples=batch_data_samples,
+                )[0]
 
                 if len(pred_instances) > 0:
                     pred_instances.labels += count
@@ -1268,8 +725,7 @@ class GroundingDINO(DINO):
             text_dict = self.language_model(list(text_prompts))
             # text feature map layer
             if self.text_feat_map is not None:
-                text_dict['embedded'] = self.text_feat_map(
-                    text_dict['embedded'])
+                text_dict["embedded"] = self.text_feat_map(text_dict["embedded"])
 
             is_rec_tasks = []
             for i, data_samples in enumerate(batch_data_samples):
@@ -1280,14 +736,17 @@ class GroundingDINO(DINO):
                 data_samples.token_positive_map = token_positive_maps[i]
 
             head_inputs_dict = self.forward_transformer(
-                visual_feats, text_dict, batch_data_samples)
+                visual_feats, text_dict, batch_data_samples
+            )
             results_list = self.bbox_head.predict(
                 **head_inputs_dict,
                 rescale=rescale,
-                batch_data_samples=batch_data_samples)
+                batch_data_samples=batch_data_samples,
+            )
 
         for data_sample, pred_instances, entity, is_rec_task in zip(
-                batch_data_samples, results_list, entities, is_rec_tasks):
+            batch_data_samples, results_list, entities, is_rec_tasks
+        ):
             if len(pred_instances) > 0:
                 label_names = []
                 for labels in pred_instances.labels:
@@ -1296,11 +755,12 @@ class GroundingDINO(DINO):
                         continue
                     if labels >= len(entity):
                         warnings.warn(
-                            'The unexpected output indicates an issue with '
-                            'named entity recognition. You can try '
-                            'setting custom_entities=True and running '
-                            'again to see if it helps.')
-                        label_names.append('unobject')
+                            "The unexpected output indicates an issue with "
+                            "named entity recognition. You can try "
+                            "setting custom_entities=True and running "
+                            "again to see if it helps."
+                        )
+                        label_names.append("unobject")
                     else:
                         label_names.append(entity[labels])
                 # for visualization
