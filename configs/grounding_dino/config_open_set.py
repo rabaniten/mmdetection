@@ -256,9 +256,7 @@ default_hooks = dict(
         type="CheckpointHook", interval=5, by_epoch=True, max_keep_ckpts=10
     ),
     sampler_seed=dict(type="DistSamplerSeedHook"),
-    visualization=dict(
-        type="DetVisualizationHook", draw=True, interval=100000, show=False
-    ),
+    visualization=dict(type="DetVisualizationHook", draw=True, interval=10, show=False),
 )
 default_scope = "mmdet"
 env_cfg = dict(
