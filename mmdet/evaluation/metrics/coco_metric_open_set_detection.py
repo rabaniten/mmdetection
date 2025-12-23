@@ -4,18 +4,6 @@ from mmdet.datasets.api_wrappers import COCO
 from mmdet.registry import METRICS
 import torch
 
-# ToDo: not not hardcode label here, check how to access them.
-ALL_LABELS = (
-    "transparent plate cover",
-    "soup cover",
-    "metallic plate cover",
-    "rectangular metallic cover",
-    "other cover",
-    "plastic wrap",
-    "cover that is above its tableware",
-    "cover that occludes food",
-)
-
 
 @METRICS.register_module()
 class OpenSetCOCOMetric(CocoMetric):
@@ -33,8 +21,14 @@ class OpenSetCOCOMetric(CocoMetric):
         # Load COCO ground truth annotations
         self.coco_gt = COCO(self.ann_file)
 
+        # Read categories from annotation file instead of hardcoded
+        categories = self.coco_gt.loadCats(self.coco_gt.getCatIds())
+        all_labels = tuple(
+            cat["name"] for cat in sorted(categories, key=lambda x: x["id"])
+        )
+
         # Mapping: category name → internal label index
-        self.global_prompt_to_index = {name: idx for idx, name in enumerate(ALL_LABELS)}
+        self.global_prompt_to_index = {name: idx for idx, name in enumerate(all_labels)}
 
         print(
             f"✅ Loaded {len(self.global_prompt_to_index)} categories from COCO annotations.",

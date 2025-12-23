@@ -20,17 +20,6 @@ from ..layers.transformer.grounding_dino_layers import (
 from .dino import DINO
 from .glip import create_positive_map, create_positive_map_label_to_token, run_ner
 
-ALL_LABELS = (
-    "transparent plate cover",
-    "soup cover",
-    "metallic plate cover",
-    "rectangular metallic cover",
-    "other cover",
-    "plastic wrap",
-    "cover that is above its tableware",
-    "cover that occludes food",
-)
-
 
 def clean_label_name(name: str) -> str:
     name = re.sub(r"\(.*\)", "", name)
@@ -64,10 +53,13 @@ class GroundingDINO(DINO):
     <https://github.com/IDEA-Research/GroundingDINO>`_.
     """
 
-    def __init__(self, language_model, *args, use_autocast=False, **kwargs) -> None:
+    def __init__(
+        self, language_model, *args, all_labels=None, use_autocast=False, **kwargs
+    ) -> None:
         self.language_model_cfg = language_model
         self._special_tokens = ". "
         self.use_autocast = use_autocast
+        self.all_labels = all_labels or ()
         # Set this variable equal to True here if you would like to get logs for debugging
         self.logging_enabled = False
         super().__init__(*args, **kwargs)
@@ -483,7 +475,7 @@ class GroundingDINO(DINO):
         do_closed_set_training = False
 
         # Run this code when creating the annotations and add 'tokens_positive' to each annotation
-        aug_text_prompts = [ALL_LABELS]
+        aug_text_prompts = [self.all_labels]
         aug_label_list = aug_text_prompts[0]
         #         # Split aug_label_list into chunks that fit within the model's max token limit
         #         # ToDo: do not hardcode factor of 5, but count number of tokens

@@ -19,18 +19,6 @@ import re
 import numpy as np
 
 
-ALL_LABELS = (
-    "transparent plate cover",
-    "soup cover",
-    "metallic plate cover",
-    "rectangular metallic cover",
-    "other cover",
-    "plastic wrap",
-    "cover that is above its tableware",
-    "cover that occludes food",
-)
-
-
 def clean_name(name):
     name = re.sub(r"\(.*\)", "", name)
     name = re.sub(r"_", " ", name)
@@ -299,8 +287,8 @@ class LoadTextAnnotations(BaseTransform):
     # return aug_tokens_positive
 
     def transform(self, results: dict) -> dict:
-        # same classes as in dataset.metadata.classes
-        all_classes_augmented = ALL_LABELS
+        # Get classes from dataset metadata (passed through results)
+        all_classes_augmented = results.get("metainfo", {}).get("classes", ())
 
         if "phrases" in results:
             tokens_positive = [

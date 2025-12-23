@@ -9,19 +9,7 @@ from mmdet.registry import DATASETS
 from .api_wrappers import COCO
 from .base_det_dataset import BaseDetDataset
 
-# ToDo: remove labels here, they can be set dynamically in the config
-
-
-ALL_LABELS = (
-    "transparent plate cover",
-    "soup cover",
-    "metallic plate cover",
-    "rectangular metallic cover",
-    "other cover",
-    "plastic wrap",
-    "cover that is above its tableware",
-    "cover that occludes food",
-)
+# Labels are set dynamically via config metainfo, not hardcoded here
 
 
 @DATASETS.register_module()
@@ -34,10 +22,8 @@ class CocoDataset(BaseDetDataset):
         "\nclosed_set_training\n" if do_closed_set_training else "\nopen set training\n"
     )
 
-    if do_closed_set_training:
-        METAINFO = {"classes": ALL_LABELS}
-    else:  # provide, extra wrong classes for open set training
-        METAINFO = {"classes": ALL_LABELS}
+    # Placeholder - overridden by config's metainfo setting
+    METAINFO = {"classes": ()}
 
     COCOAPI = COCO
     # ann_id is unique in coco dataset.
