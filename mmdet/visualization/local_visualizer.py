@@ -148,42 +148,13 @@ class DetLocalVisualizer(Visualizer):
             areas = (bboxes[:, 3] - bboxes[:, 1]) * (bboxes[:, 2] - bboxes[:, 0])
             scales = _get_adaptive_scales(areas)
 
-            # DEBUG: Log all instance fields to understand the data structure
-            if not hasattr(self, "_logged_instance_keys"):
-                print(
-                    f"🎨 [VISUALIZER] Instance keys: {list(instances.keys())}",
-                    flush=True,
-                )
-                print(
-                    f"🎨 [VISUALIZER] 'label_names' in instances: {'label_names' in instances}",
-                    flush=True,
-                )
-                self._logged_instance_keys = True
-
             for i, (pos, label) in enumerate(zip(positions, labels)):
                 if "label_names" in instances:
                     label_text = instances.label_names[i]
                 else:
-                    # DEBUG: Log label index vs classes length
-                    if i == 0:  # Only log once per batch
-                        print(
-                            f"🎨 [VISUALIZER] Predicted label indices: {labels.tolist()[:10]}...",
-                            flush=True,
-                        )
-                        print(
-                            f"🎨 [VISUALIZER] Max label: {int(max(labels))}, num classes: {len(classes) if classes else 0}",
-                            flush=True,
-                        )
-                    if classes is not None and label >= len(classes):
-                        print(
-                            f"❌ [VISUALIZER] ERROR: label {label} >= len(classes) {len(classes)}",
-                            flush=True,
-                        )
-                        label_text = f"class {label} (OUT OF RANGE)"
-                    else:
-                        label_text = (
-                            classes[label] if classes is not None else f"class {label}"
-                        )
+                    label_text = (
+                        classes[label] if classes is not None else f"class {label}"
+                    )
                 if "scores" in instances:
                     score = round(float(instances.scores[i]) * 100, 1)
                     label_text += f": {score}"
@@ -486,12 +457,6 @@ class DetLocalVisualizer(Visualizer):
         image = image.clip(0, 255).astype(np.uint8)
         classes = self.dataset_meta.get("classes", None)
         palette = self.dataset_meta.get("palette", None)
-
-        # DEBUG: Log what classes the visualizer has
-        print(f"🎨 [VISUALIZER] dataset_meta classes: {classes}", flush=True)
-        print(
-            f"🎨 [VISUALIZER] num classes: {len(classes) if classes else 0}", flush=True
-        )
 
         gt_img_data = None
         pred_img_data = None

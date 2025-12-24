@@ -48,10 +48,6 @@ CLASSES = (
     "cover that occludes food",
 )
 
-# DEBUG: Log what CLASSES are defined in config
-print(f"⚙️ [CONFIG] CLASSES defined: {CLASSES}", flush=True)
-print(f"⚙️ [CONFIG] num CLASSES: {len(CLASSES)}", flush=True)
-
 
 # CLASSES = ('Other',
 #     'banana', 'caramel flan', 'lamb stew', 'carrots', 'bread',

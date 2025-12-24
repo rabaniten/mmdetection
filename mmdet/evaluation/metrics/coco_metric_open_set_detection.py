@@ -11,12 +11,7 @@ class OpenSetCOCOMetric(CocoMetric):
 
     def __init__(self, ann_file, outfile_prefix=None, **kwargs):
         super().__init__(ann_file=ann_file, outfile_prefix=outfile_prefix, **kwargs)
-
         self.ann_file = ann_file
-        print(
-            f"🔍 OpenSetCOCOMetric initialized with annotation file: {self.ann_file}",
-            flush=True,
-        )
 
         # Load COCO ground truth annotations
         self.coco_gt = COCO(self.ann_file)
@@ -29,13 +24,6 @@ class OpenSetCOCOMetric(CocoMetric):
 
         # Mapping: category name → internal label index
         self.global_prompt_to_index = {name: idx for idx, name in enumerate(all_labels)}
-
-        # DEBUG: Log what categories were loaded from annotations
-        print(f"📊 [METRIC] all_labels from annotation: {all_labels}", flush=True)
-        print(
-            f"✅ Loaded {len(self.global_prompt_to_index)} categories from COCO annotations.",
-            flush=True,
-        )
 
     def process(self, data_batch, data_samples):
         """Convert predictions into COCO format before calling standard COCO processing."""

@@ -247,15 +247,12 @@ class LoadTextAnnotations(BaseTransform):
     """Load text annotations for Grounding DINO.
 
     Args:
-        classes (tuple, optional): Tuple of class names for augmentation.
-            If not provided, will try to get from results['metainfo']['classes'].
+        classes (tuple): Tuple of class names for text augmentation.
     """
 
-    def __init__(self, classes=None):
+    def __init__(self, classes=()):
         super().__init__()
-        self.classes = classes or ()
-        print(f"📝 [LoadTextAnnotations] __init__ classes: {self.classes}", flush=True)
-        print(f"📝 [LoadTextAnnotations] num classes: {len(self.classes)}", flush=True)
+        self.classes = classes
 
     # ToDo: refractor this code, replase method choose_n_based_on_probabilities,
     # define probabilities as input (and normalize them to be sure that they sum up to one)
@@ -300,10 +297,7 @@ class LoadTextAnnotations(BaseTransform):
     # return aug_tokens_positive
 
     def transform(self, results: dict) -> dict:
-        # Use classes from __init__, fallback to results metainfo
-        all_classes_augmented = self.classes or results.get("metainfo", {}).get(
-            "classes", ()
-        )
+        all_classes_augmented = self.classes
 
         if "phrases" in results:
             tokens_positive = [

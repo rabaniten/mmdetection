@@ -35,17 +35,6 @@ class CocoDataset(BaseDetDataset):
         Returns:
             List[dict]: A list of annotation.
         """  # noqa: E501
-        # DEBUG: Log what metainfo classes the dataset has
-        print(
-            f"📦 [COCO_DATASET] metainfo classes: {self.metainfo.get('classes', 'NOT SET')}",
-            flush=True,
-        )
-        print(
-            f"📦 [COCO_DATASET] num classes: {len(self.metainfo.get('classes', ()))}",
-            flush=True,
-        )
-        print(f"📦 [COCO_DATASET] ann_file: {self.ann_file}", flush=True)
-
         with get_local_path(
             self.ann_file, backend_args=self.backend_args
         ) as local_path:
