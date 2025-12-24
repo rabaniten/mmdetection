@@ -37,7 +37,20 @@ NUM_WORKER_VAL = 32
 MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
 
 
-CLASSES = ("patient card",)
+CLASSES = (
+    "coffee cup",
+    "coffee jar",
+    "glass",
+    "high bowl",
+    "normal bowl",
+    "other tableware",
+    "plate large",
+    "plate normal",
+    "plate small",
+    "small tableware item",
+    "square bowl",
+    "wide bowl",
+)
 
 
 # CLASSES = ('Other',
