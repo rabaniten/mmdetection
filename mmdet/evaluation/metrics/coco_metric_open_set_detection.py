@@ -7,20 +7,30 @@ import torch
 
 @METRICS.register_module()
 class OpenSetCOCOMetric(CocoMetric):
-    """Custom COCO Evaluator for Open-Set Detection Models in MMDetection."""
+    """Custom COCO Evaluator for Open-Set Detection Models in MMDetection.
 
-    def __init__(self, ann_file, outfile_prefix=None, **kwargs):
+    Args:
+        ann_file (str): Path to COCO annotation file.
+        classes (tuple): Tuple of class names. If provided, uses these instead of
+            reading from annotation file.
+        outfile_prefix (str, optional): Prefix for output files.
+    """
+
+    def __init__(self, ann_file, classes=None, outfile_prefix=None, **kwargs):
         super().__init__(ann_file=ann_file, outfile_prefix=outfile_prefix, **kwargs)
         self.ann_file = ann_file
 
         # Load COCO ground truth annotations
         self.coco_gt = COCO(self.ann_file)
 
-        # Read categories from annotation file instead of hardcoded
-        categories = self.coco_gt.loadCats(self.coco_gt.getCatIds())
-        all_labels = tuple(
-            cat["name"] for cat in sorted(categories, key=lambda x: x["id"])
-        )
+        # Use classes from config if provided, otherwise read from annotation file
+        if classes:
+            all_labels = classes
+        else:
+            categories = self.coco_gt.loadCats(self.coco_gt.getCatIds())
+            all_labels = tuple(
+                cat["name"] for cat in sorted(categories, key=lambda x: x["id"])
+            )
 
         # Mapping: category name → internal label index
         self.global_prompt_to_index = {name: idx for idx, name in enumerate(all_labels)}

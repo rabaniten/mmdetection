@@ -656,20 +656,19 @@ val_cfg = dict(type="ValLoop")
 val_evaluator = dict(
     type="OpenSetCOCOMetric",
     ann_file=ANN_FILE_VALIDATION,
+    classes=CLASSES,
     metric=["bbox"],  # Metrics for both bounding boxes and segmentation
     classwise=True,  # Enable class-wise mAP
 )
 
 vis_backends = [
-    dict(
-        type="LocalVisBackend", save_dir="/opt/ml/checkpoints/vis_results"
-    ),  # Explicitly set save directory
+    dict(type="LocalVisBackend", save_dir="/opt/ml/output/data/visualizations"),
 ]
 visualizer = dict(
     name="visualizer",
     type="DetLocalVisualizer",
     vis_backends=vis_backends,
-    save_dir="/opt/ml/checkpoints/vis_results",  # Explicitly set save directory
+    save_dir="/opt/ml/output/data/visualizations",
 )
 work_dir = "/opt/ml/checkpoints"
 
@@ -726,6 +725,7 @@ custom_imports = dict(
 test_evaluator = dict(
     type="OpenSetCOCOMetric",
     ann_file=ANN_FILE_VALIDATION,
+    classes=CLASSES,
     metric=["bbox"],  # Metrics for bounding boxes
     classwise=True,  # Enable class-wise mAP for detailed evaluation
 )
