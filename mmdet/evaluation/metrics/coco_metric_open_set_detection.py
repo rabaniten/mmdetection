@@ -30,6 +30,8 @@ class OpenSetCOCOMetric(CocoMetric):
         # Mapping: category name → internal label index
         self.global_prompt_to_index = {name: idx for idx, name in enumerate(all_labels)}
 
+        # DEBUG: Log what categories were loaded from annotations
+        print(f"📊 [METRIC] all_labels from annotation: {all_labels}", flush=True)
         print(
             f"✅ Loaded {len(self.global_prompt_to_index)} categories from COCO annotations.",
             flush=True,

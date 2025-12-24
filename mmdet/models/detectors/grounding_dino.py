@@ -62,6 +62,9 @@ class GroundingDINO(DINO):
         self.all_labels = all_labels or ()
         # Set this variable equal to True here if you would like to get logs for debugging
         self.logging_enabled = False
+        # DEBUG: Log what labels the model received
+        print(f"🤖 [GROUNDING_DINO] __init__ all_labels: {self.all_labels}", flush=True)
+        print(f"🤖 [GROUNDING_DINO] num all_labels: {len(self.all_labels)}", flush=True)
         super().__init__(*args, **kwargs)
 
     def _init_layers(self) -> None:

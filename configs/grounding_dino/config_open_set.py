@@ -48,6 +48,10 @@ CLASSES = (
     "cover that occludes food",
 )
 
+# DEBUG: Log what CLASSES are defined in config
+print(f"⚙️ [CONFIG] CLASSES defined: {CLASSES}", flush=True)
+print(f"⚙️ [CONFIG] num CLASSES: {len(CLASSES)}", flush=True)
+
 
 # CLASSES = ('Other',
 #     'banana', 'caramel flan', 'lamb stew', 'carrots', 'bread',
@@ -449,6 +453,7 @@ train_dataloader = dict(
     batch_size=BATCH_SIZE_TRAIN,
     dataset=dict(
         type="CocoDataset",
+        metainfo=metainfo,
         ann_file=ANN_FILE_TRAINING,
         backend_args=None,
         data_prefix=DATA_PREFIX_TRAIN,
@@ -623,6 +628,7 @@ val_dataloader = dict(
     persistent_workers=True,
     dataset=dict(
         type="CocoDataset",
+        metainfo=metainfo,
         # ToDo: load the validation set name dynamically
         ann_file=ANN_FILE_VALIDATION,  # Validation annotations
         data_prefix=DATA_PREFIX_VAL,  # Validation images
@@ -686,6 +692,7 @@ test_dataloader = dict(
     persistent_workers=True,
     dataset=dict(
         type="CocoDataset",
+        metainfo=metainfo,
         ann_file=ANN_FILE_VALIDATION,  # Using validation set for testing
         data_prefix=DATA_PREFIX_VAL,  # Test images from validation dataset
         filter_cfg=dict(filter_empty_gt=False),

@@ -289,6 +289,17 @@ class LoadTextAnnotations(BaseTransform):
     def transform(self, results: dict) -> dict:
         # Get classes from dataset metadata (passed through results)
         all_classes_augmented = results.get("metainfo", {}).get("classes", ())
+        # DEBUG: Log what classes the text transformer received
+        if not hasattr(self, "_logged_classes"):
+            print(
+                f"📝 [TEXT_TRANSFORMER] metainfo classes: {all_classes_augmented}",
+                flush=True,
+            )
+            print(
+                f"📝 [TEXT_TRANSFORMER] num classes: {len(all_classes_augmented)}",
+                flush=True,
+            )
+            self._logged_classes = True
 
         if "phrases" in results:
             tokens_positive = [
