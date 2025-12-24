@@ -37,16 +37,7 @@ NUM_WORKER_VAL = 32
 MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
 
 
-CLASSES = (
-    "transparent plate cover",
-    "soup cover",
-    "metallic plate cover",
-    "rectangular metallic cover",
-    "other cover",
-    "plastic wrap",
-    "cover that is above its tableware",
-    "cover that occludes food",
-)
+CLASSES = ("patient card",)
 
 
 # CLASSES = ('Other',
