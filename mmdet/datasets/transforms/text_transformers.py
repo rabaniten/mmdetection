@@ -244,6 +244,19 @@ class RandomSamplingNegPos(BaseTransform):
 
 @TRANSFORMS.register_module()
 class LoadTextAnnotations(BaseTransform):
+    """Load text annotations for Grounding DINO.
+
+    Args:
+        classes (tuple, optional): Tuple of class names for augmentation.
+            If not provided, will try to get from results['metainfo']['classes'].
+    """
+
+    def __init__(self, classes=None):
+        super().__init__()
+        self.classes = classes or ()
+        print(f"📝 [LoadTextAnnotations] __init__ classes: {self.classes}", flush=True)
+        print(f"📝 [LoadTextAnnotations] num classes: {len(self.classes)}", flush=True)
+
     # ToDo: refractor this code, replase method choose_n_based_on_probabilities,
     # define probabilities as input (and normalize them to be sure that they sum up to one)
     def choose_n_based_on_probabilities(self, probabilities):
@@ -287,19 +300,10 @@ class LoadTextAnnotations(BaseTransform):
     # return aug_tokens_positive
 
     def transform(self, results: dict) -> dict:
-        # Get classes from dataset metadata (passed through results)
-        all_classes_augmented = results.get("metainfo", {}).get("classes", ())
-        # DEBUG: Log what classes the text transformer received
-        if not hasattr(self, "_logged_classes"):
-            print(
-                f"📝 [TEXT_TRANSFORMER] metainfo classes: {all_classes_augmented}",
-                flush=True,
-            )
-            print(
-                f"📝 [TEXT_TRANSFORMER] num classes: {len(all_classes_augmented)}",
-                flush=True,
-            )
-            self._logged_classes = True
+        # Use classes from __init__, fallback to results metainfo
+        all_classes_augmented = self.classes or results.get("metainfo", {}).get(
+            "classes", ()
+        )
 
         if "phrases" in results:
             tokens_positive = [

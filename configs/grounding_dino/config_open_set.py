@@ -462,7 +462,7 @@ train_dataloader = dict(
         pipeline=[
             dict(backend_args=None, type="LoadImageFromFile"),
             dict(type="LoadAnnotations", with_bbox=True),
-            dict(type="LoadTextAnnotations"),
+            dict(type="LoadTextAnnotations", classes=CLASSES),
             dict(prob=0.5, type="RandomFlip"),
             dict(
                 transforms=[
@@ -644,7 +644,7 @@ val_dataloader = dict(
                 type="FixScaleResize",
             ),
             dict(type="LoadAnnotations", with_bbox=True),
-            dict(type="LoadTextAnnotations"),  # For GroundingDINO
+            dict(type="LoadTextAnnotations", classes=CLASSES),  # For GroundingDINO
             dict(
                 meta_keys=(
                     "img_id",
@@ -707,7 +707,7 @@ test_dataloader = dict(
                 type="FixScaleResize",
             ),
             dict(type="LoadAnnotations", with_bbox=True),
-            dict(type="LoadTextAnnotations"),  # For GroundingDINO
+            dict(type="LoadTextAnnotations", classes=CLASSES),  # For GroundingDINO
             dict(
                 meta_keys=(
                     "img_id",
