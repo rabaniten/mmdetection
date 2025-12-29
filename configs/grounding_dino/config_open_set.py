@@ -50,6 +50,7 @@ CLASSES = (
     "small tableware item",
     "square bowl",
     "wide bowl",
+    "tableware",
 )
 
 
