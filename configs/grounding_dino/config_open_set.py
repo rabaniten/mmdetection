@@ -1,7 +1,3 @@
-# mmengine: disable_lazy_import
-# This directive is required because this config uses Python code (os.environ, functions)
-# which is not allowed in mmengine's lazy import mode.
-
 # # Local training and inference
 # LOAD_FROM = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/trained_models/epoch_40.pth'
 
@@ -59,22 +55,12 @@ MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
 def load_classes_from_coco(ann_file):
     """Load category names from a COCO format annotation file."""
     import json
-    import os
-
-    print(f"📂 Loading classes from: {ann_file}")
-    if not os.path.exists(ann_file):
-        raise FileNotFoundError(
-            f"❌ Annotation file not found: {ann_file}\n"
-            f"   Available files in parent dir: {os.listdir(os.path.dirname(ann_file)) if os.path.exists(os.path.dirname(ann_file)) else 'DIR NOT FOUND'}"
-        )
 
     with open(ann_file, "r") as f:
         coco_data = json.load(f)
     # Sort categories by id to ensure consistent ordering
     categories = sorted(coco_data["categories"], key=lambda x: x["id"])
-    class_names = tuple(cat["name"] for cat in categories)
-    print(f"✅ Loaded {len(class_names)} classes: {class_names}")
-    return class_names
+    return tuple(cat["name"] for cat in categories)
 
 
 CLASSES = load_classes_from_coco(ANN_FILE_TRAINING)
