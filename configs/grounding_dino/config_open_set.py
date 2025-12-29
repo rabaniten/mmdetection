@@ -37,19 +37,20 @@ NUM_WORKER_VAL = 32
 MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
 
 
-# Load classes dynamically from COCO annotation file
-def load_classes_from_coco(ann_file):
-    """Load category names from a COCO format annotation file."""
-    import json
-
-    with open(ann_file, "r") as f:
-        coco_data = json.load(f)
-    # Sort categories by id to ensure consistent ordering
-    categories = sorted(coco_data["categories"], key=lambda x: x["id"])
-    return tuple(cat["name"] for cat in categories)
-
-
-CLASSES = load_classes_from_coco(ANN_FILE_TRAINING)
+CLASSES = (
+    "coffee cup",
+    "coffee jar",
+    "glass",
+    "high bowl",
+    "normal bowl",
+    "other tableware",
+    "plate large",
+    "plate normal",
+    "plate small",
+    "small tableware item",
+    "square bowl",
+    "wide bowl",
+)
 
 
 # CLASSES = ('Other',
