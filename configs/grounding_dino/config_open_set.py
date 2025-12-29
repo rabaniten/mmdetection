@@ -1,50 +1,23 @@
-# mmengine: disable_lazy_import
-# This directive is required because this config uses Python code (os.environ, functions)
-# which is not allowed in mmengine's lazy import mode.
-
-# # Local training and inference
-# LOAD_FROM = '/root/Sofia/Genioos/sofia_thesis_project/detection_models/grounding_dino/trained_models/epoch_40.pth'
-
-# RESUME = False
-
-# ANN_FILE_TRAINING = '/root/Sofia/Genioos/sofia_thesis_project/instance_segmentation_models/out_dirs/bbox_and_mask_annotations_obtained_from_gt_and_SAM_stadtpital_waid_train_data_coco_format_corrected_no_crowds_removed_small_masks.json'
-# ANN_FILE_VALIDATION = '/root/Sofia/Genioos/sofia_thesis_project/instance_segmentation_models/out_dirs/bbox_and_mask_annotations_obtained_from_gt_and_SAM_stadtpital_waid_val_data_coco_format_corrected_no_crowds_removed_small_masks.json'
-
-# DATA_PREFIX_TRAIN = dict(img= '/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_training/images/')
-# DATA_PREFIX_VAL = dict(img='/root/Sofia/Genioos/data/Stadtspital-Waid/annotated_data_for_ml_model/training_and_val_data/coco_validation/images/')
-
-# BATCH_SIZE_TRAIN = 1
-# BATCH_SIZE_VAL = 1
-
-# NUM_WORKER_TRAIN = 2
-# NUM_WORKER_VAL = 2
-
-
-# Training and inference in custom docker
-import os
+# ============================================================================
+# SageMaker Training Configuration for Grounding DINO
+# ============================================================================
+# NOTE: This config uses ONLY static values (no Python code like `import os`)
+# because mmengine's lazy import mode doesn't allow arbitrary Python code.
+#
+# The data paths below are the standard SageMaker mount points.
+# Classes are hardcoded for the merged KSW+WAID tableware dataset.
+# ============================================================================
 
 LOAD_FROM = "/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth"
-# LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
 
 RESUME = False  # Enable resume to continue training
 
-# Data paths - read from environment variables (set via SageMaker hyperparameters)
-# with defaults for backward compatibility
-ANN_FILE_TRAINING = os.environ.get(
-    "SM_HP_ANN_FILE_TRAINING",
-    "/opt/ml/input/data/train/annotations/instances_train.json",
-)
-ANN_FILE_VALIDATION = os.environ.get(
-    "SM_HP_ANN_FILE_VALIDATION",
-    "/opt/ml/input/data/validation/annotations/instances_val.json",
-)
+# Data paths - standard SageMaker mount points
+ANN_FILE_TRAINING = "/opt/ml/input/data/train/annotations/instances_train.json"
+ANN_FILE_VALIDATION = "/opt/ml/input/data/validation/annotations/instances_val.json"
 
-DATA_PREFIX_TRAIN = dict(
-    img=os.environ.get("SM_HP_DATA_PREFIX_TRAIN", "/opt/ml/input/data/train/images/")
-)
-DATA_PREFIX_VAL = dict(
-    img=os.environ.get("SM_HP_DATA_PREFIX_VAL", "/opt/ml/input/data/validation/images/")
-)
+DATA_PREFIX_TRAIN = dict(img="/opt/ml/input/data/train/images/")
+DATA_PREFIX_VAL = dict(img="/opt/ml/input/data/validation/images/")
 
 BATCH_SIZE_TRAIN = 1
 BATCH_SIZE_VAL = 1
@@ -52,32 +25,25 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
-MAX_EPOCHS = 50  # Train for 20 more epochs (total 50)
+MAX_EPOCHS = 50
 
-
-# Load classes dynamically from COCO annotation file
-def load_classes_from_coco(ann_file):
-    """Load category names from a COCO format annotation file."""
-    import json
-    import os
-
-    print(f"📂 Loading classes from: {ann_file}")
-    if not os.path.exists(ann_file):
-        raise FileNotFoundError(
-            f"❌ Annotation file not found: {ann_file}\n"
-            f"   Available files in parent dir: {os.listdir(os.path.dirname(ann_file)) if os.path.exists(os.path.dirname(ann_file)) else 'DIR NOT FOUND'}"
-        )
-
-    with open(ann_file, "r") as f:
-        coco_data = json.load(f)
-    # Sort categories by id to ensure consistent ordering
-    categories = sorted(coco_data["categories"], key=lambda x: x["id"])
-    class_names = tuple(cat["name"] for cat in categories)
-    print(f"✅ Loaded {len(class_names)} classes: {class_names}")
-    return class_names
-
-
-CLASSES = load_classes_from_coco(ANN_FILE_TRAINING)
+# Classes for merged KSW + WAID tableware dataset
+# (sorted by category ID from the merged annotations)
+CLASSES = (
+    "coffee cup",        # 1
+    "coffee jar",        # 2
+    "glass",             # 3
+    "high bowl",         # 4
+    "normal bowl",       # 5
+    "other tableware",   # 6
+    "plate large",       # 7
+    "plate normal",      # 8
+    "plate small",       # 9
+    "small tableware item",  # 10
+    "square bowl",       # 11
+    "wide bowl",         # 12
+    "tableware",         # 13
+)
 
 
 # CLASSES = ('Other',
