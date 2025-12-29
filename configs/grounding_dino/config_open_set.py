@@ -17,30 +17,16 @@
 
 
 # Training and inference in custom docker
-import os
-
 LOAD_FROM = "/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth"
 # LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
 
 RESUME = False  # Enable resume to continue training
 
-# Data paths - read from environment variables (set via SageMaker hyperparameters)
-# with defaults for backward compatibility
-ANN_FILE_TRAINING = os.environ.get(
-    "SM_HP_ANN_FILE_TRAINING",
-    "/opt/ml/input/data/train/annotations/instances_train.json",
-)
-ANN_FILE_VALIDATION = os.environ.get(
-    "SM_HP_ANN_FILE_VALIDATION",
-    "/opt/ml/input/data/validation/annotations/instances_val.json",
-)
+ANN_FILE_TRAINING = "/opt/ml/input/data/train/annotations/instances_train.json"
+ANN_FILE_VALIDATION = "/opt/ml/input/data/validation/annotations/instances_val.json"
 
-DATA_PREFIX_TRAIN = dict(
-    img=os.environ.get("SM_HP_DATA_PREFIX_TRAIN", "/opt/ml/input/data/train/images/")
-)
-DATA_PREFIX_VAL = dict(
-    img=os.environ.get("SM_HP_DATA_PREFIX_VAL", "/opt/ml/input/data/validation/images/")
-)
+DATA_PREFIX_TRAIN = dict(img="/opt/ml/input/data/train/images/")
+DATA_PREFIX_VAL = dict(img="/opt/ml/input/data/validation/images/")
 
 BATCH_SIZE_TRAIN = 1
 BATCH_SIZE_VAL = 1
