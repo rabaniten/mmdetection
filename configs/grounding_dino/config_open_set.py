@@ -459,7 +459,7 @@ train_dataloader = dict(
         backend_args=None,
         data_prefix=DATA_PREFIX_TRAIN,
         data_root="/opt/ml/input/data/",
-        filter_cfg=dict(filter_empty_gt=False, min_size=32),
+        filter_cfg=dict(filter_empty_gt=True, min_size=32),
         pipeline=[
             dict(backend_args=None, type="LoadImageFromFile"),
             dict(type="LoadAnnotations", with_bbox=True),
@@ -633,7 +633,7 @@ val_dataloader = dict(
         # ToDo: load the validation set name dynamically
         ann_file=ANN_FILE_VALIDATION,  # Validation annotations
         data_prefix=DATA_PREFIX_VAL,  # Validation images
-        filter_cfg=dict(filter_empty_gt=False),
+        filter_cfg=dict(filter_empty_gt=True),
         pipeline=[
             dict(backend_args=None, type="LoadImageFromFile"),
             dict(
@@ -695,7 +695,7 @@ test_dataloader = dict(
         metainfo=metainfo,
         ann_file=ANN_FILE_VALIDATION,  # Using validation set for testing
         data_prefix=DATA_PREFIX_VAL,  # Test images from validation dataset
-        filter_cfg=dict(filter_empty_gt=False),
+        filter_cfg=dict(filter_empty_gt=True),
         pipeline=[
             dict(backend_args=None, type="LoadImageFromFile"),
             dict(
