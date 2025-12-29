@@ -417,11 +417,40 @@ class GroundingDINOHead(DINOHead):
         max_per_img = self.test_cfg.get('max_per_img', len(cls_score))
         img_shape = img_meta['img_shape']
 
+        # Debug: Get image identifier
+        img_id = img_meta.get('img_id', 'unknown')
+        img_path = img_meta.get('img_path', img_meta.get('file_name', 'unknown'))
+
         if token_positive_maps is not None:
+            cls_score_before = cls_score.shape
             cls_score = convert_grounding_to_cls_scores(
                 logits=cls_score.sigmoid()[None],
                 positive_maps=[token_positive_maps])[0]
-            scores, indexes = cls_score.view(-1).topk(max_per_img)
+            cls_score_after = cls_score.shape
+            cls_score_flat = cls_score.view(-1)
+            num_elements = cls_score_flat.numel()
+
+            # Debug logging
+            print(f"\n{'='*80}")
+            print(f"DEBUG: Processing image during validation")
+            print(f"  Image ID: {img_id}")
+            print(f"  Image Path: {img_path}")
+            print(f"  Image Shape: {img_shape}")
+            print(f"  cls_score shape BEFORE conversion: {cls_score_before}")
+            print(f"  cls_score shape AFTER conversion: {cls_score_after}")
+            print(f"  cls_score.view(-1) num_elements: {num_elements}")
+            print(f"  max_per_img: {max_per_img}")
+            print(f"  token_positive_maps keys: {list(token_positive_maps.keys()) if token_positive_maps else 'None'}")
+            print(f"  token_positive_maps length: {len(token_positive_maps) if token_positive_maps else 0}")
+            print(f"{'='*80}\n", flush=True)
+
+            # Safeguard: prevent topk crash
+            if num_elements < max_per_img:
+                print(f"⚠️ WARNING: num_elements ({num_elements}) < max_per_img ({max_per_img})")
+                print(f"   Using min({num_elements}, {max_per_img}) = {min(num_elements, max_per_img)}")
+                max_per_img = min(num_elements, max_per_img)
+
+            scores, indexes = cls_score_flat.topk(max_per_img)
             num_classes = cls_score.shape[-1]
             det_labels = indexes % num_classes
             bbox_index = indexes // num_classes
@@ -429,6 +458,26 @@ class GroundingDINOHead(DINOHead):
         else:
             cls_score = cls_score.sigmoid()
             scores, _ = cls_score.max(-1)
+            num_scores = scores.numel()
+
+            # Debug logging
+            print(f"\n{'='*80}")
+            print(f"DEBUG: Processing image during validation (no token_positive_maps)")
+            print(f"  Image ID: {img_id}")
+            print(f"  Image Path: {img_path}")
+            print(f"  Image Shape: {img_shape}")
+            print(f"  cls_score shape: {cls_score.shape}")
+            print(f"  scores shape: {scores.shape}")
+            print(f"  scores num_elements: {num_scores}")
+            print(f"  max_per_img: {max_per_img}")
+            print(f"{'='*80}\n", flush=True)
+
+            # Safeguard: prevent topk crash
+            if num_scores < max_per_img:
+                print(f"⚠️ WARNING: num_scores ({num_scores}) < max_per_img ({max_per_img})")
+                print(f"   Using min({num_scores}, {max_per_img}) = {min(num_scores, max_per_img)}")
+                max_per_img = min(num_scores, max_per_img)
+
             scores, indexes = scores.topk(max_per_img)
             bbox_pred = bbox_pred[indexes]
             det_labels = scores.new_zeros(scores.shape, dtype=torch.long)
