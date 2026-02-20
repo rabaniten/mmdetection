@@ -37,21 +37,7 @@ NUM_WORKER_VAL = 32
 MAX_EPOCHS = 25  # Train for 20 epochs initially
 
 
-CLASSES = (
-    "coffee cup",
-    "coffee jar",
-    "glass",
-    "high bowl",
-    "normal bowl",
-    "other tableware",
-    "plate large",
-    "plate normal",
-    "plate small",
-    "small tableware item",
-    "square bowl",
-    "wide bowl",
-    "tableware",
-)
+CLASSES = ("paper",)  # KSW Patient Cards (127 train / 32 val)
 
 
 # CLASSES = ('Other',
