@@ -252,7 +252,7 @@ default_hooks = dict(
     logger=dict(type="LoggerHook", interval=50),
     param_scheduler=dict(type="ParamSchedulerHook"),
     checkpoint=dict(
-        type="CheckpointHook", interval=5, by_epoch=True, max_keep_ckpts=10
+        type="CheckpointHook", interval=1, by_epoch=True, max_keep_ckpts=10
     ),
     sampler_seed=dict(type="DistSamplerSeedHook"),
     visualization=dict(type="DetVisualizationHook", draw=True, interval=10, show=False),
