@@ -17,10 +17,13 @@
 
 
 # Training and inference in custom docker
-LOAD_FROM = "/opt/ml/code/pretrained_models/groundingdino_swint_ogc_mmdet-822d7e9d.pth"
-# LOAD_FROM = '/opt/ml/code/pretrained_models/epoch_40.pth'
-
-RESUME = False  # Enable resume to continue training
+import os as _os
+_pretrained_fname = _os.path.basename(
+    _os.environ.get("SM_HP_PRETRAINED_MODEL_S3_URI", "groundingdino_swint_ogc_mmdet-822d7e9d.pth")
+)
+LOAD_FROM = f"/opt/ml/code/pretrained_models/{_pretrained_fname}"
+# Auto-resume when loading from a prior training checkpoint (not the original pretrained model)
+RESUME = _pretrained_fname.startswith("epoch_") or _pretrained_fname.startswith("best_")
 
 ANN_FILE_TRAINING = "/opt/ml/input/data/train/annotations/instances_train.json"
 ANN_FILE_VALIDATION = "/opt/ml/input/data/validation/annotations/instances_val.json"
@@ -34,7 +37,7 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
-MAX_EPOCHS = 25  # Train for 20 epochs initially
+MAX_EPOCHS = 50 if RESUME else 25  # 25 base epochs; extends to 50 when resuming from a checkpoint
 
 
 CLASSES = (
