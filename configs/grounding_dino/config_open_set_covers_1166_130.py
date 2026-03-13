@@ -33,7 +33,7 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
-MAX_EPOCHS = 50  # Train from scratch for 50 epochs
+MAX_EPOCHS = 15  # Train from scratch for 15 epochs
 
 
 CLASSES = (
@@ -252,7 +252,7 @@ default_hooks = dict(
     logger=dict(type="LoggerHook", interval=50),
     param_scheduler=dict(type="ParamSchedulerHook"),
     checkpoint=dict(
-        type="CheckpointHook", interval=1, by_epoch=True, max_keep_ckpts=10
+        type="CheckpointHook", interval=1, by_epoch=True, max_keep_ckpts=15
     ),
     sampler_seed=dict(type="DistSamplerSeedHook"),
     visualization=dict(type="DetVisualizationHook", draw=True, interval=10, show=False),
