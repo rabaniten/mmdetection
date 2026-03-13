@@ -38,14 +38,15 @@ MAX_EPOCHS = 25  # Train for 20 epochs initially
 
 
 CLASSES = (
-    "transparent plate cover",
-    "soup cover",
-    "metallic plate cover",
-    "rectangular metallic cover",
-    "other cover",
     "cover that is above its tableware",
     "cover that occludes food",
-)  # KSW Covers (1166 train / 130 val) - covers_1166_130/a
+    "metallic plate cover",
+    "other cover",
+    "plastic wrap",
+    "rectangular metallic cover",
+    "soup cover",
+    "transparent plate cover",
+)  # From instances_train.json (categories by id 0-7) - KSW Covers covers_1166_130
 
 
 # CLASSES = ('Other',
