@@ -209,7 +209,6 @@ model = dict(
     num_queries=900,
     with_box_refine=True,
     as_two_stage=True,
-    num_classes=len(COVER_CLASSES),
     all_labels=COVER_CLASSES,
     data_preprocessor=dict(
         type="DetDataPreprocessor",

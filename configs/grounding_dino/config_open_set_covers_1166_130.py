@@ -33,7 +33,7 @@ BATCH_SIZE_VAL = 1
 NUM_WORKER_TRAIN = 32
 NUM_WORKER_VAL = 32
 
-MAX_EPOCHS = 20  # Train from scratch for 15 epochs
+MAX_EPOCHS = 20  # Train from scratch for 20 epochs
 
 
 CLASSES = (
